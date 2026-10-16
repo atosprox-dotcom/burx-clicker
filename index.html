@@ -498,7 +498,6 @@
             rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
-        // CAMBIO DE DIVISA CADA 2 NIVELES DE PRESTIGIO
         const CURRENCY_TIERS = [
             { minPrestige: 0, name: "Dólares", symbol: "$" },
             { minPrestige: 2, name: "Oro", symbol: "🪙" },
@@ -1260,7 +1259,7 @@
             }, 300);
         });
 
-        // RANKING
+        // RANKING (ACTUALIZADO CON ESTRELLAS DE PRESTIGIO)
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
@@ -1282,12 +1281,22 @@
                 }
 
                 sorted.forEach((p, index) => {
+                    const prestigeLvl = p.prestigeLvl || 0;
+                    let starsStr = '';
+                    for (let i = 0; i < prestigeLvl; i++) starsStr += '⭐';
+
                     const row = document.createElement('div');
                     row.className = `flex justify-between items-center p-3 rounded-xl border ${p.username === state.username ? 'bg-rose-950/40 border-rose-500/50' : 'bg-zinc-950 border-zinc-800'}`;
                     row.innerHTML = `
                         <div class="flex items-center gap-3">
                             <span class="font-bold ${index === 0 ? 'text-amber-400 text-base' : 'text-zinc-500'}">#${index + 1}</span>
-                            <span class="font-bold text-zinc-200">${p.username}</span>
+                            <div>
+                                <div class="font-bold text-zinc-200 flex items-center gap-1.5">
+                                    <span>${p.username}</span>
+                                    <span class="text-xs">${starsStr}</span>
+                                </div>
+                                ${prestigeLvl > 0 ? `<div class="text-[10px] text-purple-400">Prestigio ${prestigeLvl}</div>` : ''}
+                            </div>
                         </div>
                         <span class="font-black text-emerald-400">${Math.floor(p.money)}</span>
                     `;
