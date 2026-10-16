@@ -744,6 +744,7 @@
         let passiveTimer = null;
         let createdNewAccountPending = false;
         let dbUserRecord = null;
+        let lastClickTime = 0; // Variable para la protección de autoclicker
 
         function getClickPower() {
             const base = 1 + (state.clickLvl * 1.2);
@@ -962,7 +963,14 @@
 
         setInterval(saveCloudData, 15000); // Guardado automático rápido cada 15s
 
+        // PROTECCIÓN ANTIAUTOCLICKER (Límite de ~12 clics por segundo / máx 1 clic cada 80ms)
         document.getElementById('clicker-btn').addEventListener('click', (e) => {
+            const now = Date.now();
+            if (now - lastClickTime < 80) {
+                return; // Ignora clics inhumanos o de programas externos rápidos
+            }
+            lastClickTime = now;
+
             const earned = getClickPower();
             state.money += earned;
             state.totalEarned += earned;
