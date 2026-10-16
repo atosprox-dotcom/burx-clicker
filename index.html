@@ -164,10 +164,17 @@
 
             <!-- MENÚ DE SELECCIÓN -->
             <div id="arcade-menu" class="flex flex-col h-full">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-2">
                     <h2 class="text-xl font-bold text-rose-400 flex items-center gap-2">🕹️ Salón de Minijuegos</h2>
                     <button id="btn-close-arcade-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
                 </div>
+                
+                <!-- SALDO VISIBLE EN MENÚ ARCADE -->
+                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 mb-3 flex justify-between items-center">
+                    <span class="text-xs text-zinc-400 font-bold">Saldo disponible:</span>
+                    <span class="text-sm font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
+                </div>
+
                 <p class="text-xs text-zinc-400 mb-4">Elige a qué quieres jugar para ganar más recursos:</p>
                 <div class="space-y-3 flex-1 overflow-y-auto">
                     <!-- Batalla -->
@@ -211,11 +218,18 @@
 
             <!-- TRAGAPERRAS -->
             <div id="game-slots" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-3">
+                <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-slots" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
                     <h2 class="text-lg font-bold text-purple-400">🎰 Tragaperras 5x5</h2>
                     <button id="btn-close-slots-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
+
+                <!-- SALDO VISIBLE -->
+                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
+                    <span class="text-zinc-400 font-bold">Saldo:</span>
+                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
+                </div>
+
                 <div class="text-center mb-3 bg-zinc-950/60 border border-zinc-800 p-2 rounded-xl">
                     <div class="text-[10px] text-zinc-400">Apuesta Seleccionada:</div>
                     <div class="flex justify-center gap-2 mt-1">
@@ -244,6 +258,12 @@
                     <button id="btn-back-to-arcade-mines" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
                     <h2 class="text-lg font-bold text-emerald-400">💣 Minas BURX</h2>
                     <button id="btn-close-mines-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
+                </div>
+
+                <!-- SALDO VISIBLE -->
+                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
+                    <span class="text-zinc-400 font-bold">Saldo:</span>
+                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
                 </div>
 
                 <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-2 text-xs space-y-2">
@@ -278,22 +298,34 @@
 
             <!-- COHETE / CRASH -->
             <div id="game-crash" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-3">
+                <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-crash" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
                     <h2 class="text-lg font-bold text-amber-400">🚀 Cohete BURX</h2>
                     <button id="btn-close-crash-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
 
-                <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl mb-3 text-xs space-y-2">
+                <!-- SALDO VISIBLE -->
+                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
+                    <span class="text-zinc-400 font-bold">Saldo:</span>
+                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
+                </div>
+
+                <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-3 text-xs space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-zinc-400">Apuesta:</span>
                         <input type="number" id="crash-bet-input" value="50" min="10" class="bg-zinc-900 border border-zinc-700 text-amber-400 font-bold px-2 py-1 rounded-lg w-28 text-center">
                     </div>
                 </div>
 
-                <div class="bg-black/70 border border-amber-500/30 p-6 rounded-xl flex flex-col items-center justify-center my-auto mb-3 min-h-[140px]">
+                <div class="bg-black/70 border border-amber-500/30 p-5 rounded-xl flex flex-col items-center justify-center my-auto mb-3 min-h-[150px]">
                     <div id="crash-icon" class="text-4xl mb-1">🚀</div>
                     <div id="crash-multiplier-display" class="text-3xl font-black text-amber-400 tracking-wider">1.00x</div>
+                    
+                    <!-- PREVISUALIZACIÓN DE GANANCIA EN TIEMPO REAL -->
+                    <div id="crash-win-preview" class="text-sm font-bold text-emerald-400 mt-1 min-h-[20px]">
+                        Premio: <span class="arcade-sym">$</span><span id="crash-win-val">50</span>
+                    </div>
+
                     <div id="crash-status-msg" class="text-[11px] text-zinc-400 mt-1 h-4">Prepara tu apuesta y lanza</div>
                 </div>
 
@@ -307,10 +339,16 @@
     <!-- MAZMORRA -->
     <div id="battle-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] flex flex-col overflow-y-auto">
-            <div class="flex justify-between items-center mb-3">
+            <div class="flex justify-between items-center mb-2">
                 <button id="btn-back-to-arcade-from-battle" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
                 <h2 class="text-xl font-bold text-red-500 flex items-center gap-2">⚔️ Mazmorra</h2>
                 <button id="btn-close-battle-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
+            </div>
+
+            <!-- SALDO VISIBLE -->
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-3 flex justify-between items-center text-xs">
+                <span class="text-zinc-400 font-bold">Saldo:</span>
+                <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
             </div>
 
             <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl mb-4">
@@ -394,7 +432,7 @@
         </div>
     </div>
 
-    <!-- CABECERA -->
+    <!-- CABECERA PRINCIPAL -->
     <header class="w-full max-w-md flex flex-col items-center gap-3 mt-2">
         <div class="flex justify-between w-full items-center px-2">
             <div class="flex items-center gap-2">
@@ -875,7 +913,13 @@
             document.getElementById('cost-auto2-sym').innerText = tier.symbol;
             document.getElementById('tier-name-display').innerText = tier.name;
 
-            document.getElementById('money-counter').innerText = Math.floor(state.money);
+            const formattedMoney = Math.floor(state.money);
+            document.getElementById('money-counter').innerText = formattedMoney;
+
+            // Sincronizar el saldo en todas las vistas de los minijuegos
+            document.querySelectorAll('.arcade-sym').forEach(el => el.innerText = tier.symbol);
+            document.querySelectorAll('.arcade-bal').forEach(el => el.innerText = formattedMoney);
+
             document.getElementById('stat-click').innerText = `${getClickPower()}/clic`;
 
             const totalAuto = getAuto1Power() + getAuto2Power();
@@ -935,6 +979,12 @@
             document.getElementById('cost-armor').innerText = `${state.rpg.armor * 150}`;
             document.getElementById('lvl-boots').innerText = state.rpg.boots;
             document.getElementById('cost-boots').innerText = `${state.rpg.boots * 200}`;
+
+            // Actualizar previsualización estática del cohete si no está en vuelo
+            if (!crashRunning) {
+                const betVal = parseInt(document.getElementById('crash-bet-input').value) || 50;
+                document.getElementById('crash-win-val').innerText = betVal;
+            }
         }
 
         // ARCADE
@@ -1197,6 +1247,13 @@
         let crashInterval = null;
         let currentCrashBet = 50;
 
+        document.getElementById('crash-bet-input').addEventListener('input', (e) => {
+            if (!crashRunning) {
+                const val = parseInt(e.target.value) || 0;
+                document.getElementById('crash-win-val').innerText = val;
+            }
+        });
+
         document.getElementById('btn-open-crash').addEventListener('click', () => {
             document.getElementById('arcade-menu').classList.add('hidden');
             document.getElementById('game-crash').classList.remove('hidden');
@@ -1219,6 +1276,10 @@
             document.getElementById('crash-multiplier-display').innerText = "1.00x";
             document.getElementById('crash-icon').innerText = "🚀";
             document.getElementById('crash-status-msg').innerText = "Prepara tu apuesta y lanza";
+            
+            const betVal = parseInt(document.getElementById('crash-bet-input').value) || 50;
+            document.getElementById('crash-win-val').innerText = betVal;
+
             const btn = document.getElementById('btn-crash-action');
             btn.innerText = "LANZAR COHETE 🚀";
             btn.className = "w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base";
@@ -1239,10 +1300,7 @@
                 crashRunning = true;
                 crashMultiplier = 1.00;
 
-                // Generar punto de explosión realista (Crash)
-                // 65% probabilidad de estallar entre 1.10x y 1.70x
-                // 25% entre 1.70x y 4.00x
-                // 10% rachas locas altas (hasta x15 o más)
+                // Generar punto de explosión
                 const roll = Math.random();
                 if (roll < 0.65) {
                     crashTarget = 1.10 + Math.random() * 0.60;
@@ -1258,7 +1316,6 @@
                 document.getElementById('crash-status-msg').innerText = "¡El cohete está en vuelo! Decide cuándo cobrar...";
 
                 crashInterval = setInterval(() => {
-                    // Aceleración gradual suave del multiplicador
                     let increment = 0.01 + (crashMultiplier * 0.02);
                     crashMultiplier += increment;
 
@@ -1269,13 +1326,17 @@
                         document.getElementById('crash-multiplier-display').innerText = `${crashTarget.toFixed(2)}x 💥`;
                         document.getElementById('crash-icon').innerText = "💥";
                         document.getElementById('crash-status-msg').innerText = "¡BOOM! El cohete ha explotado.";
-                        
+                        document.getElementById('crash-win-val').innerText = "0";
+
                         const btnEnd = document.getElementById('btn-crash-action');
                         btnEnd.innerText = "LANZAR NUEVO COHETE 🚀";
                         btnEnd.className = "w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base";
                         saveCloudData();
                     } else {
                         document.getElementById('crash-multiplier-display').innerText = `${crashMultiplier.toFixed(2)}x`;
+                        // CALCULAR Y MOSTRAR PREMIO EN TIEMPO REAL
+                        const currentWin = Math.floor(currentCrashBet * crashMultiplier);
+                        document.getElementById('crash-win-val').innerText = currentWin;
                     }
                 }, 90);
 
@@ -1291,6 +1352,7 @@
 
                 document.getElementById('crash-icon').innerText = "💰";
                 document.getElementById('crash-status-msg').innerText = `🎉 ¡Cobrado con éxito! +${winAmt} (${crashMultiplier.toFixed(2)}x)`;
+                document.getElementById('crash-win-val').innerText = winAmt;
 
                 const btnEnd = document.getElementById('btn-crash-action');
                 btnEnd.innerText = "LANZAR NUEVO COHETE 🚀";
