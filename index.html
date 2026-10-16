@@ -89,6 +89,27 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMACIÓN DE PRESTIGIO -->
+    <div id="prestige-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-purple-500/50 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
+            <div class="text-5xl mb-2 animate-bounce">✨</div>
+            <h2 class="text-2xl font-bold mb-1 text-purple-400">¡Ascenso de Prestigio!</h2>
+            <p class="text-xs text-zinc-300 mb-4">¿Deseas renacer para alcanzar un nuevo nivel de poder?</p>
+            
+            <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl text-left text-xs space-y-2 mb-4">
+                <div class="text-amber-400 font-bold">Recompensas al Ascender:</div>
+                <div class="text-zinc-300">⭐ +1 Estrella de Prestigio</div>
+                <div class="text-emerald-400">🚀 +100% de Multiplicador Permanente de Ganancias</div>
+                <div class="text-rose-400 text-[11px] pt-1 border-t border-zinc-800">⚠️ Se reiniciarán tu dinero, clics y mejoras de fábrica (conservas tu equipo RPG y contraseña).</div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="btn-cancel-prestige" class="w-1/2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition text-xs">Cancelar</button>
+                <button id="btn-confirm-prestige" class="w-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl transition text-xs shadow-lg">¡ASCENDER! ✨</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE RANKING -->
     <div id="ranking-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[80vh] flex flex-col">
@@ -345,16 +366,32 @@
         </div>
     </header>
 
-    <!-- ÁREA CENTRAL -->
-    <main class="flex flex-col items-center justify-center my-auto relative py-6">
-        <div id="stars-container" class="flex gap-1 mb-3 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[28px]"></div>
-        <div class="relative flex items-center justify-center">
+    <!-- ÁREA CENTRAL (CON CARA Y BARRA DE PRESTIGIO) -->
+    <main class="flex flex-col items-center justify-center my-auto relative py-4 w-full max-w-sm">
+        <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]">⭐</div>
+        
+        <div class="relative flex items-center justify-center mb-3">
             <div class="absolute w-44 h-44 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
-            <button id="clicker-btn" class="relative w-40 h-40 rounded-full bg-gradient-to-b from-rose-500 to-rose-700 border-4 border-rose-400/50 shadow-[0_10px_30px_rgba(225,29,72,0.4)] flex items-center justify-center text-7xl active:scale-95 transition-transform duration-75 cursor-pointer select-none">
+            <button id="clicker-btn" class="relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 to-rose-700 border-4 border-rose-400/50 shadow-[0_10px_30px_rgba(225,29,72,0.4)] flex items-center justify-center text-6xl active:scale-95 transition-transform duration-75 cursor-pointer select-none">
                 😠
             </button>
         </div>
-        <div class="text-xs text-zinc-500 mt-4 font-medium uppercase tracking-widest">¡HAZ CLIC EN BURX!</div>
+
+        <!-- BARRA DE PROGRESO DE PRESTIGIO (DEBAJO DE LA CARA) -->
+        <div id="prestige-bar-container" class="w-full bg-zinc-900 border border-zinc-800 p-2.5 rounded-2xl shadow-lg mb-2">
+            <div class="flex justify-between items-center text-[11px] font-bold mb-1.5">
+                <span class="text-purple-400">✨ Prestigio <span id="prestige-level-num">0</span></span>
+                <span id="prestige-progress-text" class="text-zinc-400">0% ($0 / $5.0M)</span>
+            </div>
+            <div class="w-full bg-zinc-950 h-3 rounded-full overflow-hidden p-0.5 border border-zinc-800">
+                <div id="prestige-progress-bar" class="bg-gradient-to-r from-purple-600 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            <button id="btn-trigger-prestige" class="w-full hidden mt-2 bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-black font-black py-2 rounded-xl text-xs transition shadow-lg animate-pulse">
+                ✨ ¡ASCENDER A PRESTIGIO AHORA! ✨
+            </button>
+        </div>
+
+        <div class="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-1">¡HAZ CLIC EN BURX!</div>
     </main>
 
     <!-- SECCIÓN DE MEJORAS -->
@@ -365,7 +402,7 @@
                 <div class="text-xs text-zinc-400">Nivel: <span id="lvl-click" class="text-rose-400 font-bold">1</span></div>
             </div>
             <button id="btn-buy-click" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-rose-400/30">
-                $<span id="cost-click">10</span>
+                $<span id="cost-click">15</span>
             </button>
         </div>
 
@@ -375,7 +412,7 @@
                 <div class="text-xs text-zinc-400">Cantidad: <span id="lvl-auto1" class="text-emerald-400 font-bold">0</span></div>
             </div>
             <button id="btn-buy-auto1" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-emerald-400/30">
-                $<span id="cost-auto1">25</span>
+                $<span id="cost-auto1">40</span>
             </button>
         </div>
 
@@ -385,7 +422,7 @@
                 <div class="text-xs text-zinc-400">Cantidad: <span id="lvl-auto2" class="text-amber-400 font-bold">0</span></div>
             </div>
             <button id="btn-buy-auto2" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-amber-400/30">
-                $<span id="cost-auto2">200</span>
+                $<span id="cost-auto2">350</span>
             </button>
         </div>
 
@@ -395,7 +432,7 @@
                 <div class="text-xs text-zinc-400">Cobro cada: <span id="lvl-speed" class="text-purple-400 font-bold">1.00s</span></div>
             </div>
             <button id="btn-buy-speed" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-purple-400/30">
-                $<span id="cost-speed">500</span>
+                $<span id="cost-speed">800</span>
             </button>
         </div>
     </section>
@@ -417,7 +454,9 @@
             auto1: 0,
             auto2: 0,
             speedLvl: 0,
-            costs: { click: 10, auto1: 25, auto2: 200, speed: 500 },
+            prestigeLvl: 0,
+            totalEarned: 0, // Para calcular el prestigio
+            costs: { click: 15, auto1: 40, auto2: 350, speed: 800 },
             rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
@@ -466,7 +505,6 @@
 
             const status = document.getElementById('login-status');
 
-            // Si se acaba de mostrar la caja verde de contraseña creada, el segundo clic entra al juego
             if (createdNewAccountPending) {
                 document.getElementById('username-modal').classList.add('hidden');
                 document.getElementById('display-username').innerText = state.username;
@@ -493,14 +531,18 @@
                         return;
                     }
                     state = { ...existingUser };
+                    if (state.totalEarned === undefined) state.totalEarned = state.money;
+                    if (state.prestigeLvl === undefined) state.prestigeLvl = 0;
+
                     document.getElementById('username-modal').classList.add('hidden');
                     document.getElementById('display-username').innerText = state.username;
                     updateUI();
                     restartPassiveTimer();
                 } else {
-                    // Generar cuenta nueva con contraseña
                     const randomPass = 'BURX-' + Math.floor(1000 + Math.random() * 9000);
                     state.password = randomPass;
+                    state.totalEarned = 0;
+                    state.prestigeLvl = 0;
                     
                     document.getElementById('generated-pass-text').innerText = randomPass;
                     document.getElementById('new-password-box').classList.remove('hidden');
@@ -541,6 +583,37 @@
             document.getElementById('view-pass-modal').classList.add('hidden');
         });
 
+        // SISTEMA DE PRESTIGIO
+        function getPrestigeRequirement() {
+            // Meta inicial: 5 Millones. Cada prestigio posterior multiplica x10
+            return 5000000 * Math.pow(10, state.prestigeLvl);
+        }
+
+        document.getElementById('btn-trigger-prestige').addEventListener('click', () => {
+            document.getElementById('prestige-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-cancel-prestige').addEventListener('click', () => {
+            document.getElementById('prestige-modal').classList.add('hidden');
+        });
+
+        document.getElementById('btn-confirm-prestige').addEventListener('click', () => {
+            state.prestigeLvl += 1;
+            state.money = 0;
+            state.clickPower = 1 + (state.prestigeLvl * 2);
+            state.auto1 = 0;
+            state.auto2 = 0;
+            state.speedLvl = 0;
+            state.totalEarned = 0;
+            state.costs = { click: 15, auto1: 40, auto2: 350, speed: 800 };
+
+            document.getElementById('prestige-modal').classList.add('hidden');
+            updateUI();
+            restartPassiveTimer();
+            saveCloudData();
+            alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Tus ganancias ahora son permanentes x${1 + state.prestigeLvl}!`);
+        });
+
         async function saveCloudData() {
             if (!state.username) return;
             document.getElementById('cloud-sync-text').innerText = "Guardando...";
@@ -571,14 +644,18 @@
 
         setInterval(saveCloudData, 10000);
 
-        // CLIC PRINCIPAL
+        // CLIC PRINCIPAL (Multiplicador por prestigio)
         document.getElementById('clicker-btn').addEventListener('click', (e) => {
-            state.money += state.clickPower;
+            const prestigeMultiplier = 1 + state.prestigeLvl;
+            const earned = state.clickPower * prestigeMultiplier;
+            state.money += earned;
+            state.totalEarned += earned;
+
             const btn = e.currentTarget;
             btn.classList.remove('click-animate');
             void btn.offsetWidth;
             btn.classList.add('click-animate');
-            showFloatingText(`+$${state.clickPower}`, e.clientX, e.clientY);
+            showFloatingText(`+$${earned}`, e.clientX, e.clientY);
             updateUI();
         });
 
@@ -592,12 +669,12 @@
             setTimeout(() => el.remove(), 800);
         }
 
-        // TIENDA
+        // TIENDA (Costes rebalanceados más duros)
         document.getElementById('btn-buy-click').addEventListener('click', () => {
             if (state.money >= state.costs.click) {
                 state.money -= state.costs.click;
                 state.clickPower += 1;
-                state.costs.click = Math.floor(state.costs.click * 1.5);
+                state.costs.click = Math.floor(state.costs.click * 1.8);
                 updateUI();
                 saveCloudData();
             }
@@ -607,7 +684,7 @@
             if (state.money >= state.costs.auto1) {
                 state.money -= state.costs.auto1;
                 state.auto1 += 1;
-                state.costs.auto1 = Math.floor(state.costs.auto1 * 1.4);
+                state.costs.auto1 = Math.floor(state.costs.auto1 * 1.75);
                 updateUI();
                 saveCloudData();
             }
@@ -617,7 +694,7 @@
             if (state.money >= state.costs.auto2) {
                 state.money -= state.costs.auto2;
                 state.auto2 += 1;
-                state.costs.auto2 = Math.floor(state.costs.auto2 * 1.4);
+                state.costs.auto2 = Math.floor(state.costs.auto2 * 2.0);
                 updateUI();
                 saveCloudData();
             }
@@ -627,7 +704,7 @@
             if (state.money >= state.costs.speed && state.speedLvl < 9) {
                 state.money -= state.costs.speed;
                 state.speedLvl += 1;
-                state.costs.speed = Math.floor(state.costs.speed * 3.5);
+                state.costs.speed = Math.floor(state.costs.speed * 5.0);
                 updateUI();
                 restartPassiveTimer();
                 saveCloudData();
@@ -638,9 +715,11 @@
             if (passiveTimer) clearInterval(passiveTimer);
             const intervalMs = Math.max(100, 1000 - (state.speedLvl * 100));
             passiveTimer = setInterval(() => {
-                const autoEarnings = (state.auto1 * 1) + (state.auto2 * 10);
+                const prestigeMultiplier = 1 + state.prestigeLvl;
+                const autoEarnings = Math.floor(((state.auto1 * 1) + (state.auto2 * 10)) * prestigeMultiplier);
                 if (autoEarnings > 0 && state.username) {
                     state.money += autoEarnings;
+                    state.totalEarned += autoEarnings;
                     updateUI();
                 }
             }, intervalMs);
@@ -648,9 +727,11 @@
 
         function updateUI() {
             document.getElementById('money-counter').innerText = Math.floor(state.money);
-            document.getElementById('stat-click').innerText = `$${state.clickPower}/clic`;
             
-            const autoEarnings = (state.auto1 * 1) + (state.auto2 * 10);
+            const prestigeMultiplier = 1 + state.prestigeLvl;
+            document.getElementById('stat-click').innerText = `$${state.clickPower * prestigeMultiplier}/clic`;
+            
+            const autoEarnings = Math.floor(((state.auto1 * 1) + (state.auto2 * 10)) * prestigeMultiplier);
             document.getElementById('stat-auto').innerText = `$${autoEarnings}/s`;
 
             const currentInterval = (Math.max(100, 1000 - (state.speedLvl * 100)) / 1000).toFixed(2);
@@ -671,6 +752,28 @@
             } else {
                 document.getElementById('cost-speed').innerText = state.costs.speed;
             }
+
+            // ACTUALIZAR BARRA DE PRESTIGIO
+            const req = getPrestigeRequirement();
+            const progress = Math.min(100, (state.totalEarned / req) * 100);
+            document.getElementById('prestige-level-num').innerText = state.prestigeLvl;
+            document.getElementById('prestige-progress-bar').style.width = `${progress}%`;
+            
+            let reqFormatted = req >= 1000000 ? (req / 1000000).toFixed(1) + 'M' : req;
+            let earnedFormatted = state.totalEarned >= 1000000 ? (state.totalEarned / 1000000).toFixed(2) + 'M' : state.totalEarned;
+            document.getElementById('prestige-progress-text').innerText = `${progress.toFixed(1)}% ($${earnedFormatted} / $${reqFormatted})`;
+
+            const btnTriggerPrestige = document.getElementById('btn-trigger-prestige');
+            if (state.totalEarned >= req) {
+                btnTriggerPrestige.classList.remove('hidden');
+            } else {
+                btnTriggerPrestige.classList.add('hidden');
+            }
+
+            // ESTRELLAS DORADAS
+            let starsHtml = '';
+            for(let i = 0; i < state.prestigeLvl; i++) starsHtml += '⭐';
+            document.getElementById('stars-container').innerHTML = starsHtml || '⭐';
 
             // RPG
             const atk = 10 + (state.rpg.sword * 5);
@@ -787,7 +890,9 @@
                 }
 
                 if (prizeMultiplier > 0) {
-                    state.money += currentSlotBet * prizeMultiplier;
+                    const winAmt = currentSlotBet * prizeMultiplier;
+                    state.money += winAmt;
+                    state.totalEarned += winAmt;
                 }
 
                 isSpinning = false;
@@ -913,6 +1018,7 @@
             if (!minesActive) return;
             let finalWin = Math.floor(currentMinesBet * currentMultiplier);
             state.money += finalWin;
+            state.totalEarned += finalWin;
             updateUI();
             alert(`🎉 ¡Has cobrado con éxito $${finalWin} (${currentMultiplier.toFixed(2)}x)!`);
             endMinesGame(true);
@@ -1018,6 +1124,7 @@
                     clearInterval(interval);
                     const reward = state.rpg.bossLvl * 150;
                     state.money += reward;
+                    state.totalEarned += reward;
                     state.rpg.bossLvl += 1;
                     log.innerText = `🏆 ¡VICTORIA! Ganaste $${reward}`;
                     document.getElementById('boss-name').innerText = `👹 Boss Nivel ${state.rpg.bossLvl}`;
