@@ -390,17 +390,18 @@
 
                 <div id="slots-msg" class="text-center text-xs font-bold text-amber-400 mb-2 h-4">6 o más 🔮 activan Lock & Spin</div>
 
-                <div class="bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl flex items-center justify-between gap-2 text-xs">
-                    <div>
-                        <span class="text-zinc-400 font-bold">Apuesta:</span>
-                        <select id="slot-bet-select" class="bg-zinc-900 border border-zinc-700 text-amber-300 font-bold rounded-lg px-2 py-1 text-xs outline-none ml-1">
-                            <option value="50">50 $</option>
-                            <option value="100">100 $</option>
-                            <option value="500">500 $</option>
-                            <option value="1000">1.000 $</option>
-                        </select>
+                <!-- CONTROLES DE APUESTA DE TRAGAPERRAS LIBRE Y RÁPIDOS -->
+                <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl flex flex-col gap-2 text-xs">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-zinc-400 font-bold shrink-0">Apuesta Libre:</span>
+                        <input type="number" id="slot-bet-input" value="50" min="1" class="w-full bg-zinc-900 border border-zinc-700 text-amber-300 font-bold rounded-lg px-2 py-1.5 text-center text-xs outline-none focus:border-amber-500">
                     </div>
-                    <button id="btn-spin-slots-royal" onclick="spinSlotRoyal()" class="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black py-2 rounded-xl shadow-lg transition text-sm">
+                    <div class="flex items-center justify-between gap-1.5">
+                        <button onclick="setSlotBetQuick('min')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-1 rounded-lg text-[10px]">MIN (10)</button>
+                        <button onclick="setSlotBetQuick('double')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold py-1 rounded-lg text-[10px]">x2</button>
+                        <button onclick="setSlotBetQuick('max')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 font-bold py-1 rounded-lg text-[10px]">MAX ALL-IN</button>
+                    </div>
+                    <button id="btn-spin-slots-royal" onclick="spinSlotRoyal()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black py-2.5 rounded-xl shadow-lg transition text-sm">
                         GIRAR 🎰
                     </button>
                 </div>
@@ -744,7 +745,7 @@
         let passiveTimer = null;
         let createdNewAccountPending = false;
         let dbUserRecord = null;
-        let lastClickTime = 0; // Variable para la protección de autoclicker
+        let lastClickTime = 0; // Protección antivideoclics
 
         function getClickPower() {
             const base = 1 + (state.clickLvl * 1.2);
@@ -963,11 +964,11 @@
 
         setInterval(saveCloudData, 15000); // Guardado automático rápido cada 15s
 
-        // PROTECCIÓN ANTIAUTOCLICKER (Límite de ~12 clics por segundo / máx 1 clic cada 80ms)
+        // PROTECCIÓN ANTIAUTOCLICKER (Máximo ~12 clics por segundo / máx 1 clic cada 80ms)
         document.getElementById('clicker-btn').addEventListener('click', (e) => {
             const now = Date.now();
             if (now - lastClickTime < 80) {
-                return; // Ignora clics inhumanos o de programas externos rápidos
+                return; // Ignora clics inhumanos o programas externos muy rápidos
             }
             lastClickTime = now;
 
@@ -1403,6 +1404,20 @@
             }
         }
 
+        function setSlotBetQuick(type) {
+            if (isSlotSpinning) return;
+            const input = document.getElementById('slot-bet-input');
+            let current = parseInt(input.value) || 10;
+
+            if (type === 'min') {
+                input.value = 10;
+            } else if (type === 'double') {
+                input.value = current * 2;
+            } else if (type === 'max') {
+                input.value = Math.max(10, Math.floor(state.money));
+            }
+        }
+
         document.getElementById('btn-open-slots').addEventListener('click', () => {
             document.getElementById('arcade-menu').classList.add('hidden');
             document.getElementById('game-slots').classList.remove('hidden');
@@ -1441,7 +1456,12 @@
 
         function spinSlotRoyal() {
             if (isSlotSpinning) return;
-            const bet = parseInt(document.getElementById('slot-bet-select').value) || 50;
+            let bet = parseInt(document.getElementById('slot-bet-input').value) || 0;
+
+            if (bet <= 0) {
+                alert("¡Introduce una apuesta válida superior a 0!");
+                return;
+            }
 
             if (!isSlotBonusActive) {
                 if (state.money < bet) {
