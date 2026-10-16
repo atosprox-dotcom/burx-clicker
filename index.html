@@ -94,7 +94,6 @@
         <div class="bg-zinc-900 border border-purple-500/50 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[85vh] flex flex-col">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-xl font-bold text-purple-400 flex items-center gap-2">📜 Guía de Prestigio y Tiers</h2>
-                <button id="btn-close-guide-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
             </div>
             
             <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
@@ -119,7 +118,7 @@
                 </div>
             </div>
 
-            <button id="btn-close-guide" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition text-xs">Entendido</button>
+            <button id="btn-close-guide" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition text-xs cursor-pointer">Entendido</button>
         </div>
     </div>
 
@@ -666,47 +665,13 @@
             document.getElementById('view-pass-modal').classList.add('hidden');
         });
 
-        // GUÍA / INFO MODAL
+        // CONTROLES DE LA GUÍA / INFO MODAL
         document.getElementById('btn-open-guide').addEventListener('click', () => {
-            // Creamos dinámicamente el modal de guía si no existe o lo mostramos
-            let modal = document.getElementById('guide-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'guide-modal';
-                modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4';
-                modal.innerHTML = `
-                    <div class="bg-zinc-900 border border-purple-500/50 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[85vh] flex flex-col">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-xl font-bold text-purple-400 flex items-center gap-2">📜 Guía de Prestigio y Tiers</h2>
-                            <button id="btn-close-guide-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
-                        </div>
-                        <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
-                            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                                <div class="font-bold text-rose-400 mb-1">✨ ¿Qué es el Prestigio?</div>
-                                <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b>, un multiplicador de ganancias permanente y el acceso a una divisa de mayor valor.</p>
-                            </div>
-                            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                                <div class="font-bold text-amber-400 mb-2">🪙 Eras y Tiers de Divisas</div>
-                                <ul class="space-y-1.5 text-zinc-300">
-                                    <li>💵 <b>Prestigio 0 - 1:</b> Dólares ($) — <i>Era inicial</i></li>
-                                    <li>🪙 <b>Prestigio 2 - 3:</b> Oro (🪙) — <i>Valor superior</i></li>
-                                    <li>⚪ <b>Prestigio 4 - 5:</b> Platino (⚪) — <i>Riqueza avanzada</i></li>
-                                    <li>💎 <b>Prestigio 6+:</b> Diamante (💎) — <i>Estatus legendario</i></li>
-                                </ul>
-                            </div>
-                            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                                <div class="font-bold text-emerald-400 mb-1">🚀 Hitos de Producción (x2)</div>
-                                <p class="text-zinc-400">Cada vez que subes una mejora (Clic, Auto-BURX o Fábrica) hasta un múltiplo de <b>25 niveles</b>, ¡su rendimiento total <b>se duplica (x2)</b> automáticamente!</p>
-                            </div>
-                        </div>
-                        <button id="btn-close-guide" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition text-xs">Entendido</button>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                document.getElementById('btn-close-guide').addEventListener('click', () => modal.classList.add('hidden'));
-                document.getElementById('btn-close-guide-x').addEventListener('click', () => modal.classList.add('hidden'));
-            }
-            modal.classList.remove('hidden');
+            document.getElementById('guide-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-close-guide').addEventListener('click', () => {
+            document.getElementById('guide-modal').classList.add('hidden');
         });
 
         // PRESTIGIO
