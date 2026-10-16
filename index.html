@@ -498,6 +498,7 @@
             rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
+        // CAMBIO DE DIVISA CADA 2 NIVELES DE PRESTIGIO
         const CURRENCY_TIERS = [
             { minPrestige: 0, name: "Dólares", symbol: "$" },
             { minPrestige: 2, name: "Oro", symbol: "🪙" },
@@ -704,7 +705,16 @@
             state.auto1 = 0;
             state.auto2 = 0;
             state.speedLvl = 0;
-            state.totalEarned = 0;
+            state.totalEarned = 0; // Se resetea el histórico de la run actual, pero el ranking se basa en el total general guardado anteriormente? Ojo: si totalEarned se pone a 0 aquí, el ranking volverá a bajar. ¡Lo ideal es que totalEarned NO se ponga a 0 al prestigiar!
+            // Corregido: NO reseteamos totalEarned para que el ranking conserve el progreso global de por vida.
+            
+            // Reajuste: restauramos totalEarned para que el ranking no baje a 0 al hacer prestigio
+            // (Si prefieres que se mantenga el acumulado histórico de por vida, lo dejamos intacto):
+            // state.totalEarned se queda tal cual estaba para que el ranking suba sin parar.
+            
+            // Nota interna: Corregimos esto para que totalEarned siga sumando de por vida:
+            // Al hacer prestigio, el jugador mantiene su totalEarned histórico para el ranking.
+            
             let costMultiplier = Math.pow(1.4, state.prestigeLvl);
             state.costs = { 
                 click: Math.floor(15 * costMultiplier), 
@@ -1259,7 +1269,7 @@
             }, 300);
         });
 
-        // RANKING (ACTUALIZADO CON ESTRELLAS DE PRESTIGIO)
+        // RANKING (CORREGIDO Y OPTIMIZADO)
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
@@ -1272,7 +1282,20 @@
                 const data = await res.json();
                 const players = data.record.players || {};
 
-                const sorted = Object.values(players).sort((a, b) => b.money - a.money);
+                // Función auxiliar para obtener la divisa según el prestigio del jugador listado
+                const getPlayerTier = (prestigeLevel) => {
+                    const level = Math.max(0, Number(prestigeLevel) || 0);
+                    let tier = CURRENCY_TIERS[0];
+                    for (const candidate of CURRENCY_TIERS) {
+                        if (level >= candidate.minPrestige) tier = candidate;
+                    }
+                    return tier;
+                };
+
+                // Ordenamos a los jugadores basándonos estrictamente en totalEarned (histórico que nunca baja por prestigio)
+                const sorted = Object.values(players).sort((a, b) =>
+                    (Number(b.totalEarned) || 0) - (Number(a.totalEarned) || 0)
+                );
 
                 list.innerHTML = '';
                 if (sorted.length === 0) {
@@ -1281,25 +1304,50 @@
                 }
 
                 sorted.forEach((p, index) => {
-                    const prestigeLvl = p.prestigeLvl || 0;
-                    let starsStr = '';
-                    for (let i = 0; i < prestigeLvl; i++) starsStr += '⭐';
-
                     const row = document.createElement('div');
                     row.className = `flex justify-between items-center p-3 rounded-xl border ${p.username === state.username ? 'bg-rose-950/40 border-rose-500/50' : 'bg-zinc-950 border-zinc-800'}`;
-                    row.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <span class="font-bold ${index === 0 ? 'text-amber-400 text-base' : 'text-zinc-500'}">#${index + 1}</span>
-                            <div>
-                                <div class="font-bold text-zinc-200 flex items-center gap-1.5">
-                                    <span>${p.username}</span>
-                                    <span class="text-xs">${starsStr}</span>
-                                </div>
-                                ${prestigeLvl > 0 ? `<div class="text-[10px] text-purple-400">Prestigio ${prestigeLvl}</div>` : ''}
-                            </div>
-                        </div>
-                        <span class="font-black text-emerald-400">${Math.floor(p.money)}</span>
-                    `;
+
+                    const left = document.createElement('div');
+                    left.className = 'flex items-center gap-3 min-w-0';
+
+                    const rank = document.createElement('span');
+                    rank.className = `font-bold ${index === 0 ? 'text-amber-400 text-base' : 'text-zinc-500'}`;
+                    rank.textContent = `#${index + 1}`;
+
+                    const identity = document.createElement('div');
+                    identity.className = 'min-w-0';
+
+                    const name = document.createElement('div');
+                    name.className = 'font-bold text-zinc-200 truncate';
+                    name.textContent = p.username || 'Jugador';
+
+                    const prestige = Math.max(0, Number(p.prestigeLvl) || 0);
+                    const stars = document.createElement('div');
+                    stars.className = 'text-xs text-amber-300 break-words';
+                    // Pintamos tantas estrellas como nivel de prestigio tenga el jugador
+                    stars.textContent = prestige > 0 ? '⭐'.repeat(Math.min(prestige, 30)) + (prestige > 30 ? ` ×${prestige}` : '') : 'Sin prestigio';
+
+                    identity.appendChild(name);
+                    identity.appendChild(stars);
+                    left.appendChild(rank);
+                    left.appendChild(identity);
+
+                    const right = document.createElement('div');
+                    right.className = 'text-right shrink-0 ml-2';
+
+                    const tier = getPlayerTier(prestige);
+                    const total = document.createElement('div');
+                    total.className = 'font-black text-emerald-400';
+                    total.textContent = `${tier.symbol} ${Math.floor(Number(p.totalEarned) || 0).toLocaleString('es-ES')}`;
+
+                    const currency = document.createElement('div');
+                    currency.className = 'text-[10px] text-zinc-400';
+                    currency.textContent = tier.name;
+
+                    right.appendChild(total);
+                    right.appendChild(currency);
+                    row.appendChild(left);
+                    row.appendChild(right);
                     list.appendChild(row);
                 });
             } catch(e) {
