@@ -99,15 +99,15 @@
             <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <div class="font-bold text-rose-400 mb-1">✨ ¿Qué es el Prestigio?</div>
-                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b>, un multiplicador de ganancias permanente y el acceso a una divisa de mayor valor.</p>
+                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b> y un multiplicador de ganancias permanente.</p>
                 </div>
 
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                    <div class="font-bold text-amber-400 mb-2">🪙 Eras y Tiers de Divisas</div>
+                    <div class="font-bold text-amber-400 mb-2">🪙 Eras y Tiers de Divisas (Cambio cada 2 Prestigios)</div>
                     <ul class="space-y-1.5 text-zinc-300">
-                        <li>💵 <b>Prestigio 0 - 1:</b> Dólares ($) — <i>Era inicial</i></li>
-                        <li>🪙 <b>Prestigio 2 - 3:</b> Oro (🪙) — <i>Valor superior</i></li>
-                        <li>⚪ <b>Prestigio 4 - 5:</b> Platino (⚪) — <i>Riqueza avanzada</i></li>
+                        <li>💵 <b>Prestigio 0 y 1:</b> Dólares ($) — <i>Era inicial</i></li>
+                        <li>🪙 <b>Prestigio 2 y 3:</b> Oro (🪙) — <i>Valor superior</i></li>
+                        <li>⚪ <b>Prestigio 4 y 5:</b> Platino (⚪) — <i>Riqueza avanzada</i></li>
                         <li>💎 <b>Prestigio 6+:</b> Diamante (💎) — <i>Estatus legendario</i></li>
                     </ul>
                 </div>
@@ -127,12 +127,12 @@
         <div class="bg-zinc-900 border border-purple-500/50 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
             <div class="text-5xl mb-2 animate-bounce">✨</div>
             <h2 id="prestige-modal-title" class="text-2xl font-bold mb-1 text-purple-400">¡Ascenso de Prestigio!</h2>
-            <p id="prestige-modal-desc" class="text-xs text-zinc-300 mb-4">¿Deseas ascender al siguiente nivel y cambiar de divisa?</p>
+            <p id="prestige-modal-desc" class="text-xs text-zinc-300 mb-4">¿Deseas ascender al siguiente nivel?</p>
             
             <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl text-left text-xs space-y-2 mb-4">
                 <div class="text-amber-400 font-bold">Efectos del Ascenso:</div>
                 <div class="text-zinc-300">⭐ +1 Estrella de Prestigio</div>
-                <div class="text-emerald-400" id="prestige-perk-desc">🪙 Nueva Divisa Desbloqueada (Mayor Valor)</div>
+                <div class="text-emerald-400" id="prestige-perk-desc">🪙 Mayor multiplicador permanente</div>
                 <div class="text-rose-400 text-[11px] pt-1 border-t border-zinc-800">⚠️ Se reiniciarán tu dinero y fábricas (conservas tu equipo RPG y contraseña).</div>
             </div>
 
@@ -420,7 +420,7 @@
                 <div id="prestige-progress-bar" class="bg-gradient-to-r from-purple-600 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
             </div>
             <button id="btn-trigger-prestige" class="w-full hidden mt-2 bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-black font-black py-2 rounded-xl text-xs transition shadow-lg animate-pulse">
-                ✨ ¡ASCENDER DE TIER Y DIVISA! ✨
+                ✨ ¡ASCENDER DE NIVEL! ✨
             </button>
         </div>
 
@@ -498,6 +498,7 @@
             rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
+        // CAMBIO DE DIVISA CADA 2 NIVELES DE PRESTIGIO
         const CURRENCY_TIERS = [
             { minPrestige: 0, name: "Dólares", symbol: "$" },
             { minPrestige: 2, name: "Oro", symbol: "🪙" },
@@ -520,7 +521,6 @@
         let globalPlayersCache = {};
         let createdNewAccountPending = false;
 
-        // CÁLCULOS REBALANCEADOS CON MULTIPLICADORES POR HITO (CADA 25 NIVELES = x2)
         function getClickPower() {
             const base = 1 + (state.clickLvl * 1.2);
             const milestones = Math.floor(state.clickLvl / 25);
@@ -680,9 +680,11 @@
         }
 
         document.getElementById('btn-trigger-prestige').addEventListener('click', () => {
-            const nextTier = CURRENCY_TIERS.find(t => t.minPrestige === state.prestigeLvl + 1);
+            const nextLvl = state.prestigeLvl + 1;
+            const nextTier = CURRENCY_TIERS.find(t => t.minPrestige === nextLvl);
+            
             if (nextTier) {
-                document.getElementById('prestige-perk-desc').innerText = `✨ Nueva Divisa Desbloqueada: ${nextTier.name} (${nextTier.symbol}) - ¡Mayor valor y estatus!`;
+                document.getElementById('prestige-perk-desc').innerText = `✨ ¡Nueva Divisa Desbloqueada: ${nextTier.name} (${nextTier.symbol})!`;
             } else {
                 document.getElementById('prestige-perk-desc').innerText = `⭐ +1 Estrella y Multiplicador Superior`;
             }
@@ -694,7 +696,10 @@
         });
 
         document.getElementById('btn-confirm-prestige').addEventListener('click', () => {
+            const oldTier = getCurrentTier();
             state.prestigeLvl += 1;
+            const newTier = getCurrentTier();
+
             state.money = 0;
             state.clickLvl = 1;
             state.auto1 = 0;
@@ -714,8 +719,11 @@
             restartPassiveTimer();
             saveCloudData();
             
-            const currentTier = getCurrentTier();
-            alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Has entrado en la era del ${currentTier.name} (${currentTier.symbol})!`);
+            if (oldTier.name !== newTier.name) {
+                alert(`🎉 ¡Felicidades! Has alcanzado el Prestigio ${state.prestigeLvl}. ¡Has desbloqueado la nueva era del ${newTier.name} (${newTier.symbol})!`);
+            } else {
+                alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Tu multiplicador permanente ha aumentado!`);
+            }
         });
 
         async function saveCloudData() {
