@@ -64,6 +64,15 @@
         .crash-exploded {
             animation: explodeShake 0.4s ease-out;
         }
+
+        /* PULSO DORADO PARA CASILLA MULTIPLICADORA BINGO */
+        @keyframes goldPulse {
+            0%, 100% { border-color: rgba(250, 204, 21, 1); box-shadow: 0 0 8px rgba(250, 204, 21, 0.6); }
+            50% { border-color: rgba(250, 204, 21, 0.3); box-shadow: 0 0 2px rgba(250, 204, 21, 0.2); }
+        }
+        .golden-cell-pulse {
+            animation: goldPulse 1.2s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-950 via-zinc-900 to-neutral-950 text-white min-h-screen flex flex-col items-center justify-between p-4 font-sans select-none">
@@ -77,13 +86,11 @@
 
             <input type="text" id="input-username" class="w-full bg-zinc-950 border border-zinc-700 text-white rounded-xl px-4 py-3 mb-3 text-center text-base font-bold focus:outline-none focus:border-rose-500" placeholder="Tu apodo..." maxlength="18">
 
-            <!-- Campo dinámico de contraseña para existente -->
             <div id="password-container" class="hidden mb-3">
                 <input type="password" id="input-password" class="w-full bg-zinc-950 border border-amber-500 text-amber-300 rounded-xl px-4 py-3 text-center text-base font-bold focus:outline-none" placeholder="Introduce tu contraseña...">
                 <p class="text-[11px] text-amber-400/80 mt-1">Este apodo ya existe. Introduce su contraseña.</p>
             </div>
 
-            <!-- Caja con contraseña generada al crear cuenta nueva -->
             <div id="new-password-box" class="hidden bg-emerald-950/60 border border-emerald-500/50 p-3 rounded-xl mb-3 text-left">
                 <div class="text-xs text-emerald-300 font-bold mb-1">¡Cuenta nueva creada! Guarda tu contraseña:</div>
                 <div id="generated-pass-text" class="bg-black/50 text-emerald-400 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all my-1"></div>
@@ -297,7 +304,7 @@
                     <!-- Cartón 1 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span class="text-cyan-300 font-bold">Cartón 1</span>
+                            <span id="bingo-label-0" class="text-cyan-300 font-bold">Cartón 1</span>
                             <button id="bingo-toggle-0" onclick="toggleBingoCard(0)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
                         <div id="bingo-card-0" onclick="refreshBingoCard(0)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
@@ -306,7 +313,7 @@
                     <!-- Cartón 2 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span class="text-cyan-300 font-bold">Cartón 2</span>
+                            <span id="bingo-label-1" class="text-cyan-300 font-bold">Cartón 2</span>
                             <button id="bingo-toggle-1" onclick="toggleBingoCard(1)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
                         <div id="bingo-card-1" onclick="refreshBingoCard(1)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
@@ -315,7 +322,7 @@
                     <!-- Cartón 3 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span class="text-cyan-300 font-bold">Cartón 3</span>
+                            <span id="bingo-label-2" class="text-cyan-300 font-bold">Cartón 3</span>
                             <button id="bingo-toggle-2" onclick="toggleBingoCard(2)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
                         <div id="bingo-card-2" onclick="refreshBingoCard(2)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
@@ -324,7 +331,7 @@
                     <!-- Cartón 4 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span class="text-cyan-300 font-bold">Cartón 4</span>
+                            <span id="bingo-label-3" class="text-cyan-300 font-bold">Cartón 4</span>
                             <button id="bingo-toggle-3" onclick="toggleBingoCard(3)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
                         <div id="bingo-card-3" onclick="refreshBingoCard(3)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
@@ -346,7 +353,6 @@
                     <button id="btn-close-slots-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
 
-                <!-- SALDO VISIBLE -->
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
                     <span class="text-zinc-400 font-bold">Saldo:</span>
                     <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
@@ -382,7 +388,6 @@
                     <button id="btn-close-mines-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
 
-                <!-- SALDO VISIBLE -->
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
                     <span class="text-zinc-400 font-bold">Saldo:</span>
                     <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
@@ -426,7 +431,6 @@
                     <button id="btn-close-crash-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
 
-                <!-- SALDO VISIBLE -->
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
                     <span class="text-zinc-400 font-bold">Saldo:</span>
                     <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
@@ -439,7 +443,6 @@
                     </div>
                 </div>
 
-                <!-- ÁREA DE ANIMACIÓN DEL COHETE Y ESTRELLAS -->
                 <div id="crash-space-container" class="relative bg-black/80 border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center my-auto mb-3 h-[160px] overflow-hidden">
                     <div id="stars-field" class="absolute inset-0 pointer-events-none"></div>
                     <div id="crash-icon" class="text-4xl mb-1 z-10 transition-transform">🚀</div>
@@ -466,7 +469,6 @@
                 <button id="btn-close-battle-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
             </div>
 
-            <!-- SALDO VISIBLE -->
             <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-3 flex justify-between items-center text-xs">
                 <span class="text-zinc-400 font-bold">Saldo:</span>
                 <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
@@ -1104,7 +1106,7 @@
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        // ==================== VIDEO BINGO ====================
+        // ==================== VIDEO BINGO (IDEA 3 PULSO DORADO) ====================
         let bingoCards = [
             { active: true, numbers: [], marked: [], goldenIndex: -1 },
             { active: true, numbers: [], marked: [], goldenIndex: -1 },
@@ -1165,29 +1167,36 @@
         function renderBingoCardsUI() {
             for (let i = 0; i < 4; i++) {
                 const container = document.getElementById(`bingo-card-${i}`);
+                const label = document.getElementById(`bingo-label-${i}`);
                 container.innerHTML = '';
                 const card = bingoCards[i];
                 
+                // Actualizar cabecera del cartón indicando si tiene casilla x5 activa
+                if (isBingoPlaying && card.active && card.goldenIndex !== -1) {
+                    label.innerHTML = `Cartón ${i+1} <span class="text-[10px] text-amber-400 font-bold ml-1">⭐ x5 Activo</span>`;
+                } else {
+                    label.innerHTML = `Cartón ${i+1}`;
+                }
+
                 card.numbers.forEach((num, idx) => {
                     const cell = document.createElement('div');
                     cell.className = "aspect-square rounded text-xs font-bold flex items-center justify-center transition ";
                     
                     if (card.marked[idx]) {
                         if (card.goldenIndex === idx) {
-                            cell.className += "bg-amber-500 text-black border border-yellow-300 animate-bounce";
-                            cell.innerText = `⭐${num}`;
+                            cell.className += "bg-amber-500 text-black border-2 border-yellow-200 font-black scale-105";
+                            cell.innerText = num;
                         } else {
                             cell.className += "bg-emerald-600 text-white border border-emerald-400";
                             cell.innerText = num;
                         }
                     } else {
-                        if (card.goldenIndex === idx) {
-                            cell.className += "bg-zinc-900 text-amber-300 border-2 border-amber-400";
-                            cell.innerText = `🌟${num}`;
+                        if (isBingoPlaying && card.goldenIndex === idx) {
+                            cell.className += "bg-zinc-900 text-amber-300 border-2 border-amber-400 golden-cell-pulse";
                         } else {
                             cell.className += "bg-zinc-900 text-zinc-300 border border-zinc-800";
-                            cell.innerText = num;
                         }
+                        cell.innerText = num;
                     }
                     container.appendChild(cell);
                 });
@@ -1240,7 +1249,7 @@
             btn.disabled = true;
             btn.classList.add('opacity-50');
 
-            // Elegir un número dorado aleatorio en cada cartón activo
+            // Elegir casilla dorada (x5) en cada cartón activo
             bingoCards.forEach(card => {
                 if (card.active) {
                     card.marked = new Array(15).fill(false);
@@ -1249,7 +1258,7 @@
             });
             renderBingoCardsUI();
 
-            // Generar 30 bolas aleatorias extraídas del bombo (1 a 60)
+            // 30 bolas aleatorias del bombo (1 a 60)
             let drawnBalls = [];
             while(drawnBalls.length < 30) {
                 let b = Math.floor(Math.random() * 60) + 1;
@@ -1266,7 +1275,6 @@
                     let currentBall = drawnBalls[ballIndex];
                     lastBallText.innerHTML = `Bola extraída: <span class="text-xl font-black text-cyan-400 bg-zinc-900 px-3 py-0.5 rounded-full border border-cyan-500">${currentBall}</span> (${ballIndex + 1}/30)`;
 
-                    // Comprobar coincidencias en los cartones
                     bingoCards.forEach(card => {
                         if (card.active) {
                             let idx = card.numbers.indexOf(currentBall);
@@ -1291,8 +1299,6 @@
             bingoCards.forEach((card, cIdx) => {
                 if (!card.active) return;
 
-                // Comprobar líneas (filas de 5 elementos en matriz 3x5)
-                // Fila 0: 0,1,2,3,4 | Fila 1: 5,6,7,8,9 | Fila 2: 10,11,12,13,14
                 let linesCompleted = 0;
                 let rows = [[0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14]];
                 rows.forEach(r => {
@@ -1303,7 +1309,7 @@
                 let cardMultiplier = 0;
 
                 if (isFullBingo) {
-                    cardMultiplier = 200; // ¡BINGO!
+                    cardMultiplier = 200;
                     summaryMsg += `Cartón ${cIdx+1}: ¡BINGO x200! `;
                 } else if (linesCompleted >= 2) {
                     cardMultiplier = 30 * linesCompleted;
@@ -1313,10 +1319,10 @@
                     summaryMsg += `Cartón ${cIdx+1}: 1 Línea (x5)! `;
                 }
 
-                // Bonus por número dorado acertado (si el número dorado fue marcado)
+                // Bonus multiplicador x5 si la bola cayó en la casilla dorada pulsante
                 if (card.goldenIndex !== -1 && card.marked[card.goldenIndex]) {
-                    cardMultiplier *= 5; // Multiplicador x5 extra por bola dorada
-                    summaryMsg += `🌟 ¡DOBLE DORADO x5! `;
+                    cardMultiplier *= 5;
+                    summaryMsg += `🌟 ¡CASILLA DORADA x5! `;
                 }
 
                 if (cardMultiplier > 0) {
@@ -1327,9 +1333,9 @@
             if (totalWin > 0) {
                 state.money += totalWin;
                 state.totalEarned += totalWin;
-                document.getElementById('bingo-msg').innerText = `🎉 ¡PREMIO TOTAL: +${totalWin}! ${summaryMsg}`;
+                document.getElementById('bingo-msg').innerText = `🎉 ¡PREMIO: +${totalWin}! ${summaryMsg}`;
             } else {
-                document.getElementById('bingo-msg').innerText = "💸 Sin premio esta vez. ¡Prueba de nuevo!";
+                document.getElementById('bingo-msg').innerText = "💸 Sin premio esta vez. ¡Prueba otra vez!";
             }
 
             isBingoPlaying = false;
