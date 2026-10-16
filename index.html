@@ -99,7 +99,7 @@
             <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <div class="font-bold text-rose-400 mb-1">✨ ¿Qué es el Prestigio?</div>
-                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b> y un multiplicador de ganancias permanente.</p>
+                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b>, un multiplicador permanente y una <b>mejora automática de velocidad (-5% por nivel, mín. 0.15s)</b>.</p>
                 </div>
 
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
@@ -133,6 +133,7 @@
                 <div class="text-amber-400 font-bold">Efectos del Ascenso:</div>
                 <div class="text-zinc-300">⭐ +1 Estrella de Prestigio</div>
                 <div class="text-emerald-400" id="prestige-perk-desc">🪙 Mayor multiplicador permanente</div>
+                <div class="text-purple-300">⚡ Acelerador automático (-5% de intervalo)</div>
                 <div class="text-rose-400 text-[11px] pt-1 border-t border-zinc-800">⚠️ Se reiniciarán tu dinero y fábricas (conservas tu equipo RPG y contraseña).</div>
             </div>
 
@@ -459,14 +460,15 @@
             </button>
         </div>
 
+        <!-- ACELERADOR AUTOMÁTICO POR PRESTIGIO -->
         <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl flex items-center justify-between shadow-lg border-l-4 border-l-purple-500">
             <div>
-                <div class="font-bold text-sm text-purple-300">⚡ Acelerador BURX</div>
-                <div class="text-xs text-zinc-400">Cobro cada: <span id="lvl-speed" class="text-purple-400 font-bold">1.00s</span></div>
+                <div class="font-bold text-sm text-purple-300">⚡ Acelerador Automático</div>
+                <div class="text-xs text-zinc-400">Cobro cada: <span id="stat-interval" class="text-purple-400 font-bold">1.00s</span></div>
             </div>
-            <button id="btn-buy-speed" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-purple-400/30">
-                <span id="cost-speed-sym">$</span><span id="cost-speed">800</span>
-            </button>
+            <div class="text-xs bg-purple-950/60 border border-purple-500/40 px-3 py-2 rounded-xl text-purple-300 font-bold text-center">
+                ✨ Automático<br><span class="text-[9px] text-zinc-400">(-5% / Prestigio · Mín. 0.15s)</span>
+            </div>
         </div>
     </section>
 
@@ -491,10 +493,9 @@
             clickLvl: 1,
             auto1: 0,
             auto2: 0,
-            speedLvl: 0,
             prestigeLvl: 0,
             totalEarned: 0,
-            costs: { click: 15, auto1: 40, auto2: 350, speed: 800 },
+            costs: { click: 15, auto1: 40, auto2: 350 },
             rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
@@ -543,6 +544,13 @@
             const multiplier = Math.pow(2, milestones);
             const prestigeMultiplier = 1 + (state.prestigeLvl * 1.5);
             return Math.floor(base * multiplier * prestigeMultiplier);
+        }
+
+        // CÁLCULO PORCENTUAL DEL INTERVALO PASIVO (-5% por nivel, límite mínimo 0.15s)
+        function getPassiveInterval() {
+            let intervalSeconds = 1.00 * Math.pow(0.95, state.prestigeLvl);
+            if (intervalSeconds < 0.15) intervalSeconds = 0.15;
+            return Math.round(intervalSeconds * 1000);
         }
 
         // COMPROBAR USUARIO AL ESCRIBIR
@@ -704,23 +712,12 @@
             state.clickLvl = 1;
             state.auto1 = 0;
             state.auto2 = 0;
-            state.speedLvl = 0;
-            state.totalEarned = 0; // Se resetea el histórico de la run actual, pero el ranking se basa en el total general guardado anteriormente? Ojo: si totalEarned se pone a 0 aquí, el ranking volverá a bajar. ¡Lo ideal es que totalEarned NO se ponga a 0 al prestigiar!
-            // Corregido: NO reseteamos totalEarned para que el ranking conserve el progreso global de por vida.
-            
-            // Reajuste: restauramos totalEarned para que el ranking no baje a 0 al hacer prestigio
-            // (Si prefieres que se mantenga el acumulado histórico de por vida, lo dejamos intacto):
-            // state.totalEarned se queda tal cual estaba para que el ranking suba sin parar.
-            
-            // Nota interna: Corregimos esto para que totalEarned siga sumando de por vida:
-            // Al hacer prestigio, el jugador mantiene su totalEarned histórico para el ranking.
             
             let costMultiplier = Math.pow(1.4, state.prestigeLvl);
             state.costs = { 
                 click: Math.floor(15 * costMultiplier), 
                 auto1: Math.floor(40 * costMultiplier), 
-                auto2: Math.floor(350 * costMultiplier), 
-                speed: Math.floor(800 * costMultiplier) 
+                auto2: Math.floor(350 * costMultiplier)
             };
 
             document.getElementById('prestige-modal').classList.add('hidden');
@@ -729,9 +726,9 @@
             saveCloudData();
             
             if (oldTier.name !== newTier.name) {
-                alert(`🎉 ¡Felicidades! Has alcanzado el Prestigio ${state.prestigeLvl}. ¡Has desbloqueado la nueva era del ${newTier.name} (${newTier.symbol})!`);
+                alert(`🎉 ¡Felicidades! Has alcanzado el Prestigio ${state.prestigeLvl}. ¡Has desbloqueado la nueva era del ${newTier.name} (${newTier.symbol}) y acelerado tus ingresos automáticos!`);
             } else {
-                alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Tu multiplicador permanente ha aumentado!`);
+                alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Mayor multiplicador y velocidad de cobro mejorada!`);
             }
         });
 
@@ -820,20 +817,9 @@
             }
         });
 
-        document.getElementById('btn-buy-speed').addEventListener('click', () => {
-            if (state.money >= state.costs.speed && state.speedLvl < 9) {
-                state.money -= state.costs.speed;
-                state.speedLvl += 1;
-                state.costs.speed = Math.floor(state.costs.speed * 4.0);
-                updateUI();
-                restartPassiveTimer();
-                saveCloudData();
-            }
-        });
-
         function restartPassiveTimer() {
             if (passiveTimer) clearInterval(passiveTimer);
-            const intervalMs = Math.max(100, 1000 - (state.speedLvl * 100));
+            const intervalMs = getPassiveInterval();
             passiveTimer = setInterval(() => {
                 const autoEarnings = getAuto1Power() + getAuto2Power();
                 if (autoEarnings > 0 && state.username) {
@@ -851,7 +837,6 @@
             document.getElementById('cost-click-sym').innerText = tier.symbol;
             document.getElementById('cost-auto1-sym').innerText = tier.symbol;
             document.getElementById('cost-auto2-sym').innerText = tier.symbol;
-            document.getElementById('cost-speed-sym').innerText = tier.symbol;
             document.getElementById('tier-name-display').innerText = tier.name;
 
             document.getElementById('money-counter').innerText = Math.floor(state.money);
@@ -860,9 +845,10 @@
             const totalAuto = getAuto1Power() + getAuto2Power();
             document.getElementById('stat-auto').innerText = `${totalAuto}/s`;
 
-            const currentInterval = (Math.max(100, 1000 - (state.speedLvl * 100)) / 1000).toFixed(2);
-            document.getElementById('stat-interval').innerText = `${currentInterval}s`;
-            document.getElementById('lvl-speed').innerText = `${currentInterval}s`;
+            // Actualizar visualmente el intervalo de tiempo automático según el prestigio porcentual
+            const currentIntervalMs = getPassiveInterval();
+            const currentIntervalSec = (currentIntervalMs / 1000).toFixed(2);
+            document.getElementById('stat-interval').innerText = `${currentIntervalSec}s`;
 
             document.getElementById('lvl-click').innerText = state.clickLvl;
             document.getElementById('cost-click').innerText = state.costs.click;
@@ -879,14 +865,6 @@
 
             const auto2M = Math.floor(state.auto2 / 25);
             document.getElementById('bonus-auto2').innerText = auto2M > 0 ? `(x${Math.pow(2, auto2M)} Bonus)` : '';
-
-            const btnSpeed = document.getElementById('btn-buy-speed');
-            if (state.speedLvl >= 9) {
-                document.getElementById('cost-speed').innerText = "MÁX";
-                btnSpeed.disabled = true;
-            } else {
-                document.getElementById('cost-speed').innerText = state.costs.speed;
-            }
 
             const req = getPrestigeRequirement();
             const progress = Math.min(100, (state.totalEarned / req) * 100);
@@ -1269,7 +1247,7 @@
             }, 300);
         });
 
-        // RANKING (CORREGIDO Y OPTIMIZADO)
+        // RANKING
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
@@ -1282,7 +1260,6 @@
                 const data = await res.json();
                 const players = data.record.players || {};
 
-                // Función auxiliar para obtener la divisa según el prestigio del jugador listado
                 const getPlayerTier = (prestigeLevel) => {
                     const level = Math.max(0, Number(prestigeLevel) || 0);
                     let tier = CURRENCY_TIERS[0];
@@ -1292,7 +1269,6 @@
                     return tier;
                 };
 
-                // Ordenamos a los jugadores basándonos estrictamente en totalEarned (histórico que nunca baja por prestigio)
                 const sorted = Object.values(players).sort((a, b) =>
                     (Number(b.totalEarned) || 0) - (Number(a.totalEarned) || 0)
                 );
@@ -1324,7 +1300,6 @@
                     const prestige = Math.max(0, Number(p.prestigeLvl) || 0);
                     const stars = document.createElement('div');
                     stars.className = 'text-xs text-amber-300 break-words';
-                    // Pintamos tantas estrellas como nivel de prestigio tenga el jugador
                     stars.textContent = prestige > 0 ? '⭐'.repeat(Math.min(prestige, 30)) + (prestige > 30 ? ` ×${prestige}` : '') : 'Sin prestigio';
 
                     identity.appendChild(name);
