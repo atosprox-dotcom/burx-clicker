@@ -196,6 +196,15 @@
                         </div>
                         <span class="text-2xl">💣</span>
                     </button>
+
+                    <!-- Cohete / Crash -->
+                    <button id="btn-open-crash" class="w-full bg-gradient-to-r from-amber-900/60 to-rose-900/60 hover:from-amber-800/80 hover:to-rose-800/80 border border-amber-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
+                        <div>
+                            <div class="font-bold text-base text-amber-300">🚀 Cohete BURX (Crash)</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Deja subir el multiplicador y cobra antes de que explote.</div>
+                        </div>
+                        <span class="text-2xl">🚀</span>
+                    </button>
                 </div>
                 <button id="btn-close-arcade" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">Cerrar</button>
             </div>
@@ -264,6 +273,32 @@
                 </button>
                 <button id="btn-cashout-mines" class="w-full hidden bg-amber-500 hover:bg-amber-400 text-black font-black py-2.5 rounded-xl transition shadow-lg text-sm">
                     COBRAR (<span id="cashout-amount">0</span>) 💰
+                </button>
+            </div>
+
+            <!-- COHETE / CRASH -->
+            <div id="game-crash" class="hidden flex flex-col h-full">
+                <div class="flex justify-between items-center mb-3">
+                    <button id="btn-back-to-arcade-crash" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
+                    <h2 class="text-lg font-bold text-amber-400">🚀 Cohete BURX</h2>
+                    <button id="btn-close-crash-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
+                </div>
+
+                <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl mb-3 text-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-zinc-400">Apuesta:</span>
+                        <input type="number" id="crash-bet-input" value="50" min="10" class="bg-zinc-900 border border-zinc-700 text-amber-400 font-bold px-2 py-1 rounded-lg w-28 text-center">
+                    </div>
+                </div>
+
+                <div class="bg-black/70 border border-amber-500/30 p-6 rounded-xl flex flex-col items-center justify-center my-auto mb-3 min-h-[140px]">
+                    <div id="crash-icon" class="text-4xl mb-1">🚀</div>
+                    <div id="crash-multiplier-display" class="text-3xl font-black text-amber-400 tracking-wider">1.00x</div>
+                    <div id="crash-status-msg" class="text-[11px] text-zinc-400 mt-1 h-4">Prepara tu apuesta y lanza</div>
+                </div>
+
+                <button id="btn-crash-action" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base">
+                    LANZAR COHETE 🚀
                 </button>
             </div>
         </div>
@@ -456,7 +491,7 @@
                 <div class="font-bold text-sm text-zinc-200">Fábrica BURX</div>
                 <div class="text-xs text-zinc-400">Cantidad: <span id="lvl-auto2" class="text-amber-400 font-bold">0</span> <span id="bonus-auto2" class="text-amber-400 text-[10px]"></span></div>
             </div>
-            <button id="btn-buy-auto2" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-amber-400/30">
+            <button id="btn-buy-auto2" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-amber-600/30">
                 <span id="cost-auto2-sym">$</span><span id="cost-auto2">350</span>
             </button>
         </div>
@@ -846,7 +881,6 @@
             const totalAuto = getAuto1Power() + getAuto2Power();
             document.getElementById('stat-auto').innerText = `${totalAuto}/s`;
 
-            // Actualizar visualmente el intervalo de tiempo automático según el prestigio porcentual
             const currentIntervalMs = getPassiveInterval();
             const currentIntervalSec = (currentIntervalMs / 1000).toFixed(2);
             document.getElementById('stat-interval').innerText = `${currentIntervalSec}s`;
@@ -883,7 +917,6 @@
                 btnTriggerPrestige.classList.add('hidden');
             }
 
-            // CORRECCIÓN: Renderizar estrellas exactamente iguales al nivel de prestigio actual
             let starsHtml = '';
             for(let i = 0; i < state.prestigeLvl; i++) starsHtml += '⭐';
             document.getElementById('stars-container').innerHTML = starsHtml;
@@ -1155,6 +1188,116 @@
             document.getElementById('btn-cashout-mines').classList.add('hidden');
             saveCloudData();
         }
+
+        // COHETE / CRASH
+        let crashActive = false;
+        let crashRunning = false;
+        let crashMultiplier = 1.00;
+        let crashTarget = 1.00;
+        let crashInterval = null;
+        let currentCrashBet = 50;
+
+        document.getElementById('btn-open-crash').addEventListener('click', () => {
+            document.getElementById('arcade-menu').classList.add('hidden');
+            document.getElementById('game-crash').classList.remove('hidden');
+            resetCrashUI();
+        });
+        document.getElementById('btn-back-to-arcade-crash').addEventListener('click', () => {
+            if (crashRunning) return;
+            document.getElementById('game-crash').classList.add('hidden');
+            document.getElementById('arcade-menu').classList.remove('hidden');
+        });
+        document.getElementById('btn-close-crash-x').addEventListener('click', () => {
+            if (crashRunning) return;
+            document.getElementById('arcade-modal').classList.add('hidden');
+        });
+
+        function resetCrashUI() {
+            crashActive = false;
+            crashRunning = false;
+            crashMultiplier = 1.00;
+            document.getElementById('crash-multiplier-display').innerText = "1.00x";
+            document.getElementById('crash-icon').innerText = "🚀";
+            document.getElementById('crash-status-msg').innerText = "Prepara tu apuesta y lanza";
+            const btn = document.getElementById('btn-crash-action');
+            btn.innerText = "LANZAR COHETE 🚀";
+            btn.className = "w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base";
+        }
+
+        document.getElementById('btn-crash-action').addEventListener('click', () => {
+            if (!crashRunning) {
+                // Iniciar vuelo
+                currentCrashBet = parseInt(document.getElementById('crash-bet-input').value) || 50;
+                if (state.money < currentCrashBet) {
+                    alert("¡No tienes suficientes recursos para esta apuesta!");
+                    return;
+                }
+
+                state.money -= currentCrashBet;
+                updateUI();
+
+                crashRunning = true;
+                crashMultiplier = 1.00;
+
+                // Generar punto de explosión realista (Crash)
+                // 65% probabilidad de estallar entre 1.10x y 1.70x
+                // 25% entre 1.70x y 4.00x
+                // 10% rachas locas altas (hasta x15 o más)
+                const roll = Math.random();
+                if (roll < 0.65) {
+                    crashTarget = 1.10 + Math.random() * 0.60;
+                } else if (roll < 0.90) {
+                    crashTarget = 1.70 + Math.random() * 2.30;
+                } else {
+                    crashTarget = 4.00 + Math.random() * 11.00;
+                }
+
+                const btn = document.getElementById('btn-crash-action');
+                btn.innerText = "COBRAR 💰";
+                btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition shadow-lg text-base animate-pulse";
+                document.getElementById('crash-status-msg').innerText = "¡El cohete está en vuelo! Decide cuándo cobrar...";
+
+                crashInterval = setInterval(() => {
+                    // Aceleración gradual suave del multiplicador
+                    let increment = 0.01 + (crashMultiplier * 0.02);
+                    crashMultiplier += increment;
+
+                    if (crashMultiplier >= crashTarget) {
+                        // ¡CRASH! Explota
+                        clearInterval(crashInterval);
+                        crashRunning = false;
+                        document.getElementById('crash-multiplier-display').innerText = `${crashTarget.toFixed(2)}x 💥`;
+                        document.getElementById('crash-icon').innerText = "💥";
+                        document.getElementById('crash-status-msg').innerText = "¡BOOM! El cohete ha explotado.";
+                        
+                        const btnEnd = document.getElementById('btn-crash-action');
+                        btnEnd.innerText = "LANZAR NUEVO COHETE 🚀";
+                        btnEnd.className = "w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base";
+                        saveCloudData();
+                    } else {
+                        document.getElementById('crash-multiplier-display').innerText = `${crashMultiplier.toFixed(2)}x`;
+                    }
+                }, 90);
+
+            } else {
+                // Cobrar premio a tiempo (Cashout)
+                clearInterval(crashInterval);
+                crashRunning = false;
+
+                let winAmt = Math.floor(currentCrashBet * crashMultiplier);
+                state.money += winAmt;
+                state.totalEarned += winAmt;
+                updateUI();
+
+                document.getElementById('crash-icon').innerText = "💰";
+                document.getElementById('crash-status-msg').innerText = `🎉 ¡Cobrado con éxito! +${winAmt} (${crashMultiplier.toFixed(2)}x)`;
+
+                const btnEnd = document.getElementById('btn-crash-action');
+                btnEnd.innerText = "LANZAR NUEVO COHETE 🚀";
+                btnEnd.className = "w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base";
+                saveCloudData();
+            }
+        });
 
         // MAZMORRA
         document.getElementById('btn-open-battle-inside').addEventListener('click', () => {
