@@ -196,7 +196,7 @@
 
     <!-- MODAL DEL SALÓN DE MINIJUEGOS -->
     <div id="arcade-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] flex flex-col">
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl max-h-[92vh] flex flex-col">
 
             <!-- MENÚ DE SELECCIÓN -->
             <div id="arcade-menu" class="flex flex-col h-full">
@@ -213,6 +213,15 @@
 
                 <p class="text-xs text-zinc-400 mb-4">Elige a qué quieres jugar para ganar más recursos:</p>
                 <div class="space-y-3 flex-1 overflow-y-auto">
+                    <!-- Video Bingo -->
+                    <button id="btn-open-bingo" class="w-full bg-gradient-to-r from-cyan-900/60 to-purple-900/60 hover:from-cyan-800/80 hover:to-purple-800/80 border border-cyan-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
+                        <div>
+                            <div class="font-bold text-base text-cyan-300">🎰 Video Bingo BURX (4 Cartones)</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Líneas, bingos y números dorados con multiplicadores.</div>
+                        </div>
+                        <span class="text-2xl">🎱</span>
+                    </button>
+
                     <!-- Batalla -->
                     <button id="btn-open-battle-inside" class="w-full bg-gradient-to-r from-red-900/60 to-amber-900/60 hover:from-red-800/80 hover:to-amber-800/80 border border-red-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
@@ -250,6 +259,83 @@
                     </button>
                 </div>
                 <button id="btn-close-arcade" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">Cerrar</button>
+            </div>
+
+            <!-- VIDEO BINGO -->
+            <div id="game-bingo" class="hidden flex flex-col h-full">
+                <div class="flex justify-between items-center mb-2">
+                    <button id="btn-back-to-arcade-bingo" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
+                    <h2 class="text-base font-bold text-cyan-400">🎱 Video Bingo (4 Cartones)</h2>
+                    <button id="btn-close-bingo-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
+                </div>
+
+                <!-- SALDO VISIBLE -->
+                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
+                    <span class="text-zinc-400 font-bold">Saldo:</span>
+                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
+                </div>
+
+                <!-- CONTROLES DE APUESTA -->
+                <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-2 text-xs flex justify-between items-center">
+                    <div>
+                        <span class="text-zinc-400">Apuesta por Cartón:</span>
+                        <input type="number" id="bingo-bet-input" value="10" min="5" class="bg-zinc-900 border border-zinc-700 text-cyan-400 font-bold px-2 py-1 rounded-lg w-20 text-center ml-1">
+                    </div>
+                    <div class="text-right">
+                        <span class="text-zinc-400">Apuesta Total:</span>
+                        <span id="bingo-total-bet" class="font-black text-amber-400 ml-1">40</span>
+                    </div>
+                </div>
+
+                <!-- BOMBILLO / BOLAS SALIENTES -->
+                <div id="bingo-draw-area" class="bg-black/70 border border-cyan-500/30 p-2 rounded-xl mb-2 text-center min-h-[46px] flex items-center justify-center">
+                    <div id="bingo-last-ball" class="text-xs font-bold text-zinc-400">Pulsa Jugar para extraer bolas del bombo 🎱</div>
+                </div>
+
+                <!-- 4 CARTONES (Cuadrícula 2x2) -->
+                <div class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 mb-2 pr-1">
+                    <!-- Cartón 1 -->
+                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-1 text-[11px]">
+                            <span class="text-cyan-300 font-bold">Cartón 1</span>
+                            <button id="bingo-toggle-0" onclick="toggleBingoCard(0)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
+                        </div>
+                        <div id="bingo-card-0" onclick="refreshBingoCard(0)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
+                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                    </div>
+                    <!-- Cartón 2 -->
+                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-1 text-[11px]">
+                            <span class="text-cyan-300 font-bold">Cartón 2</span>
+                            <button id="bingo-toggle-1" onclick="toggleBingoCard(1)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
+                        </div>
+                        <div id="bingo-card-1" onclick="refreshBingoCard(1)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
+                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                    </div>
+                    <!-- Cartón 3 -->
+                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-1 text-[11px]">
+                            <span class="text-cyan-300 font-bold">Cartón 3</span>
+                            <button id="bingo-toggle-2" onclick="toggleBingoCard(2)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
+                        </div>
+                        <div id="bingo-card-2" onclick="refreshBingoCard(2)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
+                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                    </div>
+                    <!-- Cartón 4 -->
+                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-1 text-[11px]">
+                            <span class="text-cyan-300 font-bold">Cartón 4</span>
+                            <button id="bingo-toggle-3" onclick="toggleBingoCard(3)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
+                        </div>
+                        <div id="bingo-card-3" onclick="refreshBingoCard(3)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
+                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                    </div>
+                </div>
+
+                <div id="bingo-msg" class="text-center text-xs font-bold text-amber-400 mb-2 h-4">¡Activa cartones y extrae bolas!</div>
+                <button id="btn-play-bingo" class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-black py-2.5 rounded-xl transition shadow-lg text-sm">
+                    JUGAR BINGO 🎱
+                </button>
             </div>
 
             <!-- TRAGAPERRAS -->
@@ -355,18 +441,12 @@
 
                 <!-- ÁREA DE ANIMACIÓN DEL COHETE Y ESTRELLAS -->
                 <div id="crash-space-container" class="relative bg-black/80 border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center my-auto mb-3 h-[160px] overflow-hidden">
-                    <!-- Contenedor dinámico de estrellas -->
                     <div id="stars-field" class="absolute inset-0 pointer-events-none"></div>
-
-                    <!-- Cohete e Iconos -->
                     <div id="crash-icon" class="text-4xl mb-1 z-10 transition-transform">🚀</div>
                     <div id="crash-multiplier-display" class="text-3xl font-black text-amber-400 tracking-wider z-10 drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)]">1.00x</div>
-                    
-                    <!-- PREVISUALIZACIÓN DE GANANCIA EN TIEMPO REAL -->
                     <div id="crash-win-preview" class="text-sm font-bold text-emerald-400 mt-1 min-h-[20px] z-10">
                         Premio: <span class="arcade-sym">$</span><span id="crash-win-val">50</span>
                     </div>
-
                     <div id="crash-status-msg" class="text-[11px] text-zinc-400 mt-1 h-4 z-10">Prepara tu apuesta y lanza</div>
                 </div>
 
@@ -516,7 +596,6 @@
 
     <!-- ÁREA CENTRAL (CON CARA Y BARRA DE PRESTIGIO) -->
     <main class="flex flex-col items-center justify-center my-auto relative py-4 w-full max-w-sm">
-        <!-- CONTENEDOR DE ESTRELLAS DE PRESTIGIO DINÁMICAS -->
         <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]"></div>
 
         <div class="relative flex items-center justify-center mb-3">
@@ -587,7 +666,7 @@
         </div>
     </section>
 
-    <!-- FOOTER CON BOTÓN DE GUÍA DISCRETO -->
+    <!-- FOOTER -->
     <footer class="w-full max-w-md text-[10px] text-zinc-500 flex flex-col items-center gap-1 py-1">
         <div>
             ☁️ Sincronizado en la Nube de BURX | <span id="cloud-sync-text">Conectado</span>
@@ -614,7 +693,6 @@
             rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
-        // CAMBIO DE DIVISA CADA 2 NIVELES DE PRESTIGIO
         const CURRENCY_TIERS = [
             { minPrestige: 0, name: "Dólares", symbol: "$" },
             { minPrestige: 2, name: "Oro", symbol: "🪙" },
@@ -661,14 +739,12 @@
             return Math.floor(base * multiplier * prestigeMultiplier);
         }
 
-        // CÁLCULO PORCENTUAL DEL INTERVALO PASIVO (-5% por nivel, límite mínimo 0.15s)
         function getPassiveInterval() {
             let intervalSeconds = 1.00 * Math.pow(0.95, state.prestigeLvl);
             if (intervalSeconds < 0.15) intervalSeconds = 0.15;
             return Math.round(intervalSeconds * 1000);
         }
 
-        // COMPROBAR USUARIO AL ESCRIBIR
         document.getElementById('input-username').addEventListener('input', async (e) => {
             const nameInput = e.target.value.trim();
             const passContainer = document.getElementById('password-container');
@@ -696,11 +772,10 @@
                     desc.innerText = "Apodo nuevo. Se creará una contraseña automática:";
                 }
             } catch (err) {
-                console.error("Error comprobando usuario", err);
+                console.error(err);
             }
         });
 
-        // INICIAR SESIÓN / REGISTRAR
         document.getElementById('btn-login-cloud').addEventListener('click', async () => {
             const nameInput = document.getElementById('input-username').value.trim();
             const passInput = document.getElementById('input-password').value.trim();
@@ -730,7 +805,7 @@
                     const existingUser = globalPlayersCache[state.username];
                     if (existingUser.password && existingUser.password !== passInput) {
                         status.innerText = "❌ Contraseña incorrecta";
-                        alert("¡Contraseña incorrecta! No puedes acceder a este perfil.");
+                        alert("¡Contraseña incorrecta!");
                         return;
                     }
                     state = { ...existingUser };
@@ -757,17 +832,15 @@
                     await saveCloudData();
                 }
             } catch (e) {
-                console.error(e);
                 status.innerText = "⚠️ Error de conexión con la nube";
             }
         });
 
-        // COPIAR Y VER CONTRASEÑA
         document.getElementById('btn-copy-pass').addEventListener('click', (e) => {
             e.stopPropagation();
             const pass = document.getElementById('generated-pass-text').innerText;
             navigator.clipboard.writeText(pass);
-            alert("✅ ¡Contraseña copiada al portapapeles!");
+            alert("✅ ¡Contraseña copiada!");
         });
 
         document.getElementById('btn-open-view-pass').addEventListener('click', () => {
@@ -777,10 +850,9 @@
         });
 
         document.getElementById('btn-copy-profile-pass').addEventListener('click', () => {
-            const pass = state.password;
-            if (pass) {
-                navigator.clipboard.writeText(pass);
-                alert("✅ ¡Contraseña copiada al portapapeles!");
+            if (state.password) {
+                navigator.clipboard.writeText(state.password);
+                alert("✅ ¡Contraseña copiada!");
             }
         });
 
@@ -788,7 +860,6 @@
             document.getElementById('view-pass-modal').classList.add('hidden');
         });
 
-        // CONTROLES DE LA GUÍA / INFO MODAL
         document.getElementById('btn-open-guide').addEventListener('click', () => {
             document.getElementById('guide-modal').classList.remove('hidden');
         });
@@ -797,7 +868,6 @@
             document.getElementById('guide-modal').classList.add('hidden');
         });
 
-        // PRESTIGIO
         function getPrestigeRequirement() {
             return 5000000 * Math.pow(10, state.prestigeLvl);
         }
@@ -841,9 +911,9 @@
             saveCloudData();
 
             if (oldTier.name !== newTier.name) {
-                alert(`🎉 ¡Felicidades! Has alcanzado el Prestigio ${state.prestigeLvl}. ¡Has desbloqueado la nueva era del ${newTier.name} (${newTier.symbol}) y acelerado tus ingresos automáticos!`);
+                alert(`🎉 ¡Felicidades! Has desbloqueado el ${newTier.name} (${newTier.symbol})!`);
             } else {
-                alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Mayor multiplicador y velocidad de cobro mejorada!`);
+                alert(`🎉 ¡Prestigio ${state.prestigeLvl} alcanzado!`);
             }
         });
 
@@ -877,7 +947,6 @@
 
         setInterval(saveCloudData, 10000);
 
-        // CLIC PRINCIPAL
         document.getElementById('clicker-btn').addEventListener('click', (e) => {
             const earned = getClickPower();
             state.money += earned;
@@ -901,7 +970,6 @@
             setTimeout(() => el.remove(), 800);
         }
 
-        // TIENDA
         document.getElementById('btn-buy-click').addEventListener('click', () => {
             if (state.money >= state.costs.click) {
                 state.money -= state.costs.click;
@@ -957,7 +1025,6 @@
             const formattedMoney = Math.floor(state.money);
             document.getElementById('money-counter').innerText = formattedMoney;
 
-            // Sincronizar el saldo en todas las vistas de los minijuegos
             document.querySelectorAll('.arcade-sym').forEach(el => el.innerText = tier.symbol);
             document.querySelectorAll('.arcade-bal').forEach(el => el.innerText = formattedMoney);
 
@@ -967,8 +1034,7 @@
             document.getElementById('stat-auto').innerText = `${totalAuto}/s`;
 
             const currentIntervalMs = getPassiveInterval();
-            const currentIntervalSec = (currentIntervalMs / 1000).toFixed(2);
-            document.getElementById('stat-interval').innerText = `${currentIntervalSec}s`;
+            document.getElementById('stat-interval').innerText = `${(currentIntervalMs / 1000).toFixed(2)}s`;
 
             document.getElementById('lvl-click').innerText = state.clickLvl;
             document.getElementById('cost-click').innerText = state.costs.click;
@@ -1021,7 +1087,6 @@
             document.getElementById('lvl-boots').innerText = state.rpg.boots;
             document.getElementById('cost-boots').innerText = `${state.rpg.boots * 200}`;
 
-            // Actualizar previsualización estática del cohete si no está en vuelo
             if (!crashRunning) {
                 const betVal = parseInt(document.getElementById('crash-bet-input').value) || 50;
                 document.getElementById('crash-win-val').innerText = betVal;
@@ -1039,7 +1104,243 @@
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        // TRAGAPERRAS
+        // ==================== VIDEO BINGO ====================
+        let bingoCards = [
+            { active: true, numbers: [], marked: [], goldenIndex: -1 },
+            { active: true, numbers: [], marked: [], goldenIndex: -1 },
+            { active: false, numbers: [], marked: [], goldenIndex: -1 },
+            { active: false, numbers: [], marked: [], goldenIndex: -1 }
+        ];
+        let isBingoPlaying = false;
+
+        function initBingoCards() {
+            for (let i = 0; i < 4; i++) {
+                generateSingleBingoCard(i);
+            }
+            updateBingoTotalBet();
+            renderBingoCardsUI();
+        }
+
+        function generateSingleBingoCard(cardIndex) {
+            let nums = [];
+            while(nums.length < 15) {
+                let r = Math.floor(Math.random() * 60) + 1;
+                if(!nums.includes(r)) nums.push(r);
+            }
+            bingoCards[cardIndex].numbers = nums;
+            bingoCards[cardIndex].marked = new Array(15).fill(false);
+            bingoCards[cardIndex].goldenIndex = -1;
+        }
+
+        function refreshBingoCard(cardIndex) {
+            if (isBingoPlaying) return;
+            generateSingleBingoCard(cardIndex);
+            renderBingoCardsUI();
+        }
+
+        function toggleBingoCard(cardIndex) {
+            if (isBingoPlaying) return;
+            bingoCards[cardIndex].active = !bingoCards[cardIndex].active;
+            const btn = document.getElementById(`bingo-toggle-${cardIndex}`);
+            if (bingoCards[cardIndex].active) {
+                btn.className = "bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold";
+                btn.innerText = "ON";
+            } else {
+                btn.className = "bg-zinc-700 text-zinc-400 px-2 py-0.5 rounded text-[10px] font-bold";
+                btn.innerText = "OFF";
+            }
+            updateBingoTotalBet();
+            renderBingoCardsUI();
+        }
+
+        function updateBingoTotalBet() {
+            let activeCount = bingoCards.filter(c => c.active).length;
+            let betPerCard = parseInt(document.getElementById('bingo-bet-input').value) || 10;
+            let total = activeCount * betPerCard;
+            document.getElementById('bingo-total-bet').innerText = total;
+        }
+
+        document.getElementById('bingo-bet-input').addEventListener('input', updateBingoTotalBet);
+
+        function renderBingoCardsUI() {
+            for (let i = 0; i < 4; i++) {
+                const container = document.getElementById(`bingo-card-${i}`);
+                container.innerHTML = '';
+                const card = bingoCards[i];
+                
+                card.numbers.forEach((num, idx) => {
+                    const cell = document.createElement('div');
+                    cell.className = "aspect-square rounded text-xs font-bold flex items-center justify-center transition ";
+                    
+                    if (card.marked[idx]) {
+                        if (card.goldenIndex === idx) {
+                            cell.className += "bg-amber-500 text-black border border-yellow-300 animate-bounce";
+                            cell.innerText = `⭐${num}`;
+                        } else {
+                            cell.className += "bg-emerald-600 text-white border border-emerald-400";
+                            cell.innerText = num;
+                        }
+                    } else {
+                        if (card.goldenIndex === idx) {
+                            cell.className += "bg-zinc-900 text-amber-300 border-2 border-amber-400";
+                            cell.innerText = `🌟${num}`;
+                        } else {
+                            cell.className += "bg-zinc-900 text-zinc-300 border border-zinc-800";
+                            cell.innerText = num;
+                        }
+                    }
+                    container.appendChild(cell);
+                });
+
+                const cardBox = container.parentElement;
+                if (card.active) {
+                    cardBox.className = "bg-zinc-950 border border-cyan-500/50 p-2 rounded-xl flex flex-col justify-between shadow-md";
+                } else {
+                    cardBox.className = "bg-zinc-950/40 border border-zinc-900 opacity-50 p-2 rounded-xl flex flex-col justify-between";
+                }
+            }
+        }
+
+        document.getElementById('btn-open-bingo').addEventListener('click', () => {
+            document.getElementById('arcade-menu').classList.add('hidden');
+            document.getElementById('game-bingo').classList.remove('hidden');
+            initBingoCards();
+        });
+        document.getElementById('btn-back-to-arcade-bingo').addEventListener('click', () => {
+            if (isBingoPlaying) return;
+            document.getElementById('game-bingo').classList.add('hidden');
+            document.getElementById('arcade-menu').classList.remove('hidden');
+        });
+        document.getElementById('btn-close-bingo-x').addEventListener('click', () => {
+            if (isBingoPlaying) return;
+            document.getElementById('arcade-modal').classList.add('hidden');
+        });
+
+        document.getElementById('btn-play-bingo').addEventListener('click', () => {
+            if (isBingoPlaying) return;
+            let activeCards = bingoCards.filter(c => c.active);
+            if (activeCards.length === 0) {
+                alert("¡Activa al menos un cartón para jugar!");
+                return;
+            }
+
+            let betPerCard = parseInt(document.getElementById('bingo-bet-input').value) || 10;
+            let totalBet = activeCards.length * betPerCard;
+
+            if (state.money < totalBet) {
+                alert("¡No tienes suficiente saldo para esta apuesta!");
+                return;
+            }
+
+            state.money -= totalBet;
+            updateUI();
+
+            isBingoPlaying = true;
+            const btn = document.getElementById('btn-play-bingo');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            // Elegir un número dorado aleatorio en cada cartón activo
+            bingoCards.forEach(card => {
+                if (card.active) {
+                    card.marked = new Array(15).fill(false);
+                    card.goldenIndex = Math.floor(Math.random() * 15);
+                }
+            });
+            renderBingoCardsUI();
+
+            // Generar 30 bolas aleatorias extraídas del bombo (1 a 60)
+            let drawnBalls = [];
+            while(drawnBalls.length < 30) {
+                let b = Math.floor(Math.random() * 60) + 1;
+                if(!drawnBalls.includes(b)) drawnBalls.push(b);
+            }
+
+            let ballIndex = 0;
+            const msg = document.getElementById('bingo-msg');
+            const lastBallText = document.getElementById('bingo-last-ball');
+            msg.innerText = "🎱 Extrayendo bolas del bombo...";
+
+            const drawInterval = setInterval(() => {
+                if (ballIndex < drawnBalls.length) {
+                    let currentBall = drawnBalls[ballIndex];
+                    lastBallText.innerHTML = `Bola extraída: <span class="text-xl font-black text-cyan-400 bg-zinc-900 px-3 py-0.5 rounded-full border border-cyan-500">${currentBall}</span> (${ballIndex + 1}/30)`;
+
+                    // Comprobar coincidencias en los cartones
+                    bingoCards.forEach(card => {
+                        if (card.active) {
+                            let idx = card.numbers.indexOf(currentBall);
+                            if (idx !== -1) {
+                                card.marked[idx] = true;
+                            }
+                        }
+                    });
+                    renderBingoCardsUI();
+                    ballIndex++;
+                } else {
+                    clearInterval(drawInterval);
+                    calcularPremiosBingo(betPerCard);
+                }
+            }, 120);
+        });
+
+        function calcularPremiosBingo(betPerCard) {
+            let totalWin = 0;
+            let summaryMsg = "";
+
+            bingoCards.forEach((card, cIdx) => {
+                if (!card.active) return;
+
+                // Comprobar líneas (filas de 5 elementos en matriz 3x5)
+                // Fila 0: 0,1,2,3,4 | Fila 1: 5,6,7,8,9 | Fila 2: 10,11,12,13,14
+                let linesCompleted = 0;
+                let rows = [[0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14]];
+                rows.forEach(r => {
+                    if (r.every(i => card.marked[i])) linesCompleted++;
+                });
+
+                let isFullBingo = card.marked.every(m => m);
+                let cardMultiplier = 0;
+
+                if (isFullBingo) {
+                    cardMultiplier = 200; // ¡BINGO!
+                    summaryMsg += `Cartón ${cIdx+1}: ¡BINGO x200! `;
+                } else if (linesCompleted >= 2) {
+                    cardMultiplier = 30 * linesCompleted;
+                    summaryMsg += `Cartón ${cIdx+1}: ${linesCompleted} Líneas (x${cardMultiplier})! `;
+                } else if (linesCompleted === 1) {
+                    cardMultiplier = 5;
+                    summaryMsg += `Cartón ${cIdx+1}: 1 Línea (x5)! `;
+                }
+
+                // Bonus por número dorado acertado (si el número dorado fue marcado)
+                if (card.goldenIndex !== -1 && card.marked[card.goldenIndex]) {
+                    cardMultiplier *= 5; // Multiplicador x5 extra por bola dorada
+                    summaryMsg += `🌟 ¡DOBLE DORADO x5! `;
+                }
+
+                if (cardMultiplier > 0) {
+                    totalWin += (betPerCard * cardMultiplier);
+                }
+            });
+
+            if (totalWin > 0) {
+                state.money += totalWin;
+                state.totalEarned += totalWin;
+                document.getElementById('bingo-msg').innerText = `🎉 ¡PREMIO TOTAL: +${totalWin}! ${summaryMsg}`;
+            } else {
+                document.getElementById('bingo-msg').innerText = "💸 Sin premio esta vez. ¡Prueba de nuevo!";
+            }
+
+            isBingoPlaying = false;
+            const btn = document.getElementById('btn-play-bingo');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+            updateUI();
+            saveCloudData();
+        }
+
+        // ==================== TRAGAPERRAS ====================
         document.getElementById('btn-open-slots').addEventListener('click', () => {
             document.getElementById('arcade-menu').classList.add('hidden');
             document.getElementById('game-slots').classList.remove('hidden');
@@ -1122,7 +1423,7 @@
                     prizeMultiplier = 2;
                     msg.innerText = `✨ Premio Pequeño x2: +${currentSlotBet * 2}`;
                 } else {
-                    msg.innerText = "💸 Nada esta vez... Sigue intentándolo";
+                    msg.innerText = "💸 Nada esta vez...";
                 }
 
                 if (prizeMultiplier > 0) {
@@ -1183,7 +1484,7 @@
         document.getElementById('btn-start-mines').addEventListener('click', () => {
             currentMinesBet = parseInt(document.getElementById('mines-bet-input').value) || 50;
             if (state.money < currentMinesBet) {
-                alert("¡No tienes suficientes recursos para esta apuesta!");
+                alert("¡No tienes suficientes recursos!");
                 return;
             }
 
@@ -1272,7 +1573,7 @@
             }
 
             if (!won) {
-                alert("💥 ¡BOOM! Has pisado una mina y perdido la apuesta.");
+                alert("💥 ¡BOOM! Has pisado una mina.");
             }
 
             document.getElementById('btn-start-mines').classList.remove('hidden');
@@ -1281,7 +1582,6 @@
         }
 
         // COHETE / CRASH
-        let crashActive = false;
         let crashRunning = false;
         let crashMultiplier = 1.00;
         let crashTarget = 1.00;
@@ -1312,10 +1612,8 @@
         });
 
         function resetCrashUI() {
-            crashActive = false;
             crashRunning = false;
             crashMultiplier = 1.00;
-            
             const icon = document.getElementById('crash-icon');
             icon.innerText = "🚀";
             icon.className = "text-4xl mb-1 z-10 transition-transform";
@@ -1345,10 +1643,9 @@
 
         document.getElementById('btn-crash-action').addEventListener('click', () => {
             if (!crashRunning) {
-                // Iniciar vuelo
                 currentCrashBet = parseInt(document.getElementById('crash-bet-input').value) || 50;
                 if (state.money < currentCrashBet) {
-                    alert("¡No tienes suficientes recursos para esta apuesta!");
+                    alert("¡No tienes suficientes recursos!");
                     return;
                 }
 
@@ -1358,12 +1655,10 @@
                 crashRunning = true;
                 crashMultiplier = 1.00;
 
-                // Animación de vibración de cohete
                 const icon = document.getElementById('crash-icon');
                 icon.innerText = "🚀";
                 icon.className = "text-4xl mb-1 z-10 rocket-flying";
 
-                // Generar punto de explosión
                 const roll = Math.random();
                 if (roll < 0.65) {
                     crashTarget = 1.10 + Math.random() * 0.60;
@@ -1376,9 +1671,8 @@
                 const btn = document.getElementById('btn-crash-action');
                 btn.innerText = "COBRAR 💰";
                 btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition shadow-lg text-base animate-pulse";
-                document.getElementById('crash-status-msg').innerText = "¡El cohete está en vuelo! Decide cuándo cobrar...";
+                document.getElementById('crash-status-msg').innerText = "¡El cohete está en vuelo!";
 
-                // Generador de partículas de estrellas hacia abajo
                 starGenInterval = setInterval(createStarParticle, 70);
 
                 crashInterval = setInterval(() => {
@@ -1386,7 +1680,6 @@
                     crashMultiplier += increment;
 
                     if (crashMultiplier >= crashTarget) {
-                        // ¡CRASH! Explota
                         clearInterval(crashInterval);
                         clearInterval(starGenInterval);
                         crashRunning = false;
@@ -1410,7 +1703,6 @@
                 }, 90);
 
             } else {
-                // Cobrar premio a tiempo (Cashout)
                 clearInterval(crashInterval);
                 clearInterval(starGenInterval);
                 crashRunning = false;
@@ -1424,7 +1716,7 @@
                 updateUI();
 
                 icon.innerText = "💰";
-                document.getElementById('crash-status-msg').innerText = `🎉 ¡Cobrado con éxito! +${winAmt} (${crashMultiplier.toFixed(2)}x)`;
+                document.getElementById('crash-status-msg').innerText = `🎉 ¡Cobrado! +${winAmt} (${crashMultiplier.toFixed(2)}x)`;
                 document.getElementById('crash-win-val').innerText = winAmt;
 
                 const btnEnd = document.getElementById('btn-crash-action');
@@ -1522,7 +1814,7 @@
                     saveCloudData();
                 } else if (heroHp <= 0) {
                     clearInterval(interval);
-                    log.innerText = "☠️ ¡Derrotado! Mejora tu equipo";
+                    log.innerText = "☠️ ¡Derrotado!";
                 }
             }, 300);
         });
@@ -1531,7 +1823,7 @@
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
-            list.innerHTML = '<p class="text-center text-zinc-500 py-6">Cargando clasificación de la nube...</p>';
+            list.innerHTML = '<p class="text-center text-zinc-500 py-6">Cargando clasificación...</p>';
 
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
@@ -1555,7 +1847,7 @@
 
                 list.innerHTML = '';
                 if (sorted.length === 0) {
-                    list.innerHTML = '<p class="text-center text-zinc-500 py-6">Aún no hay jugadores registrados</p>';
+                    list.innerHTML = '<p class="text-center text-zinc-500 py-6">Aún no hay jugadores</p>';
                     return;
                 }
 
