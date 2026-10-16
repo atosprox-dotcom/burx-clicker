@@ -28,6 +28,42 @@
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
         }
+
+        /* ANIMACIONES PARA EL COHETE Y LAS ESTRELLAS */
+        @keyframes rocketVibrate {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-2px) rotate(-1deg); }
+            75% { transform: translateY(2px) rotate(1deg); }
+        }
+        .rocket-flying {
+            animation: rocketVibrate 0.15s infinite linear;
+        }
+
+        @keyframes starsFlyDown {
+            0% { transform: translateY(-10px); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(160px); opacity: 0; }
+        }
+        .star-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #facc15;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: starsFlyDown 0.6s infinite linear;
+        }
+
+        @keyframes explodeShake {
+            0%, 100% { transform: scale(1); }
+            20% { transform: scale(1.4) rotate(10deg); }
+            40% { transform: scale(0.9) rotate(-10deg); }
+            60% { transform: scale(1.2) rotate(5deg); }
+            80% { transform: scale(1) rotate(-5deg); }
+        }
+        .crash-exploded {
+            animation: explodeShake 0.4s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-950 via-zinc-900 to-neutral-950 text-white min-h-screen flex flex-col items-center justify-between p-4 font-sans select-none">
@@ -317,16 +353,21 @@
                     </div>
                 </div>
 
-                <div class="bg-black/70 border border-amber-500/30 p-5 rounded-xl flex flex-col items-center justify-center my-auto mb-3 min-h-[150px]">
-                    <div id="crash-icon" class="text-4xl mb-1">🚀</div>
-                    <div id="crash-multiplier-display" class="text-3xl font-black text-amber-400 tracking-wider">1.00x</div>
+                <!-- ÁREA DE ANIMACIÓN DEL COHETE Y ESTRELLAS -->
+                <div id="crash-space-container" class="relative bg-black/80 border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center my-auto mb-3 h-[160px] overflow-hidden">
+                    <!-- Contenedor dinámico de estrellas -->
+                    <div id="stars-field" class="absolute inset-0 pointer-events-none"></div>
+
+                    <!-- Cohete e Iconos -->
+                    <div id="crash-icon" class="text-4xl mb-1 z-10 transition-transform">🚀</div>
+                    <div id="crash-multiplier-display" class="text-3xl font-black text-amber-400 tracking-wider z-10 drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)]">1.00x</div>
                     
                     <!-- PREVISUALIZACIÓN DE GANANCIA EN TIEMPO REAL -->
-                    <div id="crash-win-preview" class="text-sm font-bold text-emerald-400 mt-1 min-h-[20px]">
+                    <div id="crash-win-preview" class="text-sm font-bold text-emerald-400 mt-1 min-h-[20px] z-10">
                         Premio: <span class="arcade-sym">$</span><span id="crash-win-val">50</span>
                     </div>
 
-                    <div id="crash-status-msg" class="text-[11px] text-zinc-400 mt-1 h-4">Prepara tu apuesta y lanza</div>
+                    <div id="crash-status-msg" class="text-[11px] text-zinc-400 mt-1 h-4 z-10">Prepara tu apuesta y lanza</div>
                 </div>
 
                 <button id="btn-crash-action" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base">
@@ -1245,6 +1286,7 @@
         let crashMultiplier = 1.00;
         let crashTarget = 1.00;
         let crashInterval = null;
+        let starGenInterval = null;
         let currentCrashBet = 50;
 
         document.getElementById('crash-bet-input').addEventListener('input', (e) => {
@@ -1273,8 +1315,13 @@
             crashActive = false;
             crashRunning = false;
             crashMultiplier = 1.00;
+            
+            const icon = document.getElementById('crash-icon');
+            icon.innerText = "🚀";
+            icon.className = "text-4xl mb-1 z-10 transition-transform";
+
+            document.getElementById('stars-field').innerHTML = '';
             document.getElementById('crash-multiplier-display').innerText = "1.00x";
-            document.getElementById('crash-icon').innerText = "🚀";
             document.getElementById('crash-status-msg').innerText = "Prepara tu apuesta y lanza";
             
             const betVal = parseInt(document.getElementById('crash-bet-input').value) || 50;
@@ -1283,6 +1330,17 @@
             const btn = document.getElementById('btn-crash-action');
             btn.innerText = "LANZAR COHETE 🚀";
             btn.className = "w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base";
+        }
+
+        function createStarParticle() {
+            const field = document.getElementById('stars-field');
+            if (!field) return;
+            const star = document.createElement('div');
+            star.className = 'star-particle';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = '0px';
+            field.appendChild(star);
+            setTimeout(() => star.remove(), 600);
         }
 
         document.getElementById('btn-crash-action').addEventListener('click', () => {
@@ -1300,6 +1358,11 @@
                 crashRunning = true;
                 crashMultiplier = 1.00;
 
+                // Animación de vibración de cohete
+                const icon = document.getElementById('crash-icon');
+                icon.innerText = "🚀";
+                icon.className = "text-4xl mb-1 z-10 rocket-flying";
+
                 // Generar punto de explosión
                 const roll = Math.random();
                 if (roll < 0.65) {
@@ -1315,6 +1378,9 @@
                 btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition shadow-lg text-base animate-pulse";
                 document.getElementById('crash-status-msg').innerText = "¡El cohete está en vuelo! Decide cuándo cobrar...";
 
+                // Generador de partículas de estrellas hacia abajo
+                starGenInterval = setInterval(createStarParticle, 70);
+
                 crashInterval = setInterval(() => {
                     let increment = 0.01 + (crashMultiplier * 0.02);
                     crashMultiplier += increment;
@@ -1322,9 +1388,13 @@
                     if (crashMultiplier >= crashTarget) {
                         // ¡CRASH! Explota
                         clearInterval(crashInterval);
+                        clearInterval(starGenInterval);
                         crashRunning = false;
+
+                        icon.innerText = "💥";
+                        icon.className = "text-5xl mb-1 z-10 crash-exploded";
+
                         document.getElementById('crash-multiplier-display').innerText = `${crashTarget.toFixed(2)}x 💥`;
-                        document.getElementById('crash-icon').innerText = "💥";
                         document.getElementById('crash-status-msg').innerText = "¡BOOM! El cohete ha explotado.";
                         document.getElementById('crash-win-val').innerText = "0";
 
@@ -1334,7 +1404,6 @@
                         saveCloudData();
                     } else {
                         document.getElementById('crash-multiplier-display').innerText = `${crashMultiplier.toFixed(2)}x`;
-                        // CALCULAR Y MOSTRAR PREMIO EN TIEMPO REAL
                         const currentWin = Math.floor(currentCrashBet * crashMultiplier);
                         document.getElementById('crash-win-val').innerText = currentWin;
                     }
@@ -1343,14 +1412,18 @@
             } else {
                 // Cobrar premio a tiempo (Cashout)
                 clearInterval(crashInterval);
+                clearInterval(starGenInterval);
                 crashRunning = false;
+
+                const icon = document.getElementById('crash-icon');
+                icon.className = "text-4xl mb-1 z-10";
 
                 let winAmt = Math.floor(currentCrashBet * crashMultiplier);
                 state.money += winAmt;
                 state.totalEarned += winAmt;
                 updateUI();
 
-                document.getElementById('crash-icon').innerText = "💰";
+                icon.innerText = "💰";
                 document.getElementById('crash-status-msg').innerText = `🎉 ¡Cobrado con éxito! +${winAmt} (${crashMultiplier.toFixed(2)}x)`;
                 document.getElementById('crash-win-val').innerText = winAmt;
 
