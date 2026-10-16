@@ -38,7 +38,7 @@
             <div class="text-5xl mb-3">😠</div>
             <h2 class="text-2xl font-bold mb-2 text-rose-500">BURX Clicker</h2>
             <p id="modal-desc" class="text-sm text-zinc-400 mb-4">Introduce tu apodo para entrar o registrarte:</p>
-            
+
             <input type="text" id="input-username" class="w-full bg-zinc-950 border border-zinc-700 text-white rounded-xl px-4 py-3 mb-3 text-center text-base font-bold focus:outline-none focus:border-rose-500" placeholder="Tu apodo..." maxlength="18">
 
             <!-- Campo dinámico de contraseña para existente -->
@@ -70,14 +70,14 @@
             <div class="text-4xl mb-2">🔑</div>
             <h2 class="text-xl font-bold mb-1 text-amber-400">Datos de la Cuenta</h2>
             <p class="text-xs text-zinc-400 mb-4">Esta es tu contraseña guardada en la nube:</p>
-            
+
             <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl mb-4">
                 <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Apodo:</div>
                 <div id="profile-modal-user" class="text-sm font-bold text-rose-400 mb-3"></div>
-                
+
                 <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Contraseña Secreta:</div>
                 <div id="profile-modal-pass" class="bg-black/60 text-amber-300 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all border border-amber-500/30 mb-2"></div>
-                
+
                 <button id="btn-copy-profile-pass" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2 rounded-lg text-xs transition">
                     📋 Copiar Contraseña
                 </button>
@@ -95,11 +95,11 @@
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-xl font-bold text-purple-400 flex items-center gap-2">📜 Guía de Prestigio y Tiers</h2>
             </div>
-            
+
             <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <div class="font-bold text-rose-400 mb-1">✨ ¿Qué es el Prestigio?</div>
-                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b>, un multiplicador permanente y una <b>mejora automática de velocidad (-5% por nivel, mín. 0.15s)</b>.</p>
+                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b> por nivel, un multiplicador permanente y una <b>mejora automática de velocidad (-5% por nivel, mín. 0.15s)</b>.</p>
                 </div>
 
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
@@ -128,7 +128,7 @@
             <div class="text-5xl mb-2 animate-bounce">✨</div>
             <h2 id="prestige-modal-title" class="text-2xl font-bold mb-1 text-purple-400">¡Ascenso de Prestigio!</h2>
             <p id="prestige-modal-desc" class="text-xs text-zinc-300 mb-4">¿Deseas ascender al siguiente nivel?</p>
-            
+
             <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl text-left text-xs space-y-2 mb-4">
                 <div class="text-amber-400 font-bold">Efectos del Ascenso:</div>
                 <div class="text-zinc-300">⭐ +1 Estrella de Prestigio</div>
@@ -161,7 +161,7 @@
     <!-- MODAL DEL SALÓN DE MINIJUEGOS -->
     <div id="arcade-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] flex flex-col">
-            
+
             <!-- MENÚ DE SELECCIÓN -->
             <div id="arcade-menu" class="flex flex-col h-full">
                 <div class="flex justify-between items-center mb-4">
@@ -402,8 +402,9 @@
 
     <!-- ÁREA CENTRAL (CON CARA Y BARRA DE PRESTIGIO) -->
     <main class="flex flex-col items-center justify-center my-auto relative py-4 w-full max-w-sm">
-        <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]">⭐</div>
-        
+        <!-- CONTENEDOR DE ESTRELLAS DE PRESTIGIO DINÁMICAS -->
+        <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]"></div>
+
         <div class="relative flex items-center justify-center mb-3">
             <div class="absolute w-44 h-44 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
             <button id="clicker-btn" class="relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 to-rose-700 border-4 border-rose-400/50 shadow-[0_10px_30px_rgba(225,29,72,0.4)] flex items-center justify-center text-6xl active:scale-95 transition-transform duration-75 cursor-pointer select-none">
@@ -633,11 +634,11 @@
                     state.totalEarned = 0;
                     state.prestigeLvl = 0;
                     state.clickLvl = 1;
-                    
+
                     document.getElementById('generated-pass-text').innerText = randomPass;
                     document.getElementById('new-password-box').classList.remove('hidden');
                     status.innerText = "¡Cuenta creada con éxito! Copia tu contraseña.";
-                    
+
                     createdNewAccountPending = true;
                     await saveCloudData();
                 }
@@ -690,7 +691,7 @@
         document.getElementById('btn-trigger-prestige').addEventListener('click', () => {
             const nextLvl = state.prestigeLvl + 1;
             const nextTier = CURRENCY_TIERS.find(t => t.minPrestige === nextLvl);
-            
+
             if (nextTier) {
                 document.getElementById('prestige-perk-desc').innerText = `✨ ¡Nueva Divisa Desbloqueada: ${nextTier.name} (${nextTier.symbol})!`;
             } else {
@@ -712,7 +713,7 @@
             state.clickLvl = 1;
             state.auto1 = 0;
             state.auto2 = 0;
-            
+
             let costMultiplier = Math.pow(1.4, state.prestigeLvl);
             state.costs = { 
                 click: Math.floor(15 * costMultiplier), 
@@ -724,7 +725,7 @@
             updateUI();
             restartPassiveTimer();
             saveCloudData();
-            
+
             if (oldTier.name !== newTier.name) {
                 alert(`🎉 ¡Felicidades! Has alcanzado el Prestigio ${state.prestigeLvl}. ¡Has desbloqueado la nueva era del ${newTier.name} (${newTier.symbol}) y acelerado tus ingresos automáticos!`);
             } else {
@@ -832,7 +833,7 @@
 
         function updateUI() {
             const tier = getCurrentTier();
-            
+
             document.getElementById('currency-symbol').innerText = tier.symbol;
             document.getElementById('cost-click-sym').innerText = tier.symbol;
             document.getElementById('cost-auto1-sym').innerText = tier.symbol;
@@ -841,7 +842,7 @@
 
             document.getElementById('money-counter').innerText = Math.floor(state.money);
             document.getElementById('stat-click').innerText = `${getClickPower()}/clic`;
-            
+
             const totalAuto = getAuto1Power() + getAuto2Power();
             document.getElementById('stat-auto').innerText = `${totalAuto}/s`;
 
@@ -870,7 +871,7 @@
             const progress = Math.min(100, (state.totalEarned / req) * 100);
             document.getElementById('prestige-level-num').innerText = state.prestigeLvl;
             document.getElementById('prestige-progress-bar').style.width = `${progress}%`;
-            
+
             let reqFormatted = req >= 1000000 ? (req / 1000000).toFixed(1) + 'M' : req;
             let earnedFormatted = state.totalEarned >= 1000000 ? (state.totalEarned / 1000000).toFixed(2) + 'M' : state.totalEarned;
             document.getElementById('prestige-progress-text').innerText = `${progress.toFixed(1)}% (${earnedFormatted} / ${reqFormatted})`;
@@ -882,9 +883,10 @@
                 btnTriggerPrestige.classList.add('hidden');
             }
 
+            // CORRECCIÓN: Renderizar estrellas exactamente iguales al nivel de prestigio actual
             let starsHtml = '';
             for(let i = 0; i < state.prestigeLvl; i++) starsHtml += '⭐';
-            document.getElementById('stars-container').innerHTML = starsHtml || '⭐';
+            document.getElementById('stars-container').innerHTML = starsHtml;
 
             const atk = 10 + (state.rpg.sword * 5);
             const def = 5 + (state.rpg.armor * 3);
@@ -1116,7 +1118,7 @@
                 let baseStep = 0.04 + (minesCount * 0.012);
                 currentMultiplier += (baseStep + (revealedCount * 0.01));
                 currentMultiplier = parseFloat(currentMultiplier.toFixed(3));
-                
+
                 let currentWin = Math.floor(currentMinesBet * currentMultiplier);
                 document.getElementById('mines-multiplier').innerText = `${currentMultiplier.toFixed(2)}x`;
                 document.getElementById('mines-win-preview').innerText = `${currentWin}`;
