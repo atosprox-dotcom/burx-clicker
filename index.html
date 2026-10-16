@@ -281,7 +281,7 @@
                     <button id="btn-open-slots" class="w-full bg-gradient-to-r from-purple-900/60 to-rose-900/60 hover:from-purple-800/80 hover:to-rose-800/80 border border-purple-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
                             <div class="font-bold text-base text-purple-300">🎰 Tragaperras BURX Royal (Lock & Spin)</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Estilo bar real con 10 líneas, Comodín x2 y Bonus de 3 Re-spins.</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Estilo bar real con tirada automática, 10 líneas, Comodín x2 y Bonus.</div>
                         </div>
                         <span class="text-2xl">👑</span>
                     </button>
@@ -541,9 +541,14 @@
                         <button onclick="setSlotBetQuick('double')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold py-1 rounded-lg text-[10px]">x2</button>
                         <button onclick="setSlotBetQuick('max')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 font-bold py-1 rounded-lg text-[10px]">MAX ALL-IN</button>
                     </div>
-                    <button id="btn-spin-slots-royal" onclick="spinSlotRoyal()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black py-2.5 rounded-xl shadow-lg transition text-sm">
-                        GIRAR 🎰
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="btn-spin-slots-royal" onclick="spinSlotRoyal()" class="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black py-2.5 rounded-xl shadow-lg transition text-sm">
+                            GIRAR 🎰
+                        </button>
+                        <button id="btn-auto-spin-slots" onclick="toggleAutoSpinSlots()" class="bg-zinc-800 hover:bg-zinc-700 border border-amber-500/40 text-amber-400 font-black px-4 py-2.5 rounded-xl shadow-lg transition text-xs">
+                            🤖 AUTO (OFF)
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1155,7 +1160,7 @@
             const mult = parseFloat(document.getElementById('upgrade-mult-range').value) || 2.0;
 
             document.getElementById('upgrade-mult-display').innerText = mult.toFixed(2) + 'x';
-            
+
             let chance = Math.min(95, Math.max(5, (95 / mult)));
             document.getElementById('upgrade-chance-display').innerText = chance.toFixed(1) + '%';
 
@@ -1227,339 +1232,256 @@
             }, 1000);
         });
 
-        // ==================== VIDEO BINGO ====================
-        let bingoCards = [
-            { active: true, numbers: [], marked: [], goldenIndex: -1 },
-            { active: true, numbers: [], marked: [], goldenIndex: -1 },
-            { active: false, numbers: [], marked: [], goldenIndex: -1 },
-            { active: false, numbers: [], marked: [], goldenIndex: -1 }
+        // ==================== TRAGAPERRAS BURX ROYAL (CON TIRADA AUTOMÁTICA) ====================
+        const slotSymbols = ['🍒', '🍋', '🔔', '⭐', '💎', '🍇', '🍉', '🔮', '👑'];
+        let slotGrid = [
+            ['🍒', '🍋', '🔔', '⭐', '💎'],
+            ['🍇', '🍉', '🔮', '👑', '🍒'],
+            ['🔔', '⭐', '💎', '🍇', '🍉']
         ];
-        let isBingoPlaying = false;
+        let isSlotSpinning = false;
+        let isLockSpinActive = false;
+        let slotRespinsLeft = 3;
+        let lockedOrbs = []; // [{row, col}]
+        let autoSpinSlotsTimer = null;
 
-        function initBingoCards() {
-            for (let i = 0; i < 4; i++) { generateSingleBingoCard(i); }
-            updateBingoTotalBet();
-            renderBingoCardsUI();
-        }
-
-        function generateSingleBingoCard(cardIndex) {
-            let nums = [];
-            while(nums.length < 15) {
-                let r = Math.floor(Math.random() * 60) + 1;
-                if(!nums.includes(r)) nums.push(r);
-            }
-            bingoCards[cardIndex].numbers = nums;
-            bingoCards[cardIndex].marked = new Array(15).fill(false);
-            bingoCards[cardIndex].goldenIndex = -1;
-        }
-
-        function refreshBingoCard(cardIndex) {
-            if (isBingoPlaying) return;
-            generateSingleBingoCard(cardIndex);
-            renderBingoCardsUI();
-        }
-
-        function toggleBingoCard(cardIndex) {
-            if (isBingoPlaying) return;
-            bingoCards[cardIndex].active = !bingoCards[cardIndex].active;
-            const btn = document.getElementById(`bingo-toggle-${cardIndex}`);
-            btn.className = bingoCards[cardIndex].active ? "bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold" : "bg-zinc-700 text-zinc-400 px-2 py-0.5 rounded text-[10px] font-bold";
-            btn.innerText = bingoCards[cardIndex].active ? "ON" : "OFF";
-            updateBingoTotalBet();
-            renderBingoCardsUI();
-        }
-
-        function updateBingoTotalBet() {
-            let activeCount = bingoCards.filter(c => c.active).length;
-            let betPerCard = parseInt(document.getElementById('bingo-bet-input').value) || 10;
-            document.getElementById('bingo-total-bet').innerText = activeCount * betPerCard;
-        }
-
-        document.getElementById('bingo-bet-input').addEventListener('input', updateBingoTotalBet);
-
-        function renderBingoCardsUI() {
-            for (let i = 0; i < 4; i++) {
-                const container = document.getElementById(`bingo-card-${i}`);
-                const label = document.getElementById(`bingo-label-${i}`);
-                container.innerHTML = '';
-                const card = bingoCards[i];
-                label.innerHTML = (isBingoPlaying && card.active && card.goldenIndex !== -1) ? `Cartón ${i+1} <span class="text-[10px] text-amber-400 font-bold ml-1">⭐ x5 Activo</span>` : `Cartón ${i+1}`;
-
-                card.numbers.forEach((num, idx) => {
+        function renderSlotGrid() {
+            const gridEl = document.getElementById('slot-grid-royal');
+            gridEl.innerHTML = '';
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 5; c++) {
                     const cell = document.createElement('div');
-                    cell.className = "aspect-square rounded text-xs font-bold flex items-center justify-center transition ";
-                    if (card.marked[idx]) {
-                        cell.className += card.goldenIndex === idx ? "bg-amber-500 text-black border-2 border-yellow-200 font-black scale-105" : "bg-emerald-600 text-white border border-emerald-400";
+                    cell.className = "symbol-cell h-14 bg-zinc-900 border border-zinc-800 rounded-lg";
+                    let isLocked = lockedOrbs.some(o => o.row === r && o.col === c);
+                    if (isLocked) {
+                        cell.classList.add('locked-orb');
+                        cell.innerText = '🔮';
                     } else {
-                        cell.className += (isBingoPlaying && card.goldenIndex === idx) ? "bg-zinc-900 text-amber-300 border-2 border-amber-400 golden-cell-pulse" : "bg-zinc-900 text-zinc-300 border border-zinc-800";
+                        cell.innerText = slotGrid[r][c];
                     }
-                    cell.innerText = num;
-                    container.appendChild(cell);
-                });
-                container.parentElement.className = card.active ? "bg-zinc-950 border border-cyan-500/50 p-2 rounded-xl flex flex-col justify-between shadow-md" : "bg-zinc-950/40 border border-zinc-900 opacity-50 p-2 rounded-xl flex flex-col justify-between";
-            }
-        }
-
-        document.getElementById('btn-open-bingo').addEventListener('click', () => {
-            document.getElementById('arcade-menu').classList.add('hidden');
-            document.getElementById('game-bingo').classList.remove('hidden');
-            initBingoCards();
-        });
-        document.getElementById('btn-back-to-arcade-bingo').addEventListener('click', () => {
-            if (isBingoPlaying) return;
-            document.getElementById('game-bingo').classList.add('hidden');
-            document.getElementById('arcade-menu').classList.remove('hidden');
-        });
-        document.getElementById('btn-close-bingo-x').addEventListener('click', () => {
-            if (isBingoPlaying) return;
-            document.getElementById('arcade-modal').classList.add('hidden');
-        });
-
-        document.getElementById('btn-play-bingo').addEventListener('click', () => {
-            if (isBingoPlaying) return;
-            let activeCards = bingoCards.filter(c => c.active);
-            if (activeCards.length === 0) return alert("¡Activa al menos un cartón!");
-
-            let betPerCard = parseInt(document.getElementById('bingo-bet-input').value) || 10;
-            let totalBet = activeCards.length * betPerCard;
-            if (state.money < totalBet) return alert("Saldo insuficiente.");
-
-            state.money -= totalBet;
-            updateUI();
-            isBingoPlaying = true;
-            const btn = document.getElementById('btn-play-bingo');
-            btn.disabled = true;
-            btn.classList.add('opacity-50');
-
-            bingoCards.forEach(card => { card.marked = new Array(15).fill(false); card.goldenIndex = -1; });
-            let activeIndices = bingoCards.map((c, i) => c.active ? i : -1).filter(i => i !== -1);
-            if (Math.random() > 0.5 && activeIndices.length > 0) {
-                bingoCards[activeIndices[Math.floor(Math.random() * activeIndices.length)]].goldenIndex = Math.floor(Math.random() * 15);
-            }
-            renderBingoCardsUI();
-
-            let drawnBalls = [];
-            while(drawnBalls.length < 30) {
-                let b = Math.floor(Math.random() * 60) + 1;
-                if(!drawnBalls.includes(b)) drawnBalls.push(b);
-            }
-
-            let ballIndex = 0;
-            const msg = document.getElementById('bingo-msg');
-            msg.innerText = "🎱 Extrayendo bolas...";
-
-            const drawInterval = setInterval(() => {
-                if (ballIndex < drawnBalls.length) {
-                    let currentBall = drawnBalls[ballIndex];
-                    document.getElementById('bingo-last-ball').innerHTML = `Bola: <span class="text-xl font-black text-cyan-400 bg-zinc-900 px-3 py-0.5 rounded-full border border-cyan-500">${currentBall}</span> (${ballIndex + 1}/30)`;
-                    bingoCards.forEach(card => {
-                        if (card.active) {
-                            let idx = card.numbers.indexOf(currentBall);
-                            if (idx !== -1) card.marked[idx] = true;
-                        }
-                    });
-                    renderBingoCardsUI();
-                    ballIndex++;
-                } else {
-                    clearInterval(drawInterval);
-                    calcularPremiosBingo(betPerCard);
+                    gridEl.appendChild(cell);
                 }
-            }, 120);
-        });
-
-        function calcularPremiosBingo(betPerCard) {
-            let totalWin = 0;
-            bingoCards.forEach((card, cIdx) => {
-                if (!card.active) return;
-                let linesCompleted = 0;
-                [[0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14]].forEach(r => { if (r.every(i => card.marked[i])) linesCompleted++; });
-                let isFullBingo = card.marked.every(m => m);
-                let mult = isFullBingo ? 200 : (linesCompleted >= 2 ? 30 * linesCompleted : (linesCompleted === 1 ? 5 : 0));
-                if (card.goldenIndex !== -1 && card.marked[card.goldenIndex]) mult *= 5;
-                if (mult > 0) totalWin += (betPerCard * mult);
-            });
-
-            if (totalWin > 0) {
-                state.money += totalWin;
-                state.totalEarned += totalWin;
-                document.getElementById('bingo-msg').innerText = `🎉 ¡PREMIO: +${totalWin}!`;
-            } else {
-                document.getElementById('bingo-msg').innerText = "💸 Sin premio.";
             }
-
-            isBingoPlaying = false;
-            const btn = document.getElementById('btn-play-bingo');
-            btn.disabled = false;
-            btn.classList.remove('opacity-50');
-            updateUI();
-            saveCloudData();
         }
 
-        // ==================== BLACKJACK ====================
-        let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjCurrentBet = 50, bjHasInsurance = false, bjInsuranceCost = 0;
-
-        document.getElementById('btn-open-blackjack').addEventListener('click', () => {
-            document.getElementById('arcade-menu').classList.add('hidden');
-            document.getElementById('game-blackjack').classList.remove('hidden');
-            resetBjTable();
-        });
-        document.getElementById('btn-back-to-arcade-bj').addEventListener('click', () => {
-            document.getElementById('game-blackjack').classList.add('hidden');
-            document.getElementById('arcade-menu').classList.remove('hidden');
-        });
-        document.getElementById('btn-close-bj-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
-
-        function setBjBetQuick(type) {
-            const input = document.getElementById('bj-bet-input');
+        function setSlotBetQuick(type) {
+            const input = document.getElementById('slot-bet-input');
             let current = parseInt(input.value) || 10;
             if (type === 'min') input.value = 10;
             else if (type === 'double') input.value = current * 2;
             else if (type === 'max') input.value = Math.max(10, Math.floor(state.money));
         }
 
-        function createDeck() {
-            const suits = ['♠', '♣', '♥', '♦'];
-            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-            let deck = [];
-            suits.forEach(s => values.forEach(v => {
-                let w = parseInt(v) || (['J','Q','K'].includes(v) ? 10 : 11);
-                deck.push({ suit: s, val: v, weight: w });
-            }));
-            return deck.sort(() => Math.random() - 0.5);
-        }
-
-        function calculateHand(hand) {
-            let sum = 0, aces = 0;
-            hand.forEach(c => { sum += c.weight; if (c.val === 'A') aces++; });
-            while (sum > 21 && aces > 0) { sum -= 10; aces--; }
-            return sum;
-        }
-
-        document.getElementById('btn-start-bj').addEventListener('click', () => {
-            bjCurrentBet = parseInt(document.getElementById('bj-bet-input').value) || 0;
-            if (bjCurrentBet <= 0 || state.money < bjCurrentBet) return alert("Apuesta inválida o saldo insuficiente.");
-
-            state.money -= bjCurrentBet;
-            updateUI();
-
-            bjDeck = createDeck();
-            bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
-            bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
-            bjHasInsurance = false;
-
-            document.getElementById('bj-bet-section').classList.add('hidden');
-            document.getElementById('bj-table-section').classList.remove('hidden');
-            document.getElementById('btn-bj-new-round').classList.add('hidden');
-
-            renderBjHands(false);
-            if (bjDealerHand[0].val === 'A') {
-                document.getElementById('bj-insurance-box').classList.remove('hidden');
-            } else if (calculateHand(bjPlayerHand) === 21 || calculateHand(bjDealerHand) === 21) {
-                finishBjRound();
-            } else {
-                document.getElementById('bj-actions-section').classList.remove('hidden');
-                document.getElementById('btn-bj-double').style.display = state.money >= bjCurrentBet ? 'block' : 'none';
-            }
+        document.getElementById('btn-open-slots').addEventListener('click', () => {
+            document.getElementById('arcade-menu').classList.add('hidden');
+            document.getElementById('game-slots').classList.remove('hidden');
+            renderSlotGrid();
+        });
+        document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => {
+            stopAutoSpinSlots();
+            document.getElementById('game-slots').classList.add('hidden');
+            document.getElementById('arcade-menu').classList.remove('hidden');
+        });
+        document.getElementById('btn-close-slots-x').addEventListener('click', () => {
+            stopAutoSpinSlots();
+            document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        function resolveInsurance(buy) {
-            document.getElementById('bj-insurance-box').classList.add('hidden');
-            if (buy && state.money >= Math.floor(bjCurrentBet / 2)) {
-                bjInsuranceCost = Math.floor(bjCurrentBet / 2);
-                state.money -= bjInsuranceCost;
-                bjHasInsurance = true;
+        function toggleAutoSpinSlots() {
+            if (autoSpinSlotsTimer) {
+                stopAutoSpinSlots();
+            } else {
+                const bet = parseInt(document.getElementById('slot-bet-input').value) || 0;
+                if (bet <= 0 || state.money < bet) {
+                    alert("Saldo insuficiente para iniciar tiradas automáticas.");
+                    return;
+                }
+                autoSpinSlotsTimer = setInterval(() => {
+                    const currentBet = parseInt(document.getElementById('slot-bet-input').value) || 0;
+                    if (state.money < currentBet) {
+                        stopAutoSpinSlots();
+                        return;
+                    }
+                    spinSlotRoyal();
+                }, 1000); // 1 segundo por tirada automática
+
+                const btnAuto = document.getElementById('btn-auto-spin-slots');
+                btnAuto.innerText = "🤖 AUTO (ON)";
+                btnAuto.className = "bg-amber-500 hover:bg-amber-400 text-black font-black px-4 py-2.5 rounded-xl shadow-lg transition text-xs";
+            }
+        }
+
+        function stopAutoSpinSlots() {
+            if (autoSpinSlotsTimer) {
+                clearInterval(autoSpinSlotsTimer);
+                autoSpinSlotsTimer = null;
+            }
+            const btnAuto = document.getElementById('btn-auto-spin-slots');
+            if (btnAuto) {
+                btnAuto.innerText = "🤖 AUTO (OFF)";
+                btnAuto.className = "bg-zinc-800 hover:bg-zinc-700 border border-amber-500/40 text-amber-400 font-black px-4 py-2.5 rounded-xl shadow-lg transition text-xs";
+            }
+        }
+
+        function spinSlotRoyal() {
+            if (isSlotSpinning) return;
+            const bet = parseInt(document.getElementById('slot-bet-input').value) || 0;
+            if (bet <= 0 || state.money < bet) {
+                stopAutoSpinSlots();
+                alert("Apuesta inválida o saldo insuficiente.");
+                return;
+            }
+
+            if (!isLockSpinActive) {
+                state.money -= bet;
                 updateUI();
             }
-            if (calculateHand(bjDealerHand) === 21 || calculateHand(bjPlayerHand) === 21) {
-                finishBjRound();
+
+            isSlotSpinning = true;
+            document.getElementById('slots-msg').innerText = "🎰 Girando rodillos...";
+
+            // Animación rápida de símbolos antes de fijar resultado
+            let spinAnimCounter = 0;
+            const animInterval = setInterval(() => {
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 5; c++) {
+                        if (!isLockSpinActive || !lockedOrbs.some(o => o.row === r && o.col === c)) {
+                            slotGrid[r][c] = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+                        }
+                    }
+                }
+                renderSlotGrid();
+                spinAnimCounter++;
+                if (spinAnimCounter > 6) {
+                    clearInterval(animInterval);
+                    finalizeSlotSpin(bet);
+                }
+            }, 80);
+        }
+
+        function finalizeSlotSpin(bet) {
+            let newOrbsCount = 0;
+
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 5; c++) {
+                    let isLocked = lockedOrbs.some(o => o.row === r && o.col === c);
+                    if (!isLocked) {
+                        // Probabilidad de que salga orbe (🔮) o comodín (👑)
+                        let roll = Math.random();
+                        if (roll < 0.12) {
+                            slotGrid[r][c] = '🔮';
+                        } else if (roll < 0.18) {
+                            slotGrid[r][c] = '👑';
+                        } else {
+                            slotGrid[r][c] = slotSymbols[Math.floor(Math.random() * (slotSymbols.length - 2))];
+                        }
+                    }
+
+                    if (slotGrid[r][c] === '🔮' && !isLocked) {
+                        lockedOrbs.push({ row: r, col: c });
+                        newOrbsCount++;
+                    }
+                }
+            }
+
+            renderSlotGrid();
+
+            if (!isLockSpinActive) {
+                // Comprobar si se activa Lock & Spin (6 o más orbes 🔮)
+                let totalOrbs = lockedOrbs.length;
+                if (totalOrbs >= 6) {
+                    isLockSpinActive = true;
+                    slotRespinsLeft = 3;
+                    document.getElementById('slot-bonus-banner').classList.remove('hidden');
+                    document.getElementById('slot-respins-count').innerText = slotRespinsLeft;
+                    document.getElementById('slots-msg').innerText = "🌟 ¡MODO LOCK & SPIN ACTIVADO!";
+                    isSlotSpinning = false;
+                    return;
+                }
+
+                // Cálculo de premios normales por líneas / símbolos
+                let winAmount = evaluateNormalSlotsPayout(bet);
+                if (winAmount > 0) {
+                    state.money += winAmount;
+                    state.totalEarned += winAmount;
+                    document.getElementById('slots-msg').innerText = `🎉 ¡PREMIO: +${winAmount} $!`;
+                } else {
+                    document.getElementById('slots-msg').innerText = "💸 Sin premio.";
+                }
+                isSlotSpinning = false;
+                updateUI();
+                saveCloudData();
+
             } else {
-                document.getElementById('bj-actions-section').classList.remove('hidden');
+                // Durante Lock & Spin
+                if (newOrbsCount > 0) {
+                    slotRespinsLeft = 3; // Se resetean los re-spins si cae nuevo orbe
+                } else {
+                    slotRespinsLeft--;
+                }
+
+                document.getElementById('slot-respins-count').innerText = slotRespinsLeft;
+
+                if (slotRespinsLeft <= 0 || lockedOrbs.length === 15) {
+                    // Fin del Bonus
+                    let bonusWin = 0;
+                    if (lockedOrbs.length === 15) {
+                        bonusWin = bet * 1000; // GRAND PRIZE
+                        document.getElementById('slots-msg').innerText = `🏆 ¡GRAND JACKPOT! +${bonusWin} $`;
+                    } else {
+                        bonusWin = bet * lockedOrbs.length * 5;
+                        document.getElementById('slots-msg').innerText = `🌟 Fin del Bonus: +${bonusWin} $`;
+                    }
+
+                    state.money += bonusWin;
+                    state.totalEarned += bonusWin;
+
+                    // Resetear bonus
+                    isLockSpinActive = false;
+                    lockedOrbs = [];
+                    document.getElementById('slot-bonus-banner').classList.add('hidden');
+                    stopAutoSpinSlots();
+                }
+
+                isSlotSpinning = false;
+                updateUI();
+                saveCloudData();
             }
         }
 
-        function renderBjHands(revealDealer) {
-            const dc = document.getElementById('bj-dealer-cards'), pc = document.getElementById('bj-player-cards');
-            dc.innerHTML = ''; pc.innerHTML = '';
-            bjDealerHand.forEach((c, idx) => {
-                const el = document.createElement('div');
-                el.className = `w-10 h-14 bg-white ${['♥','♦'].includes(c.suit)?'text-red-600':'text-black'} font-bold rounded flex flex-col items-center justify-center text-xs shadow`;
-                el.innerText = (idx === 1 && !revealDealer) ? '🂠' : c.val + c.suit;
-                dc.appendChild(el);
-            });
-            bjPlayerHand.forEach(c => {
-                const el = document.createElement('div');
-                el.className = `w-10 h-14 bg-white ${['♥','♦'].includes(c.suit)?'text-red-600':'text-black'} font-bold rounded flex flex-col items-center justify-center text-xs shadow`;
-                el.innerText = c.val + c.suit;
-                pc.appendChild(el);
-            });
-            document.getElementById('bj-player-score').innerText = calculateHand(bjPlayerHand);
-            document.getElementById('bj-dealer-score').innerText = revealDealer ? calculateHand(bjDealerHand) : bjDealerHand[0].weight;
+        function evaluateNormalSlotsPayout(bet) {
+            let win = 0;
+            // Revisar filas horizontales
+            for (let r = 0; r < 3; r++) {
+                let first = slotGrid[r][0];
+                let count = 1;
+                for (let c = 1; c < 5; c++) {
+                    if (slotGrid[r][c] === first || slotGrid[r][c] === '👑' || first === '👑') {
+                        count++;
+                        if (slotGrid[r][c] !== '👑') first = slotGrid[r][c];
+                    } else {
+                        break;
+                    }
+                }
+                if (count >= 3) {
+                    let multiplier = count === 3 ? 2 : (count === 4 ? 10 : 50);
+                    win += bet * multiplier;
+                }
+            }
+            return win;
         }
 
-        function bjHit() {
-            document.getElementById('btn-bj-double').style.display = 'none';
-            bjPlayerHand.push(bjDeck.pop());
-            renderBjHands(false);
-            if (calculateHand(bjPlayerHand) > 21) finishBjRound();
-        }
-
-        function bjDouble() {
-            if (state.money < bjCurrentBet) return;
-            state.money -= bjCurrentBet;
-            bjCurrentBet *= 2;
-            updateUI();
-            bjPlayerHand.push(bjDeck.pop());
-            renderBjHands(false);
-            bjStand();
-        }
-
-        function bjStand() {
-            document.getElementById('bj-actions-section').classList.add('hidden');
-            while (calculateHand(bjDealerHand) < 17) bjDealerHand.push(bjDeck.pop());
-            finishBjRound();
-        }
-
-        function finishBjRound() {
-            document.getElementById('bj-actions-section').classList.add('hidden');
-            renderBjHands(true);
-            let pVal = calculateHand(bjPlayerHand), dVal = calculateHand(bjDealerHand);
-            let payout = 0, insWin = bjHasInsurance && dVal === 21 ? bjInsuranceCost * 3 : 0;
-            let status = document.getElementById('bj-status-text');
-
-            if (pVal > 21) status.innerText = "💥 ¡Te pasaste!";
-            else if (pVal === 21 && bjPlayerHand.length === 2 && dVal !== 21) { payout = Math.floor(bjCurrentBet * 2.5); status.innerText = "🔥 ¡BLACKJACK x2.5!"; }
-            else if (dVal > 21 || pVal > dVal) { payout = bjCurrentBet * 2; status.innerText = "🏆 ¡Ganaste!"; }
-            else if (pVal === dVal) { payout = bjCurrentBet; status.innerText = "🤝 Empate."; }
-            else status.innerText = "💸 Gana el crupier.";
-
-            let total = payout + insWin;
-            if (total > 0) { state.money += total; state.totalEarned += total; }
-            updateUI();
-            saveCloudData();
-            document.getElementById('btn-bj-new-round').classList.remove('hidden');
-        }
-
-        function resetBjTable() {
-            document.getElementById('bj-table-section').classList.add('hidden');
-            document.getElementById('bj-bet-section').classList.remove('hidden');
-            document.getElementById('btn-bj-new-round').classList.add('hidden');
-            document.getElementById('bj-insurance-box').classList.add('hidden');
-            document.getElementById('bj-status-text').innerText = "¡Tu turno!";
-        }
-
-        // TRAGAPERRAS, MINAS, COHETE Y RANKING (Manteniendo funcionalidad íntegra)
-        document.getElementById('btn-open-slots').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-slots').classList.remove('hidden'); });
-        document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => { document.getElementById('game-slots').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
-        document.getElementById('btn-close-slots-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
-
+        // MINAS
         document.getElementById('btn-open-mines').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-mines').classList.remove('hidden'); });
         document.getElementById('btn-back-to-arcade-mines').addEventListener('click', () => { document.getElementById('game-mines').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
         document.getElementById('btn-close-mines-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
 
+        // COHETE / CRASH
         document.getElementById('btn-open-crash').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-crash').classList.remove('hidden'); });
         document.getElementById('btn-back-to-arcade-crash').addEventListener('click', () => { document.getElementById('game-crash').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
         document.getElementById('btn-close-crash-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
 
+        // RANKING
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
