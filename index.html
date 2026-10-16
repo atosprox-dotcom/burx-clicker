@@ -2,18 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- EVITAR ZOOM AUTOMÁTICO EN MÓVILES -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BURX Clicker</title>
     <!-- Tailwind CSS para diseño responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* SOLUCIÓN CLAVE PARA EL ZOOM EN IOS / IPHONE */
-        button, input, select, textarea {
-            touch-action: manipulation;
-            -webkit-appearance: none;
-        }
-
         @keyframes pulse-fast {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.12); }
@@ -1255,18 +1248,24 @@
             btn.disabled = true;
             btn.classList.add('opacity-50');
 
+            // Limpiar marcados previos de todos los cartones
             bingoCards.forEach(card => {
                 card.marked = new Array(15).fill(false);
                 card.goldenIndex = -1;
             });
 
+            // DISTRIBUCIÓN ALEATORIA DINÁMICA DE CASILLAS DORADAS (PROBABILIDAD)
+            // Decidimos cuántas casillas doradas aparecen en total (de 1 a la cantidad de cartones activos)
             const activeIndices = bingoCards.map((c, i) => c.active ? i : -1).filter(i => i !== -1);
+            
+            // Probabilidad: 50% 1 casilla, 30% 2 casillas, 15% 3 casillas, 5% todas las activas
             const randProb = Math.random();
             let totalGoldenToSpawn = 1;
             if (randProb > 0.50 && activeIndices.length >= 2) totalGoldenToSpawn = 2;
             if (randProb > 0.80 && activeIndices.length >= 3) totalGoldenToSpawn = 3;
             if (randProb > 0.95 && activeIndices.length >= 4) totalGoldenToSpawn = activeIndices.length;
             
+            // Asignar aleatoriamente las casillas doradas a cartones activos
             let shuffledCartons = [...activeIndices].sort(() => Math.random() - 0.5);
             for (let k = 0; k < Math.min(totalGoldenToSpawn, shuffledCartons.length); k++) {
                 let cIdx = shuffledCartons[k];
@@ -1275,6 +1274,7 @@
 
             renderBingoCardsUI();
 
+            // 30 bolas aleatorias del bombo (1 a 60)
             let drawnBalls = [];
             while(drawnBalls.length < 30) {
                 let b = Math.floor(Math.random() * 60) + 1;
@@ -1335,6 +1335,7 @@
                     summaryMsg += `Cartón ${cIdx+1}: 1 Línea (x5)! `;
                 }
 
+                // Bonus multiplicador x5 si la bola cayó en la casilla dorada pulsante
                 if (card.goldenIndex !== -1 && card.marked[card.goldenIndex]) {
                     cardMultiplier *= 5;
                     summaryMsg += `🌟 ¡CASILLA DORADA x5! `;
