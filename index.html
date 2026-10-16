@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BURX Clicker</title>
-    <!-- Tailwind CSS para diseño responsive -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        button { touch-action: manipulation; -webkit-appearance: none; }
+
         @keyframes pulse-fast {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.12); }
@@ -72,6 +76,24 @@
         }
         .golden-cell-pulse {
             animation: goldPulse 1.2s infinite ease-in-out;
+        }
+
+        /* ESTILOS PARA LA TRAGAPERRAS LOCK & SPIN */
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 10px rgba(250, 204, 21, 0.8); transform: scale(1); }
+            50% { box-shadow: 0 0 18px rgba(250, 204, 21, 1); transform: scale(1.03); }
+        }
+        .locked-orb {
+            animation: pulse-gold 1s infinite ease-in-out;
+            border: 2px solid #facc15 !important;
+            background: radial-gradient(circle, #713f12 0%, #18181b 100%) !important;
+        }
+        .symbol-cell {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
         }
     </style>
 </head>
@@ -211,8 +233,7 @@
                     <h2 class="text-xl font-bold text-rose-400 flex items-center gap-2">🕹️ Salón de Minijuegos</h2>
                     <button id="btn-close-arcade-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
                 </div>
-                
-                <!-- SALDO VISIBLE EN MENÚ ARCADE -->
+
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 mb-3 flex justify-between items-center">
                     <span class="text-xs text-zinc-400 font-bold">Saldo disponible:</span>
                     <span class="text-sm font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
@@ -238,13 +259,13 @@
                         <span class="text-2xl">⚔️</span>
                     </button>
 
-                    <!-- Tragaperras -->
+                    <!-- Tragaperras Estilo Royal -->
                     <button id="btn-open-slots" class="w-full bg-gradient-to-r from-purple-900/60 to-rose-900/60 hover:from-purple-800/80 hover:to-rose-800/80 border border-purple-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
-                            <div class="font-bold text-base text-purple-300">🎰 Tragaperras BURX 5x5</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Alta dificultad. Botes raros pero masivos hasta x500.</div>
+                            <div class="font-bold text-base text-purple-300">🎰 Tragaperras BURX Royal (Lock & Spin)</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Estilo bar real con 10 líneas, Comodín x2 y Bonus de 3 Re-spins.</div>
                         </div>
-                        <span class="text-2xl">🎰</span>
+                        <span class="text-2xl">👑</span>
                     </button>
 
                     <!-- Minas -->
@@ -276,13 +297,11 @@
                     <button id="btn-close-bingo-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
 
-                <!-- SALDO VISIBLE -->
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
                     <span class="text-zinc-400 font-bold">Saldo:</span>
                     <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
                 </div>
 
-                <!-- CONTROLES DE APUESTA -->
                 <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-2 text-xs flex justify-between items-center">
                     <div>
                         <span class="text-zinc-400">Apuesta por Cartón:</span>
@@ -294,14 +313,11 @@
                     </div>
                 </div>
 
-                <!-- BOMBILLO / BOLAS SALIENTES -->
                 <div id="bingo-draw-area" class="bg-black/70 border border-cyan-500/30 p-2 rounded-xl mb-2 text-center min-h-[46px] flex items-center justify-center">
                     <div id="bingo-last-ball" class="text-xs font-bold text-zinc-400">Pulsa Jugar para extraer bolas del bombo 🎱</div>
                 </div>
 
-                <!-- 4 CARTONES (Cuadrícula 2x2) -->
                 <div class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 mb-2 pr-1">
-                    <!-- Cartón 1 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-0" class="text-cyan-300 font-bold">Cartón 1</span>
@@ -310,7 +326,6 @@
                         <div id="bingo-card-0" onclick="refreshBingoCard(0)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
                         <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
                     </div>
-                    <!-- Cartón 2 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-1" class="text-cyan-300 font-bold">Cartón 2</span>
@@ -319,7 +334,6 @@
                         <div id="bingo-card-1" onclick="refreshBingoCard(1)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
                         <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
                     </div>
-                    <!-- Cartón 3 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-2" class="text-cyan-300 font-bold">Cartón 3</span>
@@ -328,7 +342,6 @@
                         <div id="bingo-card-2" onclick="refreshBingoCard(2)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
                         <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
                     </div>
-                    <!-- Cartón 4 -->
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-3" class="text-cyan-300 font-bold">Cartón 4</span>
@@ -345,12 +358,23 @@
                 </button>
             </div>
 
-            <!-- TRAGAPERRAS -->
+            <!-- TRAGAPERRAS ROYAL -->
             <div id="game-slots" class="hidden flex flex-col h-full">
                 <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-slots" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
-                    <h2 class="text-lg font-bold text-purple-400">🎰 Tragaperras 5x5</h2>
+                    <h2 class="text-base font-bold text-amber-400">🎰 BURX Royal (Lock & Spin)</h2>
                     <button id="btn-close-slots-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-1.5 mb-2 text-center text-[10px] font-black">
+                    <div class="bg-gradient-to-r from-red-950 to-rose-950 border border-red-500/50 p-1.5 rounded-lg">
+                        <div class="text-rose-400">GRAND (15 Orbes)</div>
+                        <div class="text-amber-300 text-xs font-mono">50.000 $</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-950 to-indigo-950 border border-purple-500/50 p-1.5 rounded-lg">
+                        <div class="text-purple-300">MAJOR</div>
+                        <div class="text-amber-300 text-xs font-mono">10.000 $</div>
+                    </div>
                 </div>
 
                 <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
@@ -358,26 +382,28 @@
                     <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
                 </div>
 
-                <div class="text-center mb-3 bg-zinc-950/60 border border-zinc-800 p-2 rounded-xl">
-                    <div class="text-[10px] text-zinc-400">Apuesta Seleccionada:</div>
-                    <div class="flex justify-center gap-2 mt-1">
-                        <button onclick="setSlotBet(10)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">10</button>
-                        <button onclick="setSlotBet(50)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">50</button>
-                        <button onclick="setSlotBet(100)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">100</button>
-                        <button onclick="setSlotBet(500)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">500</button>
+                <div id="slot-bonus-banner" class="hidden bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-black text-center font-black py-1 px-2 rounded-lg text-[11px] shadow-lg animate-bounce mb-2">
+                    🌟 LOCK & SPIN - RE-SPINS: <span id="slot-respins-count">3</span> 🌟
+                </div>
+
+                <div id="slot-grid-royal" class="grid grid-cols-5 gap-1.5 bg-black/80 p-2 rounded-xl border-2 border-amber-500/40 mb-2"></div>
+
+                <div id="slots-msg" class="text-center text-xs font-bold text-amber-400 mb-2 h-4">6 o más 🔮 activan Lock & Spin</div>
+
+                <div class="bg-zinc-950/80 border border-zinc-800 p-2 rounded-xl flex items-center justify-between gap-2 text-xs">
+                    <div>
+                        <span class="text-zinc-400 font-bold">Apuesta:</span>
+                        <select id="slot-bet-select" class="bg-zinc-900 border border-zinc-700 text-amber-300 font-bold rounded-lg px-2 py-1 text-xs outline-none ml-1">
+                            <option value="50">50 $</option>
+                            <option value="100">100 $</option>
+                            <option value="500">500 $</option>
+                            <option value="1000">1.000 $</option>
+                        </select>
                     </div>
+                    <button id="btn-spin-slots-royal" onclick="spinSlotRoyal()" class="flex-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black py-2 rounded-xl shadow-lg transition text-sm">
+                        GIRAR 🎰
+                    </button>
                 </div>
-                <div id="slots-grid" class="grid grid-cols-5 gap-1.5 bg-black/60 p-2.5 rounded-xl border border-purple-500/30 mb-3 justify-center items-center text-2xl text-center">
-                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
-                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
-                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
-                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
-                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
-                </div>
-                <div id="slots-msg" class="text-center text-xs font-bold text-amber-400 mb-3 h-5">¡Elige apuesta y prueba tu suerte!</div>
-                <button id="btn-spin-slots" class="w-full bg-gradient-to-r from-purple-600 to-rose-600 hover:from-purple-500 hover:to-rose-500 text-white font-black py-3 rounded-xl transition shadow-lg text-base">
-                    GIRAR RODILLOS 🎰
-                </button>
             </div>
 
             <!-- MINAS -->
@@ -596,7 +622,7 @@
         </div>
     </header>
 
-    <!-- ÁREA CENTRAL (CON CARA Y BARRA DE PRESTIGIO) -->
+    <!-- ÁREA CENTRAL -->
     <main class="flex flex-col items-center justify-center my-auto relative py-4 w-full max-w-sm">
         <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]"></div>
 
@@ -607,7 +633,7 @@
             </button>
         </div>
 
-        <!-- BARRA DE PROGRESO DE PRESTIGIO -->
+        <!-- BARRA DE PRESTIGIO -->
         <div id="prestige-bar-container" class="w-full bg-zinc-900 border border-zinc-800 p-2.5 rounded-2xl shadow-lg mb-2">
             <div class="flex justify-between items-center text-[11px] font-bold mb-1.5">
                 <span class="text-purple-400">✨ Prestigio <span id="prestige-level-num">0</span> (<span id="tier-name-display">Dólares</span>)</span>
@@ -624,7 +650,7 @@
         <div class="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-1">¡HAZ CLIC EN BURX!</div>
     </main>
 
-    <!-- SECCIÓN DE MEJORAS -->
+    <!-- MEJORAS -->
     <section class="w-full max-w-md space-y-2 mb-2">
         <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl flex items-center justify-between shadow-lg">
             <div>
@@ -656,8 +682,7 @@
             </button>
         </div>
 
-        <!-- ACELERADOR AUTOMÁTICO POR PRESTIGIO -->
-        <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl flex items-center justify-between shadow-lg border-l-4 border-l-purple-500">
+        <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-xl flex items-center justify-between shadow-lg border-l-4 border-l-purple-500">
             <div>
                 <div class="font-bold text-sm text-purple-300">⚡ Acelerador Automático</div>
                 <div class="text-xs text-zinc-400">Cobro cada: <span id="stat-interval" class="text-purple-400 font-bold">1.00s</span></div>
@@ -671,7 +696,7 @@
     <!-- FOOTER -->
     <footer class="w-full max-w-md text-[10px] text-zinc-500 flex flex-col items-center gap-1 py-1">
         <div>
-            ☁️ Sincronizado en la Nube de BURX | <span id="cloud-sync-text">Conectado</span>
+            ⚡ Sincronización Ilimitada en Supabase | <span id="cloud-sync-text">Conectado</span>
         </div>
         <button id="btn-open-guide" class="text-purple-400 hover:text-purple-300 font-bold underline transition cursor-pointer">
             ℹ️ Guía de Prestigios y Divisas
@@ -679,8 +704,12 @@
     </footer>
 
     <script>
-        const JSONBIN_MASTER_KEY = "$2a$10$aNHkyohaYCmzkyEsAyC3.eAO7PoIK1E/e3ZGV0Jum9REcKbCiVL2K";
-        const JSONBIN_BIN_ID = "6ad1bed6ffd5d160536feb57";
+        // ================= CONFIGURACIÓN DE SUPABASE PRE-CONFIGURADA =================
+        const SUPABASE_URL = "https://uomqjazepfbdkoguzwvu.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_GVsDncI196Usfvit5Zb93g_qQbbJAB2";
+
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ============================================================
 
         let state = {
             username: "",
@@ -712,10 +741,9 @@
             return current;
         }
 
-        let currentSlotBet = 10;
         let passiveTimer = null;
-        let globalPlayersCache = {};
         let createdNewAccountPending = false;
+        let dbUserRecord = null;
 
         function getClickPower() {
             const base = 1 + (state.clickLvl * 1.2);
@@ -760,16 +788,14 @@
             }
 
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
-                });
-                const data = await res.json();
-                globalPlayersCache = data.record.players || {};
+                const { data, error } = await db.from('players').select('*').eq('username', nameInput).single();
 
-                if (globalPlayersCache[nameInput]) {
+                if (data) {
+                    dbUserRecord = data;
                     passContainer.classList.remove('hidden');
                     desc.innerText = "¡Este apodo ya existe! Introduce tu contraseña secreta:";
                 } else {
+                    dbUserRecord = null;
                     passContainer.classList.add('hidden');
                     desc.innerText = "Apodo nuevo. Se creará una contraseña automática:";
                 }
@@ -793,24 +819,17 @@
                 return;
             }
 
-            status.innerText = "⏳ Verificando credenciales...";
+            status.innerText = "⏳ Conectando con Supabase...";
             state.username = nameInput;
 
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
-                });
-                const data = await res.json();
-                globalPlayersCache = data.record.players || {};
-
-                if (globalPlayersCache[state.username]) {
-                    const existingUser = globalPlayersCache[state.username];
-                    if (existingUser.password && existingUser.password !== passInput) {
+                if (dbUserRecord) {
+                    if (dbUserRecord.password && dbUserRecord.password !== passInput) {
                         status.innerText = "❌ Contraseña incorrecta";
                         alert("¡Contraseña incorrecta!");
                         return;
                     }
-                    state = { ...existingUser };
+                    state = { ...dbUserRecord.state, username: dbUserRecord.username, password: dbUserRecord.password };
                     if (state.clickLvl === undefined) state.clickLvl = state.clickPower || 1;
                     if (state.totalEarned === undefined) state.totalEarned = state.money;
                     if (state.prestigeLvl === undefined) state.prestigeLvl = 0;
@@ -919,35 +938,29 @@
             }
         });
 
+        // GUARDA DIRECTO EN SUPABASE (SIN LÍMITES DE REQUESTS)
         async function saveCloudData() {
             if (!state.username) return;
             document.getElementById('cloud-sync-text').innerText = "Guardando...";
             localStorage.setItem('burx_' + state.username, JSON.stringify(state));
 
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
-                });
-                const data = await res.json();
-                let players = data.record.players || {};
-                players[state.username] = state;
-
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Master-Key": JSONBIN_MASTER_KEY
-                    },
-                    body: JSON.stringify({ players })
+                const { error } = await db.from('players').upsert({
+                    username: state.username,
+                    password: state.password,
+                    state: state,
+                    updated_at: new Date()
                 });
 
-                document.getElementById('cloud-sync-text').innerText = "✅ Sincronizado";
+                if (error) throw error;
+                document.getElementById('cloud-sync-text').innerText = "✅ Guardado en Supabase";
             } catch (e) {
+                console.error(e);
                 document.getElementById('cloud-sync-text').innerText = "⚠️ Guardado local";
             }
         }
 
-        setInterval(saveCloudData, 10000);
+        setInterval(saveCloudData, 15000); // Guardado automático rápido cada 15s
 
         document.getElementById('clicker-btn').addEventListener('click', (e) => {
             const earned = getClickPower();
@@ -1088,11 +1101,6 @@
             document.getElementById('cost-armor').innerText = `${state.rpg.armor * 150}`;
             document.getElementById('lvl-boots').innerText = state.rpg.boots;
             document.getElementById('cost-boots').innerText = `${state.rpg.boots * 200}`;
-
-            if (!crashRunning) {
-                const betVal = parseInt(document.getElementById('crash-bet-input').value) || 50;
-                document.getElementById('crash-win-val').innerText = betVal;
-            }
         }
 
         // ARCADE
@@ -1106,7 +1114,7 @@
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        // ==================== VIDEO BINGO (PROBABILIDAD DINÁMICA DE CASILLAS DORADAS) ====================
+        // ==================== VIDEO BINGO ====================
         let bingoCards = [
             { active: true, numbers: [], marked: [], goldenIndex: -1 },
             { active: true, numbers: [], marked: [], goldenIndex: -1 },
@@ -1170,7 +1178,7 @@
                 const label = document.getElementById(`bingo-label-${i}`);
                 container.innerHTML = '';
                 const card = bingoCards[i];
-                
+
                 if (isBingoPlaying && card.active && card.goldenIndex !== -1) {
                     label.innerHTML = `Cartón ${i+1} <span class="text-[10px] text-amber-400 font-bold ml-1">⭐ x5 Activo</span>`;
                 } else {
@@ -1180,7 +1188,7 @@
                 card.numbers.forEach((num, idx) => {
                     const cell = document.createElement('div');
                     cell.className = "aspect-square rounded text-xs font-bold flex items-center justify-center transition ";
-                    
+
                     if (card.marked[idx]) {
                         if (card.goldenIndex === idx) {
                             cell.className += "bg-amber-500 text-black border-2 border-yellow-200 font-black scale-105";
@@ -1248,24 +1256,18 @@
             btn.disabled = true;
             btn.classList.add('opacity-50');
 
-            // Limpiar marcados previos de todos los cartones
             bingoCards.forEach(card => {
                 card.marked = new Array(15).fill(false);
                 card.goldenIndex = -1;
             });
 
-            // DISTRIBUCIÓN ALEATORIA DINÁMICA DE CASILLAS DORADAS (PROBABILIDAD)
-            // Decidimos cuántas casillas doradas aparecen en total (de 1 a la cantidad de cartones activos)
             const activeIndices = bingoCards.map((c, i) => c.active ? i : -1).filter(i => i !== -1);
-            
-            // Probabilidad: 50% 1 casilla, 30% 2 casillas, 15% 3 casillas, 5% todas las activas
             const randProb = Math.random();
             let totalGoldenToSpawn = 1;
             if (randProb > 0.50 && activeIndices.length >= 2) totalGoldenToSpawn = 2;
             if (randProb > 0.80 && activeIndices.length >= 3) totalGoldenToSpawn = 3;
             if (randProb > 0.95 && activeIndices.length >= 4) totalGoldenToSpawn = activeIndices.length;
             
-            // Asignar aleatoriamente las casillas doradas a cartones activos
             let shuffledCartons = [...activeIndices].sort(() => Math.random() - 0.5);
             for (let k = 0; k < Math.min(totalGoldenToSpawn, shuffledCartons.length); k++) {
                 let cIdx = shuffledCartons[k];
@@ -1274,7 +1276,6 @@
 
             renderBingoCardsUI();
 
-            // 30 bolas aleatorias del bombo (1 a 60)
             let drawnBalls = [];
             while(drawnBalls.length < 30) {
                 let b = Math.floor(Math.random() * 60) + 1;
@@ -1335,7 +1336,6 @@
                     summaryMsg += `Cartón ${cIdx+1}: 1 Línea (x5)! `;
                 }
 
-                // Bonus multiplicador x5 si la bola cayó en la casilla dorada pulsante
                 if (card.goldenIndex !== -1 && card.marked[card.goldenIndex]) {
                     cardMultiplier *= 5;
                     summaryMsg += `🌟 ¡CASILLA DORADA x5! `;
@@ -1362,105 +1362,270 @@
             saveCloudData();
         }
 
-        // ==================== TRAGAPERRAS ====================
+        // ==================== TRAGAPERRAS ROYAL ====================
+        const SLOT_SYMBOLS = ['👸', '🔮', '🍀', '🐞', '🧲', '👑', '💎', '🅰️', '🇰'];
+        const PAYLINES = [
+            [5, 6, 7, 8, 9],     
+            [0, 1, 2, 3, 4],     
+            [10, 11, 12, 13, 14],
+            [0, 6, 12, 8, 4],    
+            [10, 6, 2, 8, 14],   
+            [0, 1, 7, 13, 14],   
+            [10, 11, 7, 3, 4],   
+            [5, 0, 1, 2, 9],     
+            [5, 10, 11, 12, 9],  
+            [0, 6, 7, 8, 14]     
+        ];
+
+        let slotGridState = new Array(15).fill('🍀');
+        let isSlotSpinning = false;
+        let isSlotBonusActive = false;
+        let slotBonusRespins = 3;
+        let lockedOrbs = new Array(15).fill(null);
+
+        function initSlotRoyalGrid() {
+            const grid = document.getElementById('slot-grid-royal');
+            grid.innerHTML = '';
+            for (let i = 0; i < 15; i++) {
+                const cell = document.createElement('div');
+                cell.id = `royal-cell-${i}`;
+                cell.className = 'aspect-square bg-zinc-900 border border-zinc-800 rounded-lg symbol-cell flex flex-col items-center justify-center';
+                cell.innerText = '❓';
+                grid.appendChild(cell);
+            }
+        }
+
         document.getElementById('btn-open-slots').addEventListener('click', () => {
             document.getElementById('arcade-menu').classList.add('hidden');
             document.getElementById('game-slots').classList.remove('hidden');
+            initSlotRoyalGrid();
         });
         document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => {
+            if (isSlotSpinning) return;
             document.getElementById('game-slots').classList.add('hidden');
             document.getElementById('arcade-menu').classList.remove('hidden');
         });
         document.getElementById('btn-close-slots-x').addEventListener('click', () => {
+            if (isSlotSpinning) return;
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        function setSlotBet(val) {
-            currentSlotBet = val;
-            document.getElementById('slots-msg').innerText = `Apuesta fijada en ${val}`;
+        function getRandomSlotSymbol() {
+            const rand = Math.random();
+            if (rand < 0.12) return '🔮';
+            if (rand < 0.18) return '👸';
+            if (rand < 0.32) return '🍀';
+            if (rand < 0.46) return '🐞';
+            if (rand < 0.60) return '🧲';
+            if (rand < 0.74) return '👑';
+            if (rand < 0.88) return '💎';
+            return '🅰️';
         }
 
-        let isSpinning = false;
-        document.getElementById('btn-spin-slots').addEventListener('click', () => {
-            if (isSpinning) return;
-            if (state.money < currentSlotBet) {
-                document.getElementById('slots-msg').innerText = "❌ ¡No tienes suficientes recursos!";
-                return;
+        function getRandomOrbValue(bet) {
+            const rand = Math.random();
+            if (rand < 0.02) return 'MAJOR';
+            if (rand < 0.08) return 'MINOR';
+            if (rand < 0.18) return 'MINI';
+            const mults = [1, 2, 3, 5, 10];
+            return bet * mults[Math.floor(Math.random() * mults.length)];
+        }
+
+        function spinSlotRoyal() {
+            if (isSlotSpinning) return;
+            const bet = parseInt(document.getElementById('slot-bet-select').value) || 50;
+
+            if (!isSlotBonusActive) {
+                if (state.money < bet) {
+                    alert("¡No tienes suficiente saldo para esta apuesta!");
+                    return;
+                }
+                state.money -= bet;
+                updateUI();
             }
 
-            isSpinning = true;
-            state.money -= currentSlotBet;
-            updateUI();
-
-            const btn = document.getElementById('btn-spin-slots');
+            isSlotSpinning = true;
+            const btn = document.getElementById('btn-spin-slots-royal');
             btn.disabled = true;
             btn.classList.add('opacity-50');
 
-            const grid = document.getElementById('slots-grid');
             const msg = document.getElementById('slots-msg');
-            msg.innerText = "🎰 Girando rodillos...";
+            msg.innerText = isSlotBonusActive ? "🔮 ¡Girando Re-spins Lock & Spin!..." : "🎰 Girando rodillos...";
 
-            const weightedSymbols = ['😠','😠','😠','😠','😠','😠','💩','💩','💩','💩','💩','💥','💥','💥','💥','🔥','🔥','🔥','⚡','⚡','💎','👑'];
-
-            let spinTicks = 0;
+            let ticks = 0;
             const spinInterval = setInterval(() => {
-                grid.innerHTML = '';
-                for (let i = 0; i < 25; i++) {
-                    const rand = weightedSymbols[Math.floor(Math.random() * weightedSymbols.length)];
-                    const cell = document.createElement('div');
-                    cell.innerText = rand;
-                    cell.className = 'animate-pulse';
-                    grid.appendChild(cell);
+                for (let i = 0; i < 15; i++) {
+                    if (isSlotBonusActive && lockedOrbs[i] !== null) continue;
+                    const cell = document.getElementById(`royal-cell-${i}`);
+                    cell.innerText = getRandomSlotSymbol();
                 }
-                spinTicks++;
+                ticks++;
 
-                if (spinTicks >= 8) {
+                if (ticks >= 8) {
                     clearInterval(spinInterval);
-                    revelarSlot();
+                    finalizeSlotRoyal(bet);
                 }
-            }, 90);
+            }, 80);
+        }
 
-            function revelarSlot() {
-                grid.innerHTML = '';
-                for (let i = 0; i < 25; i++) {
-                    const rand = weightedSymbols[Math.floor(Math.random() * weightedSymbols.length)];
-                    const cell = document.createElement('div');
-                    cell.innerText = rand;
-                    grid.appendChild(cell);
-                }
+        function finalizeSlotRoyal(bet) {
+            for (let i = 0; i < 15; i++) {
+                if (isSlotBonusActive && lockedOrbs[i] !== null) continue;
+                slotGridState[i] = getRandomSlotSymbol();
+            }
 
-                const luckRoll = Math.random();
-                let prizeMultiplier = 0;
+            for (let i = 0; i < 15; i++) {
+                const cell = document.getElementById(`royal-cell-${i}`);
+                if (isSlotBonusActive && lockedOrbs[i] !== null) {
+                    cell.className = 'aspect-square rounded-lg symbol-cell locked-orb flex flex-col items-center justify-center';
+                    const val = lockedOrbs[i];
+                    cell.innerHTML = `<span class="text-base">🔮</span><span class="text-[9px] font-black text-amber-300 font-mono">${typeof val === 'number' ? val : val}</span>`;
+                } else if (slotGridState[i] === '🔮') {
+                    const orbVal = getRandomOrbValue(bet);
+                    cell.className = 'aspect-square bg-zinc-900 border-2 border-cyan-400/50 rounded-lg symbol-cell flex flex-col items-center justify-center';
+                    cell.innerHTML = `<span class="text-base">🔮</span><span class="text-[9px] font-black text-cyan-300 font-mono">${typeof orbVal === 'number' ? orbVal : orbVal}</span>`;
 
-                if (luckRoll < 0.005) {
-                    prizeMultiplier = 500;
-                    msg.innerText = `🚨 ¡¡SUPER BOTE ÉPICO x500!! +${currentSlotBet * 500}`;
-                } else if (luckRoll < 0.02) {
-                    prizeMultiplier = 100;
-                    msg.innerText = `💥 ¡¡GRAN BOTE x100!! +${currentSlotBet * 100}`;
-                } else if (luckRoll < 0.08) {
-                    prizeMultiplier = 10;
-                    msg.innerText = `🎉 ¡Premio Medio x10! +${currentSlotBet * 10}`;
-                } else if (luckRoll < 0.18) {
-                    prizeMultiplier = 2;
-                    msg.innerText = `✨ Premio Pequeño x2: +${currentSlotBet * 2}`;
+                    if (isSlotBonusActive) {
+                        lockedOrbs[i] = orbVal;
+                        slotBonusRespins = 3;
+                    }
                 } else {
-                    msg.innerText = "💸 Nada esta vez...";
+                    cell.className = 'aspect-square bg-zinc-900 border border-zinc-800 rounded-lg symbol-cell flex items-center justify-center';
+                    cell.innerText = slotGridState[i];
                 }
+            }
 
-                if (prizeMultiplier > 0) {
-                    const winAmt = currentSlotBet * prizeMultiplier;
-                    state.money += winAmt;
-                    state.totalEarned += winAmt;
-                }
+            if (isSlotBonusActive) {
+                handleSlotBonusStep(bet);
+            } else {
+                handleSlotNormalSpin(bet);
+            }
+        }
 
-                isSpinning = false;
+        function handleSlotNormalSpin(bet) {
+            let orbIndices = [];
+            slotGridState.forEach((sym, idx) => {
+                if (sym === '🔮') orbIndices.push(idx);
+            });
+
+            if (orbIndices.length >= 6) {
+                isSlotBonusActive = true;
+                slotBonusRespins = 3;
+                lockedOrbs.fill(null);
+
+                orbIndices.forEach(idx => {
+                    const cell = document.getElementById(`royal-cell-${idx}`);
+                    const valText = cell.querySelector('span:nth-child(2)').innerText;
+                    lockedOrbs[idx] = isNaN(valText) ? valText : parseInt(valText);
+                });
+
+                document.getElementById('slot-bonus-banner').classList.remove('hidden');
+                document.getElementById('slot-respins-count').innerText = slotBonusRespins;
+                document.getElementById('slots-msg').innerText = "🚨 ¡¡BONUS LOCK & SPIN ACTIVADO!! 🚨";
+
+                isSlotSpinning = false;
+                const btn = document.getElementById('btn-spin-slots-royal');
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
-                updateUI();
-                saveCloudData();
+                return;
             }
-        });
+
+            let totalWin = 0;
+            let linesWon = 0;
+
+            PAYLINES.forEach(line => {
+                const syms = line.map(pos => slotGridState[pos]);
+                const firstSym = syms.find(s => s !== '👸' && s !== '🔮') || '👸';
+
+                let matchCount = 0;
+                let hasWild = false;
+
+                for (let s of syms) {
+                    if (s === firstSym || s === '👸') {
+                        matchCount++;
+                        if (s === '👸') hasWild = true;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (matchCount >= 3) {
+                    let win = bet * (matchCount === 3 ? 0.5 : matchCount === 4 ? 2 : 10);
+                    if (hasWild) win *= 2;
+                    totalWin += win;
+                    linesWon++;
+                }
+            });
+
+            if (totalWin > 0) {
+                state.money += totalWin;
+                state.totalEarned += totalWin;
+                document.getElementById('slots-msg').innerText = `🎉 ¡Ganaste +${totalWin} $ en ${linesWon} líneas!`;
+            } else {
+                document.getElementById('slots-msg').innerText = "💸 Sin premio. ¡Sigue probando!";
+            }
+
+            isSlotSpinning = false;
+            const btn = document.getElementById('btn-spin-slots-royal');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+            updateUI();
+            saveCloudData();
+        }
+
+        function handleSlotBonusStep(bet) {
+            slotBonusRespins--;
+            document.getElementById('slot-respins-count').innerText = slotBonusRespins;
+
+            const totalLocked = lockedOrbs.filter(v => v !== null).length;
+
+            if (totalLocked === 15) {
+                endSlotBonusGame(true);
+                return;
+            }
+
+            if (slotBonusRespins <= 0) {
+                endSlotBonusGame(false);
+                return;
+            }
+
+            document.getElementById('slots-msg').innerText = `🔮 Re-spins: ${slotBonusRespins}. Orbes: ${totalLocked}/15`;
+            isSlotSpinning = false;
+            const btn = document.getElementById('btn-spin-slots-royal');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+        }
+
+        function endSlotBonusGame(isGrand) {
+            let bonusWin = 0;
+
+            lockedOrbs.forEach(val => {
+                if (val === 'MINI') bonusWin += 1000;
+                else if (val === 'MINOR') bonusWin += 2500;
+                else if (val === 'MAJOR') bonusWin += 10000;
+                else if (typeof val === 'number') bonusWin += val;
+            });
+
+            if (isGrand) {
+                bonusWin += 50000;
+                alert("🚨 ¡¡INCREÍBLE!! ¡HAS COMPLETADO LOS 15 ORBES Y GANADO EL GRAND JACKPOT DE 50.000 $! 🚨");
+            }
+
+            state.money += bonusWin;
+            state.totalEarned += bonusWin;
+            document.getElementById('slots-msg').innerText = `🎉 ¡FIN DEL BONUS! Ganado: +${bonusWin} $`;
+
+            isSlotBonusActive = false;
+            lockedOrbs.fill(null);
+            document.getElementById('slot-bonus-banner').classList.add('hidden');
+
+            isSlotSpinning = false;
+            const btn = document.getElementById('btn-spin-slots-royal');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+            updateUI();
+            saveCloudData();
+        }
 
         // MINAS
         let minesCount = 3;
@@ -1643,7 +1808,7 @@
             document.getElementById('stars-field').innerHTML = '';
             document.getElementById('crash-multiplier-display').innerText = "1.00x";
             document.getElementById('crash-status-msg').innerText = "Prepara tu apuesta y lanza";
-            
+
             const betVal = parseInt(document.getElementById('crash-bet-input').value) || 50;
             document.getElementById('crash-win-val').innerText = betVal;
 
@@ -1841,18 +2006,15 @@
             }, 300);
         });
 
-        // RANKING
+        // RANKING DIRECTO EN SUPABASE
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
             list.innerHTML = '<p class="text-center text-zinc-500 py-6">Cargando clasificación...</p>';
 
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
-                });
-                const data = await res.json();
-                const players = data.record.players || {};
+                const { data, error } = await db.from('players').select('*');
+                if (error) throw error;
 
                 const getPlayerTier = (prestigeLevel) => {
                     const level = Math.max(0, Number(prestigeLevel) || 0);
@@ -1863,9 +2025,13 @@
                     return tier;
                 };
 
-                const sorted = Object.values(players).sort((a, b) =>
-                    (Number(b.totalEarned) || 0) - (Number(a.totalEarned) || 0)
-                );
+                const playerList = data.map(d => ({
+                    username: d.username,
+                    totalEarned: d.state ? d.state.totalEarned || 0 : 0,
+                    prestigeLvl: d.state ? d.state.prestigeLvl || 0 : 0
+                }));
+
+                const sorted = playerList.sort((a, b) => b.totalEarned - a.totalEarned);
 
                 list.innerHTML = '';
                 if (sorted.length === 0) {
