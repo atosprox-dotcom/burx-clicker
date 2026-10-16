@@ -224,7 +224,7 @@
                     <button id="btn-open-bingo" class="w-full bg-gradient-to-r from-cyan-900/60 to-purple-900/60 hover:from-cyan-800/80 hover:to-purple-800/80 border border-cyan-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
                             <div class="font-bold text-base text-cyan-300">🎰 Video Bingo BURX (4 Cartones)</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Líneas, bingos y números dorados con multiplicadores.</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Líneas, bingos y números dorados aleatorios con multiplicadores.</div>
                         </div>
                         <span class="text-2xl">🎱</span>
                     </button>
@@ -1106,7 +1106,7 @@
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        // ==================== VIDEO BINGO (IDEA 3 PULSO DORADO) ====================
+        // ==================== VIDEO BINGO (PROBABILIDAD DINÁMICA DE CASILLAS DORADAS) ====================
         let bingoCards = [
             { active: true, numbers: [], marked: [], goldenIndex: -1 },
             { active: true, numbers: [], marked: [], goldenIndex: -1 },
@@ -1171,7 +1171,6 @@
                 container.innerHTML = '';
                 const card = bingoCards[i];
                 
-                // Actualizar cabecera del cartón indicando si tiene casilla x5 activa
                 if (isBingoPlaying && card.active && card.goldenIndex !== -1) {
                     label.innerHTML = `Cartón ${i+1} <span class="text-[10px] text-amber-400 font-bold ml-1">⭐ x5 Activo</span>`;
                 } else {
@@ -1249,13 +1248,30 @@
             btn.disabled = true;
             btn.classList.add('opacity-50');
 
-            // Elegir casilla dorada (x5) en cada cartón activo
+            // Limpiar marcados previos de todos los cartones
             bingoCards.forEach(card => {
-                if (card.active) {
-                    card.marked = new Array(15).fill(false);
-                    card.goldenIndex = Math.floor(Math.random() * 15);
-                }
+                card.marked = new Array(15).fill(false);
+                card.goldenIndex = -1;
             });
+
+            // DISTRIBUCIÓN ALEATORIA DINÁMICA DE CASILLAS DORADAS (PROBABILIDAD)
+            // Decidimos cuántas casillas doradas aparecen en total (de 1 a la cantidad de cartones activos)
+            const activeIndices = bingoCards.map((c, i) => c.active ? i : -1).filter(i => i !== -1);
+            
+            // Probabilidad: 50% 1 casilla, 30% 2 casillas, 15% 3 casillas, 5% todas las activas
+            const randProb = Math.random();
+            let totalGoldenToSpawn = 1;
+            if (randProb > 0.50 && activeIndices.length >= 2) totalGoldenToSpawn = 2;
+            if (randProb > 0.80 && activeIndices.length >= 3) totalGoldenToSpawn = 3;
+            if (randProb > 0.95 && activeIndices.length >= 4) totalGoldenToSpawn = activeIndices.length;
+            
+            // Asignar aleatoriamente las casillas doradas a cartones activos
+            let shuffledCartons = [...activeIndices].sort(() => Math.random() - 0.5);
+            for (let k = 0; k < Math.min(totalGoldenToSpawn, shuffledCartons.length); k++) {
+                let cIdx = shuffledCartons[k];
+                bingoCards[cIdx].goldenIndex = Math.floor(Math.random() * 15);
+            }
+
             renderBingoCardsUI();
 
             // 30 bolas aleatorias del bombo (1 a 60)
