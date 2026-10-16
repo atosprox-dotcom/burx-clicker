@@ -41,16 +41,19 @@
             
             <input type="text" id="input-username" class="w-full bg-zinc-950 border border-zinc-700 text-white rounded-xl px-4 py-3 mb-3 text-center text-base font-bold focus:outline-none focus:border-rose-500" placeholder="Tu apodo..." maxlength="18">
 
-            <!-- Campo dinámico de contraseña -->
+            <!-- Campo dinámico de contraseña para existente -->
             <div id="password-container" class="hidden mb-3">
                 <input type="password" id="input-password" class="w-full bg-zinc-950 border border-amber-500 text-amber-300 rounded-xl px-4 py-3 text-center text-base font-bold focus:outline-none" placeholder="Introduce tu contraseña...">
                 <p class="text-[11px] text-amber-400/80 mt-1">Este apodo ya existe. Introduce su contraseña.</p>
             </div>
 
-            <!-- Caja donde se muestra la contraseña generada -->
+            <!-- Caja con contraseña generada al crear cuenta nueva -->
             <div id="new-password-box" class="hidden bg-emerald-950/60 border border-emerald-500/50 p-3 rounded-xl mb-3 text-left">
                 <div class="text-xs text-emerald-300 font-bold mb-1">¡Cuenta nueva creada! Guarda tu contraseña:</div>
-                <div id="generated-pass-text" class="bg-black/50 text-emerald-400 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all"></div>
+                <div id="generated-pass-text" class="bg-black/50 text-emerald-400 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all my-1"></div>
+                <button id="btn-copy-pass" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-1 my-1">
+                    📋 Copiar Contraseña
+                </button>
                 <div class="text-[10px] text-zinc-400 mt-1 text-center">La necesitarás si entras desde otro dispositivo.</div>
             </div>
 
@@ -61,19 +64,28 @@
         </div>
     </div>
 
-    <!-- MODAL DE CAMBIO DE NOMBRE -->
-    <div id="edit-name-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <!-- MODAL DE VER / CAMBIAR PERFIL Y CONTRASEÑA -->
+    <div id="view-pass-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
-            <div class="text-4xl mb-2">✏️</div>
-            <h2 class="text-xl font-bold mb-1 text-amber-400">Cambiar Apodo</h2>
-            <p class="text-xs text-zinc-400 mb-4">Elige cómo quieres guardarte en el servidor:</p>
+            <div class="text-4xl mb-2">🔑</div>
+            <h2 class="text-xl font-bold mb-1 text-amber-400">Datos de la Cuenta</h2>
+            <p class="text-xs text-zinc-400 mb-4">Esta es tu contraseña guardada en la nube:</p>
             
-            <input type="text" id="input-new-name" class="w-full bg-zinc-950 border border-zinc-700 text-white rounded-xl px-4 py-2.5 mb-4 text-center text-sm font-bold focus:outline-none focus:border-amber-500" placeholder="Escribe tu apodo..." maxlength="18">
-            
-            <div class="flex gap-2">
-                <button id="btn-cancel-name" class="w-1/2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-xl transition text-xs">Cancelar</button>
-                <button id="btn-save-name" class="w-1/2 bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 rounded-xl transition text-xs">Guardar</button>
+            <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl mb-4">
+                <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Apodo:</div>
+                <div id="profile-modal-user" class="text-sm font-bold text-rose-400 mb-3"></div>
+                
+                <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Contraseña Secreta:</div>
+                <div id="profile-modal-pass" class="bg-black/60 text-amber-300 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all border border-amber-500/30 mb-2"></div>
+                
+                <button id="btn-copy-profile-pass" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2 rounded-lg text-xs transition">
+                    📋 Copiar Contraseña
+                </button>
             </div>
+
+            <button id="btn-close-view-pass" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-xl transition text-xs">
+                Cerrar
+            </button>
         </div>
     </div>
 
@@ -162,7 +174,7 @@
                 </button>
             </div>
 
-            <!-- MINAS (MULTIPLICADORES LENTOS) -->
+            <!-- MINAS -->
             <div id="game-mines" class="hidden flex flex-col h-full">
                 <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-mines" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
@@ -296,9 +308,11 @@
     <header class="w-full max-w-md flex flex-col items-center gap-3 mt-2">
         <div class="flex justify-between w-full items-center px-2">
             <div class="flex items-center gap-2">
-                <div class="text-xs text-zinc-400 flex items-center gap-1">
+                <div class="text-xs text-zinc-400 flex items-center gap-1.5">
                     Jugador: <span id="display-username" class="text-rose-400 font-bold">-</span>
-                    <button id="btn-open-edit-name" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 px-1.5 py-0.5 rounded text-zinc-300 transition" title="Cambiar apodo">✏️</button>
+                    <button id="btn-open-view-pass" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 px-2 py-0.5 rounded-lg text-amber-300 border border-amber-500/30 transition flex items-center gap-1" title="Ver Contraseña">
+                        🔑 Pass
+                    </button>
                 </div>
             </div>
             <div class="flex gap-1.5">
@@ -410,13 +424,15 @@
         let currentSlotBet = 10;
         let passiveTimer = null;
         let globalPlayersCache = {};
+        let createdNewAccountPending = false;
 
-        // COMPROBAR USUARIO
+        // COMPROBAR USUARIO AL ESCRIBIR
         document.getElementById('input-username').addEventListener('input', async (e) => {
             const nameInput = e.target.value.trim();
             const passContainer = document.getElementById('password-container');
             const desc = document.getElementById('modal-desc');
             document.getElementById('new-password-box').classList.add('hidden');
+            createdNewAccountPending = false;
 
             if (nameInput.length < 2) {
                 passContainer.classList.add('hidden');
@@ -435,7 +451,7 @@
                     desc.innerText = "¡Este apodo ya existe! Introduce tu contraseña secreta:";
                 } else {
                     passContainer.classList.add('hidden');
-                    desc.innerText = "Apodo nuevo. Se creará una contraseña aleatoria:";
+                    desc.innerText = "Apodo nuevo. Se creará una contraseña automática:";
                 }
             } catch (err) {
                 console.error("Error comprobando usuario", err);
@@ -449,8 +465,17 @@
             if (!nameInput) return alert('¡Escribe un apodo válido!');
 
             const status = document.getElementById('login-status');
-            status.innerText = "⏳ Verificando credenciales...";
 
+            // Si se acaba de mostrar la caja verde de contraseña creada, el segundo clic entra al juego
+            if (createdNewAccountPending) {
+                document.getElementById('username-modal').classList.add('hidden');
+                document.getElementById('display-username').innerText = state.username;
+                updateUI();
+                restartPassiveTimer();
+                return;
+            }
+
+            status.innerText = "⏳ Verificando credenciales...";
             state.username = nameInput;
 
             try {
@@ -473,26 +498,47 @@
                     updateUI();
                     restartPassiveTimer();
                 } else {
+                    // Generar cuenta nueva con contraseña
                     const randomPass = 'BURX-' + Math.floor(1000 + Math.random() * 9000);
                     state.password = randomPass;
                     
                     document.getElementById('generated-pass-text').innerText = randomPass;
                     document.getElementById('new-password-box').classList.remove('hidden');
-                    status.innerText = "¡Cuenta creada con éxito!";
+                    status.innerText = "¡Cuenta creada con éxito! Copia tu contraseña.";
                     
+                    createdNewAccountPending = true;
                     await saveCloudData();
-
-                    setTimeout(() => {
-                        document.getElementById('username-modal').classList.add('hidden');
-                        document.getElementById('display-username').innerText = state.username;
-                        updateUI();
-                        restartPassiveTimer();
-                    }, 3500);
                 }
             } catch (e) {
                 console.error(e);
                 status.innerText = "⚠️ Error de conexión con la nube";
             }
+        });
+
+        // BOTONES DE COPIAR CONTRASEÑA
+        document.getElementById('btn-copy-pass').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const pass = document.getElementById('generated-pass-text').innerText;
+            navigator.clipboard.writeText(pass);
+            alert("✅ ¡Contraseña copiada al portapapeles!");
+        });
+
+        document.getElementById('btn-open-view-pass').addEventListener('click', () => {
+            document.getElementById('profile-modal-user').innerText = state.username;
+            document.getElementById('profile-modal-pass').innerText = state.password || "Sin contraseña";
+            document.getElementById('view-pass-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-copy-profile-pass').addEventListener('click', () => {
+            const pass = state.password;
+            if (pass) {
+                navigator.clipboard.writeText(pass);
+                alert("✅ ¡Contraseña copiada al portapapeles!");
+            }
+        });
+
+        document.getElementById('btn-close-view-pass').addEventListener('click', () => {
+            document.getElementById('view-pass-modal').classList.add('hidden');
         });
 
         async function saveCloudData() {
@@ -714,11 +760,8 @@
 
             function revelarSlot() {
                 grid.innerHTML = '';
-                let counts = {};
-
                 for (let i = 0; i < 25; i++) {
                     const rand = weightedSymbols[Math.floor(Math.random() * weightedSymbols.length)];
-                    counts[rand] = (counts[rand] || 0) + 1;
                     const cell = document.createElement('div');
                     cell.innerText = rand;
                     grid.appendChild(cell);
@@ -755,7 +798,7 @@
             }
         });
 
-        // MINAS (SISTEMA DE MULTIPLICADORES LENTOS Y REBALANCEADOS)
+        // MINAS
         let minesCount = 3;
         let minesActive = false;
         let mineField = [];
@@ -855,9 +898,7 @@
                 cell.className = 'aspect-square bg-emerald-950 border border-emerald-500 rounded-lg flex items-center justify-center text-xl';
                 revealedCount++;
 
-                // FÓRMULA DE CRECIMIENTO PROGRESIVO Y MUY LENTO:
-                // Sube de forma controlada según el número de casillas acertadas y minas
-                let baseStep = 0.04 + (minesCount * 0.012); // Incremento base muy ajustado
+                let baseStep = 0.04 + (minesCount * 0.012);
                 currentMultiplier += (baseStep + (revealedCount * 0.01));
                 currentMultiplier = parseFloat(currentMultiplier.toFixed(3));
                 
@@ -1032,23 +1073,6 @@
         });
         document.getElementById('btn-close-ranking-x').addEventListener('click', () => {
             document.getElementById('ranking-modal').classList.add('hidden');
-        });
-
-        // EDITAR APODO
-        document.getElementById('btn-open-edit-name').addEventListener('click', () => {
-            document.getElementById('edit-name-modal').classList.remove('hidden');
-        });
-        document.getElementById('btn-cancel-name').addEventListener('click', () => {
-            document.getElementById('edit-name-modal').classList.add('hidden');
-        });
-        document.getElementById('btn-save-name').addEventListener('click', async () => {
-            const newName = document.getElementById('input-new-name').value.trim();
-            if (newName) {
-                state.username = newName;
-                document.getElementById('display-username').innerText = state.username;
-                await saveCloudData();
-                document.getElementById('edit-name-modal').classList.add('hidden');
-            }
         });
     </script>
 </body>
