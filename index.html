@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BURX Clicker</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS para diseño responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        button { touch-action: manipulation; -webkit-appearance: none; }
-
         @keyframes pulse-fast {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.12); }
@@ -32,74 +28,6 @@
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
         }
-
-        /* GIRO FLUIDO DE LA RULETA DE UPGRADE */
-        #upgrade-wheel-wrapper {
-            transition: transform 1.2s cubic-bezier(0.15, 0.85, 0.35, 1);
-        }
-
-        /* ANIMACIONES PARA EL COHETE Y LAS ESTRELLAS */
-        @keyframes rocketVibrate {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-2px) rotate(-1deg); }
-            75% { transform: translateY(2px) rotate(1deg); }
-        }
-        .rocket-flying {
-            animation: rocketVibrate 0.15s infinite linear;
-        }
-
-        @keyframes starsFlyDown {
-            0% { transform: translateY(-10px); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translateY(160px); opacity: 0; }
-        }
-        .star-particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background-color: #facc15;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: starsFlyDown 0.6s infinite linear;
-        }
-
-        @keyframes explodeShake {
-            0%, 100% { transform: scale(1); }
-            20% { transform: scale(1.4) rotate(10deg); }
-            40% { transform: scale(0.9) rotate(-10deg); }
-            60% { transform: scale(1.2) rotate(5deg); }
-            80% { transform: scale(1) rotate(-5deg); }
-        }
-        .crash-exploded {
-            animation: explodeShake 0.4s ease-out;
-        }
-
-        /* PULSO DORADO PARA CASILLA MULTIPLICADORA BINGO */
-        @keyframes goldPulse {
-            0%, 100% { border-color: rgba(250, 204, 21, 1); box-shadow: 0 0 8px rgba(250, 204, 21, 0.6); }
-            50% { border-color: rgba(250, 204, 21, 0.3); box-shadow: 0 0 2px rgba(250, 204, 21, 0.2); }
-        }
-        .golden-cell-pulse {
-            animation: goldPulse 1.2s infinite ease-in-out;
-        }
-
-        /* ESTILOS PARA LA TRAGAPERRAS LOCK & SPIN */
-        @keyframes pulse-gold {
-            0%, 100% { box-shadow: 0 0 10px rgba(250, 204, 21, 0.8); transform: scale(1); }
-            50% { box-shadow: 0 0 18px rgba(250, 204, 21, 1); transform: scale(1.03); }
-        }
-        .locked-orb {
-            animation: pulse-gold 1s infinite ease-in-out;
-            border: 2px solid #facc15 !important;
-            background: radial-gradient(circle, #713f12 0%, #18181b 100%) !important;
-        }
-        .symbol-cell {
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-950 via-zinc-900 to-neutral-950 text-white min-h-screen flex flex-col items-center justify-between p-4 font-sans select-none">
@@ -110,14 +38,16 @@
             <div class="text-5xl mb-3">😠</div>
             <h2 class="text-2xl font-bold mb-2 text-rose-500">BURX Clicker</h2>
             <p id="modal-desc" class="text-sm text-zinc-400 mb-4">Introduce tu apodo para entrar o registrarte:</p>
-
+            
             <input type="text" id="input-username" class="w-full bg-zinc-950 border border-zinc-700 text-white rounded-xl px-4 py-3 mb-3 text-center text-base font-bold focus:outline-none focus:border-rose-500" placeholder="Tu apodo..." maxlength="18">
 
+            <!-- Campo dinámico de contraseña para existente -->
             <div id="password-container" class="hidden mb-3">
                 <input type="password" id="input-password" class="w-full bg-zinc-950 border border-amber-500 text-amber-300 rounded-xl px-4 py-3 text-center text-base font-bold focus:outline-none" placeholder="Introduce tu contraseña...">
                 <p class="text-[11px] text-amber-400/80 mt-1">Este apodo ya existe. Introduce su contraseña.</p>
             </div>
 
+            <!-- Caja con contraseña generada al crear cuenta nueva -->
             <div id="new-password-box" class="hidden bg-emerald-950/60 border border-emerald-500/50 p-3 rounded-xl mb-3 text-left">
                 <div class="text-xs text-emerald-300 font-bold mb-1">¡Cuenta nueva creada! Guarda tu contraseña:</div>
                 <div id="generated-pass-text" class="bg-black/50 text-emerald-400 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all my-1"></div>
@@ -140,14 +70,14 @@
             <div class="text-4xl mb-2">🔑</div>
             <h2 class="text-xl font-bold mb-1 text-amber-400">Datos de la Cuenta</h2>
             <p class="text-xs text-zinc-400 mb-4">Esta es tu contraseña guardada en la nube:</p>
-
+            
             <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl mb-4">
                 <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Apodo:</div>
                 <div id="profile-modal-user" class="text-sm font-bold text-rose-400 mb-3"></div>
-
+                
                 <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Contraseña Secreta:</div>
                 <div id="profile-modal-pass" class="bg-black/60 text-amber-300 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all border border-amber-500/30 mb-2"></div>
-
+                
                 <button id="btn-copy-profile-pass" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2 rounded-lg text-xs transition">
                     📋 Copiar Contraseña
                 </button>
@@ -165,11 +95,11 @@
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-xl font-bold text-purple-400 flex items-center gap-2">📜 Guía de Prestigio y Tiers</h2>
             </div>
-
+            
             <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
                     <div class="font-bold text-rose-400 mb-1">✨ ¿Qué es el Prestigio?</div>
-                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b> por nivel, un multiplicador permanente y una <b>mejora automática de velocidad (-5% por nivel, mín. 0.15s)</b>.</p>
+                    <p class="text-zinc-400">Cuando alcances la meta de recursos acumulados, podrás ascender. Al hacerlo, se reiniciarán tus fábricas y dinero actual a cambio de una <b>Estrella ⭐</b>, un multiplicador permanente y una <b>mejora automática de velocidad (-5% por nivel, mín. 0.15s)</b>.</p>
                 </div>
 
                 <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
@@ -198,13 +128,13 @@
             <div class="text-5xl mb-2 animate-bounce">✨</div>
             <h2 id="prestige-modal-title" class="text-2xl font-bold mb-1 text-purple-400">¡Ascenso de Prestigio!</h2>
             <p id="prestige-modal-desc" class="text-xs text-zinc-300 mb-4">¿Deseas ascender al siguiente nivel?</p>
-
+            
             <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl text-left text-xs space-y-2 mb-4">
                 <div class="text-amber-400 font-bold">Efectos del Ascenso:</div>
                 <div class="text-zinc-300">⭐ +1 Estrella de Prestigio</div>
                 <div class="text-emerald-400" id="prestige-perk-desc">🪙 Mayor multiplicador permanente</div>
                 <div class="text-purple-300">⚡ Acelerador automático (-5% de intervalo)</div>
-                <div class="text-rose-400 text-[11px] pt-1 border-t border-zinc-800">⚠️ Se reiniciarán tu dinero y fábricas (conservas tu contraseña).</div>
+                <div class="text-rose-400 text-[11px] pt-1 border-t border-zinc-800">⚠️ Se reiniciarán tu dinero y fábricas (conservas tu equipo RPG y contraseña).</div>
             </div>
 
             <div class="flex gap-2">
@@ -230,56 +160,32 @@
 
     <!-- MODAL DEL SALÓN DE MINIJUEGOS -->
     <div id="arcade-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl max-h-[92vh] flex flex-col">
-
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] flex flex-col">
+            
             <!-- MENÚ DE SELECCIÓN -->
             <div id="arcade-menu" class="flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold text-rose-400 flex items-center gap-2">🕹️ Salón de Minijuegos</h2>
                     <button id="btn-close-arcade-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
                 </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 mb-3 flex justify-between items-center">
-                    <span class="text-xs text-zinc-400 font-bold">Saldo disponible:</span>
-                    <span class="text-sm font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
-                </div>
-
                 <p class="text-xs text-zinc-400 mb-4">Elige a qué quieres jugar para ganar más recursos:</p>
                 <div class="space-y-3 flex-1 overflow-y-auto">
-                    <!-- UPGRADE / RULETA -->
-                    <button id="btn-open-upgrade" class="w-full bg-gradient-to-r from-amber-900/60 to-emerald-900/60 hover:from-amber-800/80 hover:to-emerald-800/80 border border-amber-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
+                    <!-- Batalla -->
+                    <button id="btn-open-battle-inside" class="w-full bg-gradient-to-r from-red-900/60 to-amber-900/60 hover:from-red-800/80 hover:to-amber-800/80 border border-red-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
-                            <div class="font-bold text-base text-amber-300">🎯 Ruleta Upgrade (Estilo CS)</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Elige tu multiplicador, ajusta tu probabilidad y arriésgate a ganar.</div>
+                            <div class="font-bold text-base text-red-300">⚔️ Mazmorra de BURX</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Equipa a tu caballero, sube estadísticas y vence a los bosses.</div>
                         </div>
-                        <span class="text-2xl">🎯</span>
+                        <span class="text-2xl">⚔️</span>
                     </button>
 
-                    <!-- Video Bingo -->
-                    <button id="btn-open-bingo" class="w-full bg-gradient-to-r from-cyan-900/60 to-purple-900/60 hover:from-cyan-800/80 hover:to-purple-800/80 border border-cyan-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
-                        <div>
-                            <div class="font-bold text-base text-cyan-300">🎰 Video Bingo BURX (4 Cartones)</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Líneas, bingos y números dorados aleatorios con multiplicadores.</div>
-                        </div>
-                        <span class="text-2xl">🎱</span>
-                    </button>
-
-                    <!-- BLACKJACK -->
-                    <button id="btn-open-blackjack" class="w-full bg-gradient-to-r from-emerald-900/60 to-teal-900/60 hover:from-emerald-800/80 hover:to-teal-800/80 border border-emerald-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
-                        <div>
-                            <div class="font-bold text-base text-emerald-300">🃏 Blackjack BURX</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Apuesta libre, seguro contra crupier, dobla y consigue Blackjack x2.5.</div>
-                        </div>
-                        <span class="text-2xl">🃏</span>
-                    </button>
-
-                    <!-- Tragaperras Estilo Royal -->
+                    <!-- Tragaperras -->
                     <button id="btn-open-slots" class="w-full bg-gradient-to-r from-purple-900/60 to-rose-900/60 hover:from-purple-800/80 hover:to-rose-800/80 border border-purple-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
-                            <div class="font-bold text-base text-purple-300">🎰 Tragaperras BURX Royal (Lock & Spin)</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Estilo bar real con 10 líneas, Comodín x2 y Bonus de 3 Re-spins.</div>
+                            <div class="font-bold text-base text-purple-300">🎰 Tragaperras BURX 5x5</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Alta dificultad. Botes raros pero masivos hasta x500.</div>
                         </div>
-                        <span class="text-2xl">👑</span>
+                        <span class="text-2xl">🎰</span>
                     </button>
 
                     <!-- Minas -->
@@ -290,259 +196,37 @@
                         </div>
                         <span class="text-2xl">💣</span>
                     </button>
-
-                    <!-- Cohete / Crash -->
-                    <button id="btn-open-crash" class="w-full bg-gradient-to-r from-amber-900/60 to-rose-900/60 hover:from-amber-800/80 hover:to-rose-800/80 border border-amber-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
-                        <div>
-                            <div class="font-bold text-base text-amber-300">🚀 Cohete BURX (Crash)</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Deja subir el multiplicador y cobra antes de que explote.</div>
-                        </div>
-                        <span class="text-2xl">🚀</span>
-                    </button>
                 </div>
                 <button id="btn-close-arcade" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">Cerrar</button>
             </div>
 
-            <!-- UPGRADE / RULETA ESTILO CS CON ANIMACIÓN EXACTA -->
-            <div id="game-upgrade" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
-                    <button id="btn-back-to-arcade-upgrade" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-amber-400">🎯 Ruleta Upgrade</h2>
-                    <button id="btn-close-upgrade-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
-                </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
-                    <span class="text-zinc-400 font-bold">Saldo:</span>
-                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
-                </div>
-
-                <!-- RULETA CIRCULAR CON ANIMACIÓN EXACTA -->
-                <div class="relative bg-black/80 border border-amber-500/30 p-3 rounded-xl flex flex-col items-center justify-center mb-3">
-                    <div class="absolute top-1 text-amber-400 text-xl font-black z-25 drop-shadow">▼</div>
-                    <div class="relative w-40 h-40 flex items-center justify-center my-2">
-                        <div id="upgrade-wheel-wrapper" class="w-full h-full flex items-center justify-center">
-                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                <!-- Círculo Base Rojo -->
-                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#ef4444" stroke-width="12"></circle>
-                                <!-- Círculo Variable Verde -->
-                                <circle id="upgrade-svg-circle" cx="50" cy="50" r="40" fill="transparent" stroke="#22c55e" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="125.6"></circle>
-                            </svg>
-                        </div>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                            <span id="upgrade-chance-display" class="text-lg font-black text-emerald-400">50.0%</span>
-                            <span class="text-[9px] text-zinc-400 uppercase tracking-wider">Probabilidad</span>
-                        </div>
-                    </div>
-                    <div id="upgrade-status-msg" class="text-xs font-bold text-amber-300 h-4 mt-1">Ajusta tu apuesta y multiplicador</div>
-                </div>
-
-                <!-- CONTROLES DE APUESTA Y MULTIPLICADOR -->
-                <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl space-y-2 mb-2 text-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-zinc-400 font-bold">Apuesta:</span>
-                        <input type="number" id="upgrade-bet-input" value="50" min="1" class="w-32 bg-zinc-900 border border-zinc-700 text-amber-400 font-bold rounded-lg px-2 py-1.5 text-center text-xs outline-none">
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-zinc-400 font-bold">Multiplicador:</span>
-                        <div class="flex items-center gap-2">
-                            <input type="range" id="upgrade-mult-range" min="1.1" max="10" step="0.1" value="2.0" class="w-28 accent-amber-500 cursor-pointer">
-                            <span id="upgrade-mult-display" class="font-black text-amber-400 w-10 text-right">2.00x</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between text-[11px] text-zinc-400 pt-1 border-t border-zinc-900">
-                        <span>Premio Potencial:</span>
-                        <b id="upgrade-win-preview" class="text-emerald-400">100 $</b>
-                    </div>
-                </div>
-
-                <button id="btn-spin-upgrade" class="w-full bg-gradient-to-r from-amber-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 text-black font-black py-3 rounded-xl shadow-lg transition text-sm">
-                    UPGRADE 🎯
-                </button>
-            </div>
-
-            <!-- VIDEO BINGO -->
-            <div id="game-bingo" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
-                    <button id="btn-back-to-arcade-bingo" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-cyan-400">🎱 Video Bingo (4 Cartones)</h2>
-                    <button id="btn-close-bingo-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
-                </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
-                    <span class="text-zinc-400 font-bold">Saldo:</span>
-                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
-                </div>
-
-                <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-2 text-xs flex justify-between items-center">
-                    <div>
-                        <span class="text-zinc-400">Apuesta por Cartón:</span>
-                        <input type="number" id="bingo-bet-input" value="10" min="5" class="bg-zinc-900 border border-zinc-700 text-cyan-400 font-bold px-2 py-1 rounded-lg w-20 text-center ml-1">
-                    </div>
-                    <div class="text-right">
-                        <span class="text-zinc-400">Apuesta Total:</span>
-                        <span id="bingo-total-bet" class="font-black text-amber-400 ml-1">40</span>
-                    </div>
-                </div>
-
-                <div id="bingo-draw-area" class="bg-black/70 border border-cyan-500/30 p-2 rounded-xl mb-2 text-center min-h-[46px] flex items-center justify-center">
-                    <div id="bingo-last-ball" class="text-xs font-bold text-zinc-400">Pulsa Jugar para extraer bolas del bombo 🎱</div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 overflow-y-auto flex-1 mb-2 pr-1">
-                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span id="bingo-label-0" class="text-cyan-300 font-bold">Cartón 1</span>
-                            <button id="bingo-toggle-0" onclick="toggleBingoCard(0)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
-                        </div>
-                        <div id="bingo-card-0" onclick="refreshBingoCard(0)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
-                    </div>
-                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span id="bingo-label-1" class="text-cyan-300 font-bold">Cartón 2</span>
-                            <button id="bingo-toggle-1" onclick="toggleBingoCard(1)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
-                        </div>
-                        <div id="bingo-card-1" onclick="refreshBingoCard(1)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
-                    </div>
-                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span id="bingo-label-2" class="text-cyan-300 font-bold">Cartón 3</span>
-                            <button id="bingo-toggle-2" onclick="toggleBingoCard(2)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
-                        </div>
-                        <div id="bingo-card-2" onclick="refreshBingoCard(2)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
-                    </div>
-                    <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-1 text-[11px]">
-                            <span id="bingo-label-3" class="text-cyan-300 font-bold">Cartón 4</span>
-                            <button id="bingo-toggle-3" onclick="toggleBingoCard(3)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
-                        </div>
-                        <div id="bingo-card-3" onclick="refreshBingoCard(3)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
-                    </div>
-                </div>
-
-                <div id="bingo-msg" class="text-center text-xs font-bold text-amber-400 mb-2 h-4">¡Activa cartones y extrae bolas!</div>
-                <button id="btn-play-bingo" class="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-black py-2.5 rounded-xl transition shadow-lg text-sm">
-                    JUGAR BINGO 🎱
-                </button>
-            </div>
-
-            <!-- BLACKJACK -->
-            <div id="game-blackjack" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
-                    <button id="btn-back-to-arcade-bj" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-emerald-400">🃏 Blackjack BURX</h2>
-                    <button id="btn-close-bj-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
-                </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
-                    <span class="text-zinc-400 font-bold">Saldo:</span>
-                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
-                </div>
-
-                <div id="bj-bet-section" class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl flex flex-col gap-2 mb-2">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-zinc-400 font-bold">Apuesta:</span>
-                        <input type="number" id="bj-bet-input" value="50" min="1" class="w-32 bg-zinc-900 border border-zinc-700 text-emerald-400 font-bold rounded-lg px-2 py-1.5 text-center text-xs outline-none">
-                    </div>
-                    <div class="flex gap-1">
-                        <button onclick="setBjBetQuick('min')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-1 rounded text-[10px]">MIN (10)</button>
-                        <button onclick="setBjBetQuick('double')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold py-1 rounded text-[10px]">x2</button>
-                        <button onclick="setBjBetQuick('max')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 font-bold py-1 rounded text-[10px]">MAX</button>
-                    </div>
-                    <button id="btn-start-bj" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl shadow-lg transition text-sm mt-1">
-                        REPARTIR CARTAS 🃏
-                    </button>
-                </div>
-
-                <div id="bj-table-section" class="hidden flex flex-col flex-1 justify-between bg-black/60 border border-emerald-500/30 p-3 rounded-xl mb-2">
-                    <div>
-                        <div class="flex justify-between items-center text-xs text-zinc-400 mb-1">
-                            <span>Crupier:</span>
-                            <span id="bj-dealer-score" class="font-bold text-amber-400">-</span>
-                        </div>
-                        <div id="bj-dealer-cards" class="flex gap-1.5 min-h-[48px] items-center"></div>
-                    </div>
-
-                    <div id="bj-message-box" class="text-center my-2">
-                        <div id="bj-status-text" class="text-xs font-bold text-amber-300">¡Tu turno!</div>
-                        <div id="bj-insurance-box" class="hidden mt-2 bg-amber-950/80 border border-amber-500 p-2 rounded-lg">
-                            <p class="text-[11px] text-amber-300 font-bold mb-1.5">⚠️ ¿El crupier muestra un As. Comprar seguro?</p>
-                            <div class="flex gap-2">
-                                <button onclick="resolveInsurance(true)" class="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold py-1 rounded text-xs">Sí (Seguro)</button>
-                                <button onclick="resolveInsurance(false)" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-1 rounded text-xs">No</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between items-center text-xs text-zinc-400 mb-1">
-                            <span>Tus Cartas:</span>
-                            <span id="bj-player-score" class="font-bold text-emerald-400">-</span>
-                        </div>
-                        <div id="bj-player-cards" class="flex gap-1.5 min-h-[48px] items-center"></div>
-                    </div>
-                </div>
-
-                <div id="bj-actions-section" class="hidden grid grid-cols-3 gap-2">
-                    <button onclick="bjHit()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 rounded-xl text-xs transition shadow">Pedir Carta</button>
-                    <button onclick="bjStand()" class="bg-amber-600 hover:bg-amber-500 text-black font-black py-2 rounded-xl text-xs transition shadow">Plantarse</button>
-                    <button id="btn-bj-double" onclick="bjDouble()" class="bg-purple-600 hover:bg-purple-500 text-white font-black py-2 rounded-xl text-xs transition shadow">Doblar</button>
-                </div>
-
-                <button id="btn-bj-new-round" onclick="resetBjTable()" class="hidden w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold py-2.5 rounded-xl text-xs transition">
-                    Nueva Mano 🃏
-                </button>
-            </div>
-
-            <!-- TRAGAPERRAS ROYAL -->
+            <!-- TRAGAPERRAS -->
             <div id="game-slots" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex justify-between items-center mb-3">
                     <button id="btn-back-to-arcade-slots" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-amber-400">🎰 BURX Royal (Lock & Spin)</h2>
+                    <h2 class="text-lg font-bold text-purple-400">🎰 Tragaperras 5x5</h2>
                     <button id="btn-close-slots-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
                 </div>
-
-                <div class="grid grid-cols-2 gap-1.5 mb-2 text-center text-[10px] font-black">
-                    <div class="bg-gradient-to-r from-red-950 to-rose-950 border border-red-500/50 p-1.5 rounded-lg">
-                        <div class="text-rose-400">GRAND (15 Orbes)</div>
-                        <div class="text-amber-300 text-xs font-mono">50.000 $</div>
-                    </div>
-                    <div class="bg-gradient-to-r from-purple-950 to-indigo-950 border border-purple-500/50 p-1.5 rounded-lg">
-                        <div class="text-purple-300">MAJOR</div>
-                        <div class="text-amber-300 text-xs font-mono">10.000 $</div>
+                <div class="text-center mb-3 bg-zinc-950/60 border border-zinc-800 p-2 rounded-xl">
+                    <div class="text-[10px] text-zinc-400">Apuesta Seleccionada:</div>
+                    <div class="flex justify-center gap-2 mt-1">
+                        <button onclick="setSlotBet(10)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">10</button>
+                        <button onclick="setSlotBet(50)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">50</button>
+                        <button onclick="setSlotBet(100)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">100</button>
+                        <button onclick="setSlotBet(500)" class="bet-btn text-xs bg-zinc-800 px-2.5 py-1 rounded-md font-bold text-emerald-400 border border-zinc-700">500</button>
                     </div>
                 </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
-                    <span class="text-zinc-400 font-bold">Saldo:</span>
-                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
+                <div id="slots-grid" class="grid grid-cols-5 gap-1.5 bg-black/60 p-2.5 rounded-xl border border-purple-500/30 mb-3 justify-center items-center text-2xl text-center">
+                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
+                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
+                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
+                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
+                    <div>❓</div><div>❓</div><div>❓</div><div>❓</div><div>❓</div>
                 </div>
-
-                <div id="slot-bonus-banner" class="hidden bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-black text-center font-black py-1 px-2 rounded-lg text-[11px] shadow-lg animate-bounce mb-2">
-                    🌟 LOCK & SPIN - RE-SPINS: <span id="slot-respins-count">3</span> 🌟
-                </div>
-
-                <div id="slot-grid-royal" class="grid grid-cols-5 gap-1.5 bg-black/80 p-2 rounded-xl border-2 border-amber-500/40 mb-2"></div>
-
-                <div id="slots-msg" class="text-center text-xs font-bold text-amber-400 mb-2 h-4">6 o más 🔮 activan Lock & Spin</div>
-
-                <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl flex flex-col gap-2 text-xs">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-zinc-400 font-bold shrink-0">Apuesta Libre:</span>
-                        <input type="number" id="slot-bet-input" value="50" min="1" class="w-full bg-zinc-900 border border-zinc-700 text-amber-300 font-bold rounded-lg px-2 py-1.5 text-center text-xs outline-none focus:border-amber-500">
-                    </div>
-                    <div class="flex items-center justify-between gap-1.5">
-                        <button onclick="setSlotBetQuick('min')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-1 rounded-lg text-[10px]">MIN (10)</button>
-                        <button onclick="setSlotBetQuick('double')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold py-1 rounded-lg text-[10px]">x2</button>
-                        <button onclick="setSlotBetQuick('max')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 font-bold py-1 rounded-lg text-[10px]">MAX ALL-IN</button>
-                    </div>
-                    <button id="btn-spin-slots-royal" onclick="spinSlotRoyal()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-black font-black py-2.5 rounded-xl shadow-lg transition text-sm">
-                        GIRAR 🎰
-                    </button>
-                </div>
+                <div id="slots-msg" class="text-center text-xs font-bold text-amber-400 mb-3 h-5">¡Elige apuesta y prueba tu suerte!</div>
+                <button id="btn-spin-slots" class="w-full bg-gradient-to-r from-purple-600 to-rose-600 hover:from-purple-500 hover:to-rose-500 text-white font-black py-3 rounded-xl transition shadow-lg text-base">
+                    GIRAR RODILLOS 🎰
+                </button>
             </div>
 
             <!-- MINAS -->
@@ -551,11 +235,6 @@
                     <button id="btn-back-to-arcade-mines" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
                     <h2 class="text-lg font-bold text-emerald-400">💣 Minas BURX</h2>
                     <button id="btn-close-mines-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
-                </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
-                    <span class="text-zinc-400 font-bold">Saldo:</span>
-                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
                 </div>
 
                 <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-2 text-xs space-y-2">
@@ -587,45 +266,100 @@
                     COBRAR (<span id="cashout-amount">0</span>) 💰
                 </button>
             </div>
-
-            <!-- COHETE / CRASH -->
-            <div id="game-crash" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
-                    <button id="btn-back-to-arcade-crash" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
-                    <h2 class="text-lg font-bold text-amber-400">🚀 Cohete BURX</h2>
-                    <button id="btn-close-crash-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
-                </div>
-
-                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
-                    <span class="text-zinc-400 font-bold">Saldo:</span>
-                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
-                </div>
-
-                <div class="bg-zinc-950/80 border border-zinc-800 p-2.5 rounded-xl mb-3 text-xs space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-zinc-400">Apuesta:</span>
-                        <input type="number" id="crash-bet-input" value="50" min="10" class="bg-zinc-900 border border-zinc-700 text-amber-400 font-bold px-2 py-1 rounded-lg w-28 text-center">
-                    </div>
-                </div>
-
-                <div id="crash-space-container" class="relative bg-black/80 border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center my-auto mb-3 h-[160px] overflow-hidden">
-                    <div id="stars-field" class="absolute inset-0 pointer-events-none"></div>
-                    <div id="crash-icon" class="text-4xl mb-1 z-10 transition-transform">🚀</div>
-                    <div id="crash-multiplier-display" class="text-3xl font-black text-amber-400 tracking-wider z-10 drop-shadow-[0_2px_8px_rgba(250,204,21,0.5)]">1.00x</div>
-                    <div id="crash-win-preview" class="text-sm font-bold text-emerald-400 mt-1 min-h-[20px] z-10">
-                        Premio: <span class="arcade-sym">$</span><span id="crash-win-val">50</span>
-                    </div>
-                    <div id="crash-status-msg" class="text-[11px] text-zinc-400 mt-1 h-4 z-10">Prepara tu apuesta y lanza</div>
-                </div>
-
-                <button id="btn-crash-action" class="w-full bg-amber-600 hover:bg-amber-500 text-black font-black py-3 rounded-xl transition shadow-lg text-base">
-                    LANZAR COHETE 🚀
-                </button>
-            </div>
         </div>
     </div>
 
-    <!-- CABECERA PRINCIPAL -->
+    <!-- MAZMORRA -->
+    <div id="battle-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] flex flex-col overflow-y-auto">
+            <div class="flex justify-between items-center mb-3">
+                <button id="btn-back-to-arcade-from-battle" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
+                <h2 class="text-xl font-bold text-red-500 flex items-center gap-2">⚔️ Mazmorra</h2>
+                <button id="btn-close-battle-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
+            </div>
+
+            <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl mb-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-4xl bg-zinc-800 p-2 rounded-xl border border-zinc-700">⚔️😠</div>
+                    <div>
+                        <div class="font-bold text-sm text-amber-400">Caballero BURX</div>
+                        <div class="text-xs text-zinc-400 flex gap-3 mt-0.5">
+                            <span>⚔️ ATQ: <b id="rpg-stat-atk" class="text-red-400">10</b></span>
+                            <span>🛡️ DEF: <b id="rpg-stat-def" class="text-blue-400">5</b></span>
+                            <span>❤️ HP: <b id="rpg-stat-hp" class="text-emerald-400">100</b></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button id="btn-upgrade-sword" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-2 rounded-lg text-left flex flex-col">
+                        <span class="font-bold text-red-400">🗡️ Espada Nv.<span id="lvl-sword">1</span></span>
+                        <span class="text-[10px] text-zinc-400">+5 Ataque</span>
+                        <span id="cost-sword" class="text-[10px] font-bold text-emerald-400 mt-1">100</span>
+                    </button>
+                    <button id="btn-upgrade-helmet" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-2 rounded-lg text-left flex flex-col">
+                        <span class="font-bold text-blue-400">🪖 Casco Nv.<span id="lvl-helmet">1</span></span>
+                        <span class="text-[10px] text-zinc-400">+20 HP</span>
+                        <span id="cost-helmet" class="text-[10px] font-bold text-emerald-400 mt-1">100</span>
+                    </button>
+                    <button id="btn-upgrade-armor" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-2 rounded-lg text-left flex flex-col">
+                        <span class="font-bold text-cyan-400">🛡️ Pechera Nv.<span id="lvl-armor">1</span></span>
+                        <span class="text-[10px] text-zinc-400">+3 Defensa</span>
+                        <span id="cost-armor" class="text-[10px] font-bold text-emerald-400 mt-1">150</span>
+                    </button>
+                    <button id="btn-upgrade-boots" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-2 rounded-lg text-left flex flex-col">
+                        <span class="font-bold text-amber-400">🥾 Botas Nv.<span id="lvl-boots">1</span></span>
+                        <span class="text-[10px] text-zinc-400">+2% Crítico/Esquiva</span>
+                        <span id="cost-boots" class="text-[10px] font-bold text-emerald-400 mt-1">200</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl text-center">
+                <div class="text-xs text-zinc-400 mb-1">Enfrentamiento Actual:</div>
+                <div id="boss-name" class="font-black text-base text-red-500 mb-2">🦇 Murciélago Furioso (Nivel 1)</div>
+
+                <div class="flex justify-between items-center bg-black/60 p-3 rounded-xl mb-3 border border-zinc-800">
+                    <div id="hero-avatar" class="text-3xl">😠</div>
+                    <div class="text-xs font-bold text-red-500 animate-pulse">VS</div>
+                    <div id="boss-avatar" class="text-3xl">🦇</div>
+                </div>
+
+                <div class="space-y-2 mb-3">
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold mb-0.5">
+                            <span class="text-rose-400">Tu Caballero</span>
+                            <span id="hero-hp-text">100/100</span>
+                        </div>
+                        <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                            <div id="hero-hp-bar" class="bg-emerald-500 h-full w-full transition-all duration-300"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold mb-0.5">
+                            <span id="boss-hp-label" class="text-red-400">Boss</span>
+                            <span id="boss-hp-text">50/50</span>
+                        </div>
+                        <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                            <div id="boss-hp-bar" class="bg-red-500 h-full w-full transition-all duration-300"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="battle-log" class="text-xs font-bold text-amber-400 h-6 flex items-center justify-center">
+                    ¡Prepara tu equipo y ataca!
+                </div>
+
+                <button id="btn-start-fight" class="w-full mt-2 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black py-2.5 rounded-xl transition shadow-lg">
+                    ¡LUCHAR! ⚔️
+                </button>
+            </div>
+
+            <button id="btn-close-battle" class="w-full mt-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-xl transition text-xs">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- CABECERA -->
     <header class="w-full max-w-md flex flex-col items-center gap-3 mt-2">
         <div class="flex justify-between w-full items-center px-2">
             <div class="flex items-center gap-2">
@@ -666,10 +400,10 @@
         </div>
     </header>
 
-    <!-- ÁREA CENTRAL -->
+    <!-- ÁREA CENTRAL (CON CARA Y BARRA DE PRESTIGIO) -->
     <main class="flex flex-col items-center justify-center my-auto relative py-4 w-full max-w-sm">
-        <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]"></div>
-
+        <div id="stars-container" class="flex gap-1 mb-2 text-xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] min-h-[24px]">⭐</div>
+        
         <div class="relative flex items-center justify-center mb-3">
             <div class="absolute w-44 h-44 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
             <button id="clicker-btn" class="relative w-36 h-36 rounded-full bg-gradient-to-b from-rose-500 to-rose-700 border-4 border-rose-400/50 shadow-[0_10px_30px_rgba(225,29,72,0.4)] flex items-center justify-center text-6xl active:scale-95 transition-transform duration-75 cursor-pointer select-none">
@@ -677,7 +411,7 @@
             </button>
         </div>
 
-        <!-- BARRA DE PRESTIGIO -->
+        <!-- BARRA DE PROGRESO DE PRESTIGIO -->
         <div id="prestige-bar-container" class="w-full bg-zinc-900 border border-zinc-800 p-2.5 rounded-2xl shadow-lg mb-2">
             <div class="flex justify-between items-center text-[11px] font-bold mb-1.5">
                 <span class="text-purple-400">✨ Prestigio <span id="prestige-level-num">0</span> (<span id="tier-name-display">Dólares</span>)</span>
@@ -694,7 +428,7 @@
         <div class="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-1">¡HAZ CLIC EN BURX!</div>
     </main>
 
-    <!-- MEJORAS -->
+    <!-- SECCIÓN DE MEJORAS -->
     <section class="w-full max-w-md space-y-2 mb-2">
         <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl flex items-center justify-between shadow-lg">
             <div>
@@ -721,12 +455,13 @@
                 <div class="font-bold text-sm text-zinc-200">Fábrica BURX</div>
                 <div class="text-xs text-zinc-400">Cantidad: <span id="lvl-auto2" class="text-amber-400 font-bold">0</span> <span id="bonus-auto2" class="text-amber-400 text-[10px]"></span></div>
             </div>
-            <button id="btn-buy-auto2" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-amber-600/30">
+            <button id="btn-buy-auto2" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow border border-amber-400/30">
                 <span id="cost-auto2-sym">$</span><span id="cost-auto2">350</span>
             </button>
         </div>
 
-        <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-xl flex items-center justify-between shadow-lg border-l-4 border-l-purple-500">
+        <!-- ACELERADOR AUTOMÁTICO POR PRESTIGIO -->
+        <div class="bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl flex items-center justify-between shadow-lg border-l-4 border-l-purple-500">
             <div>
                 <div class="font-bold text-sm text-purple-300">⚡ Acelerador Automático</div>
                 <div class="text-xs text-zinc-400">Cobro cada: <span id="stat-interval" class="text-purple-400 font-bold">1.00s</span></div>
@@ -737,10 +472,10 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- FOOTER CON BOTÓN DE GUÍA DISCRETO -->
     <footer class="w-full max-w-md text-[10px] text-zinc-500 flex flex-col items-center gap-1 py-1">
         <div>
-            ⚡ Sincronización Ilimitada en Supabase | <span id="cloud-sync-text">Conectado</span>
+            ☁️ Sincronizado en la Nube de BURX | <span id="cloud-sync-text">Conectado</span>
         </div>
         <button id="btn-open-guide" class="text-purple-400 hover:text-purple-300 font-bold underline transition cursor-pointer">
             ℹ️ Guía de Prestigios y Divisas
@@ -748,12 +483,8 @@
     </footer>
 
     <script>
-        // ================= CONFIGURACIÓN DE SUPABASE PRE-CONFIGURADA =================
-        const SUPABASE_URL = "https://uomqjazepfbdkoguzwvu.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_GVsDncI196Usfvit5Zb93g_qQbbJAB2";
-
-        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // ============================================================
+        const JSONBIN_MASTER_KEY = "$2a$10$aNHkyohaYCmzkyEsAyC3.eAO7PoIK1E/e3ZGV0Jum9REcKbCiVL2K";
+        const JSONBIN_BIN_ID = "6ad1bed6ffd5d160536feb57";
 
         let state = {
             username: "",
@@ -764,9 +495,11 @@
             auto2: 0,
             prestigeLvl: 0,
             totalEarned: 0,
-            costs: { click: 15, auto1: 40, auto2: 350 }
+            costs: { click: 15, auto1: 40, auto2: 350 },
+            rpg: { sword: 1, helmet: 1, armor: 1, boots: 1, bossLvl: 1 }
         };
 
+        // CAMBIO DE DIVISA CADA 2 NIVELES DE PRESTIGIO
         const CURRENCY_TIERS = [
             { minPrestige: 0, name: "Dólares", symbol: "$" },
             { minPrestige: 2, name: "Oro", symbol: "🪙" },
@@ -784,10 +517,10 @@
             return current;
         }
 
+        let currentSlotBet = 10;
         let passiveTimer = null;
+        let globalPlayersCache = {};
         let createdNewAccountPending = false;
-        let dbUserRecord = null;
-        let lastClickTime = 0;
 
         function getClickPower() {
             const base = 1 + (state.clickLvl * 1.2);
@@ -813,12 +546,14 @@
             return Math.floor(base * multiplier * prestigeMultiplier);
         }
 
+        // CÁLCULO PORCENTUAL DEL INTERVALO PASIVO (-5% por nivel, límite mínimo 0.15s)
         function getPassiveInterval() {
             let intervalSeconds = 1.00 * Math.pow(0.95, state.prestigeLvl);
             if (intervalSeconds < 0.15) intervalSeconds = 0.15;
             return Math.round(intervalSeconds * 1000);
         }
 
+        // COMPROBAR USUARIO AL ESCRIBIR
         document.getElementById('input-username').addEventListener('input', async (e) => {
             const nameInput = e.target.value.trim();
             const passContainer = document.getElementById('password-container');
@@ -832,22 +567,25 @@
             }
 
             try {
-                const { data, error } = await db.from('players').select('*').eq('username', nameInput).single();
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
+                });
+                const data = await res.json();
+                globalPlayersCache = data.record.players || {};
 
-                if (data) {
-                    dbUserRecord = data;
+                if (globalPlayersCache[nameInput]) {
                     passContainer.classList.remove('hidden');
                     desc.innerText = "¡Este apodo ya existe! Introduce tu contraseña secreta:";
                 } else {
-                    dbUserRecord = null;
                     passContainer.classList.add('hidden');
                     desc.innerText = "Apodo nuevo. Se creará una contraseña automática:";
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Error comprobando usuario", err);
             }
         });
 
+        // INICIAR SESIÓN / REGISTRAR
         document.getElementById('btn-login-cloud').addEventListener('click', async () => {
             const nameInput = document.getElementById('input-username').value.trim();
             const passInput = document.getElementById('input-password').value.trim();
@@ -863,17 +601,24 @@
                 return;
             }
 
-            status.innerText = "⏳ Conectando con Supabase...";
+            status.innerText = "⏳ Verificando credenciales...";
             state.username = nameInput;
 
             try {
-                if (dbUserRecord) {
-                    if (dbUserRecord.password && dbUserRecord.password !== passInput) {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
+                });
+                const data = await res.json();
+                globalPlayersCache = data.record.players || {};
+
+                if (globalPlayersCache[state.username]) {
+                    const existingUser = globalPlayersCache[state.username];
+                    if (existingUser.password && existingUser.password !== passInput) {
                         status.innerText = "❌ Contraseña incorrecta";
-                        alert("¡Contraseña incorrecta!");
+                        alert("¡Contraseña incorrecta! No puedes acceder a este perfil.");
                         return;
                     }
-                    state = { ...dbUserRecord.state, username: dbUserRecord.username, password: dbUserRecord.password };
+                    state = { ...existingUser };
                     if (state.clickLvl === undefined) state.clickLvl = state.clickPower || 1;
                     if (state.totalEarned === undefined) state.totalEarned = state.money;
                     if (state.prestigeLvl === undefined) state.prestigeLvl = 0;
@@ -888,24 +633,26 @@
                     state.totalEarned = 0;
                     state.prestigeLvl = 0;
                     state.clickLvl = 1;
-
+                    
                     document.getElementById('generated-pass-text').innerText = randomPass;
                     document.getElementById('new-password-box').classList.remove('hidden');
                     status.innerText = "¡Cuenta creada con éxito! Copia tu contraseña.";
-
+                    
                     createdNewAccountPending = true;
                     await saveCloudData();
                 }
             } catch (e) {
+                console.error(e);
                 status.innerText = "⚠️ Error de conexión con la nube";
             }
         });
 
+        // COPIAR Y VER CONTRASEÑA
         document.getElementById('btn-copy-pass').addEventListener('click', (e) => {
             e.stopPropagation();
             const pass = document.getElementById('generated-pass-text').innerText;
             navigator.clipboard.writeText(pass);
-            alert("✅ ¡Contraseña copiada!");
+            alert("✅ ¡Contraseña copiada al portapapeles!");
         });
 
         document.getElementById('btn-open-view-pass').addEventListener('click', () => {
@@ -915,9 +662,10 @@
         });
 
         document.getElementById('btn-copy-profile-pass').addEventListener('click', () => {
-            if (state.password) {
-                navigator.clipboard.writeText(state.password);
-                alert("✅ ¡Contraseña copiada!");
+            const pass = state.password;
+            if (pass) {
+                navigator.clipboard.writeText(pass);
+                alert("✅ ¡Contraseña copiada al portapapeles!");
             }
         });
 
@@ -925,6 +673,7 @@
             document.getElementById('view-pass-modal').classList.add('hidden');
         });
 
+        // CONTROLES DE LA GUÍA / INFO MODAL
         document.getElementById('btn-open-guide').addEventListener('click', () => {
             document.getElementById('guide-modal').classList.remove('hidden');
         });
@@ -933,6 +682,7 @@
             document.getElementById('guide-modal').classList.add('hidden');
         });
 
+        // PRESTIGIO
         function getPrestigeRequirement() {
             return 5000000 * Math.pow(10, state.prestigeLvl);
         }
@@ -940,7 +690,7 @@
         document.getElementById('btn-trigger-prestige').addEventListener('click', () => {
             const nextLvl = state.prestigeLvl + 1;
             const nextTier = CURRENCY_TIERS.find(t => t.minPrestige === nextLvl);
-
+            
             if (nextTier) {
                 document.getElementById('prestige-perk-desc').innerText = `✨ ¡Nueva Divisa Desbloqueada: ${nextTier.name} (${nextTier.symbol})!`;
             } else {
@@ -962,7 +712,7 @@
             state.clickLvl = 1;
             state.auto1 = 0;
             state.auto2 = 0;
-
+            
             let costMultiplier = Math.pow(1.4, state.prestigeLvl);
             state.costs = { 
                 click: Math.floor(15 * costMultiplier), 
@@ -974,11 +724,11 @@
             updateUI();
             restartPassiveTimer();
             saveCloudData();
-
+            
             if (oldTier.name !== newTier.name) {
-                alert(`🎉 ¡Felicidades! Has desbloqueado el ${newTier.name} (${newTier.symbol})!`);
+                alert(`🎉 ¡Felicidades! Has alcanzado el Prestigio ${state.prestigeLvl}. ¡Has desbloqueado la nueva era del ${newTier.name} (${newTier.symbol}) y acelerado tus ingresos automáticos!`);
             } else {
-                alert(`🎉 ¡Prestigio ${state.prestigeLvl} alcanzado!`);
+                alert(`🎉 ¡Felicidades! Has ascendido al Prestigio ${state.prestigeLvl}. ¡Mayor multiplicador y velocidad de cobro mejorada!`);
             }
         });
 
@@ -988,29 +738,32 @@
             localStorage.setItem('burx_' + state.username, JSON.stringify(state));
 
             try {
-                const { error } = await db.from('players').upsert({
-                    username: state.username,
-                    password: state.password,
-                    state: state,
-                    updated_at: new Date()
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
+                });
+                const data = await res.json();
+                let players = data.record.players || {};
+                players[state.username] = state;
+
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": JSONBIN_MASTER_KEY
+                    },
+                    body: JSON.stringify({ players })
                 });
 
-                if (error) throw error;
-                document.getElementById('cloud-sync-text').innerText = "✅ Guardado en Supabase";
+                document.getElementById('cloud-sync-text').innerText = "✅ Sincronizado";
             } catch (e) {
-                console.error(e);
                 document.getElementById('cloud-sync-text').innerText = "⚠️ Guardado local";
             }
         }
 
-        setInterval(saveCloudData, 15000);
+        setInterval(saveCloudData, 10000);
 
-        // PROTECCIÓN ANTIAUTOCLICKER (12 CPS máx)
+        // CLIC PRINCIPAL
         document.getElementById('clicker-btn').addEventListener('click', (e) => {
-            const now = Date.now();
-            if (now - lastClickTime < 80) return;
-            lastClickTime = now;
-
             const earned = getClickPower();
             state.money += earned;
             state.totalEarned += earned;
@@ -1033,6 +786,7 @@
             setTimeout(() => el.remove(), 800);
         }
 
+        // TIENDA
         document.getElementById('btn-buy-click').addEventListener('click', () => {
             if (state.money >= state.costs.click) {
                 state.money -= state.costs.click;
@@ -1078,26 +832,23 @@
 
         function updateUI() {
             const tier = getCurrentTier();
-
+            
             document.getElementById('currency-symbol').innerText = tier.symbol;
             document.getElementById('cost-click-sym').innerText = tier.symbol;
             document.getElementById('cost-auto1-sym').innerText = tier.symbol;
             document.getElementById('cost-auto2-sym').innerText = tier.symbol;
             document.getElementById('tier-name-display').innerText = tier.name;
 
-            const formattedMoney = Math.floor(state.money);
-            document.getElementById('money-counter').innerText = formattedMoney;
-
-            document.querySelectorAll('.arcade-sym').forEach(el => el.innerText = tier.symbol);
-            document.querySelectorAll('.arcade-bal').forEach(el => el.innerText = formattedMoney);
-
+            document.getElementById('money-counter').innerText = Math.floor(state.money);
             document.getElementById('stat-click').innerText = `${getClickPower()}/clic`;
-
+            
             const totalAuto = getAuto1Power() + getAuto2Power();
             document.getElementById('stat-auto').innerText = `${totalAuto}/s`;
 
+            // Actualizar visualmente el intervalo de tiempo automático según el prestigio porcentual
             const currentIntervalMs = getPassiveInterval();
-            document.getElementById('stat-interval').innerText = `${(currentIntervalMs / 1000).toFixed(2)}s`;
+            const currentIntervalSec = (currentIntervalMs / 1000).toFixed(2);
+            document.getElementById('stat-interval').innerText = `${currentIntervalSec}s`;
 
             document.getElementById('lvl-click').innerText = state.clickLvl;
             document.getElementById('cost-click').innerText = state.costs.click;
@@ -1119,7 +870,7 @@
             const progress = Math.min(100, (state.totalEarned / req) * 100);
             document.getElementById('prestige-level-num').innerText = state.prestigeLvl;
             document.getElementById('prestige-progress-bar').style.width = `${progress}%`;
-
+            
             let reqFormatted = req >= 1000000 ? (req / 1000000).toFixed(1) + 'M' : req;
             let earnedFormatted = state.totalEarned >= 1000000 ? (state.totalEarned / 1000000).toFixed(2) + 'M' : state.totalEarned;
             document.getElementById('prestige-progress-text').innerText = `${progress.toFixed(1)}% (${earnedFormatted} / ${reqFormatted})`;
@@ -1133,7 +884,22 @@
 
             let starsHtml = '';
             for(let i = 0; i < state.prestigeLvl; i++) starsHtml += '⭐';
-            document.getElementById('stars-container').innerHTML = starsHtml;
+            document.getElementById('stars-container').innerHTML = starsHtml || '⭐';
+
+            const atk = 10 + (state.rpg.sword * 5);
+            const def = 5 + (state.rpg.armor * 3);
+            const hp = 100 + (state.rpg.helmet * 20);
+            document.getElementById('rpg-stat-atk').innerText = atk;
+            document.getElementById('rpg-stat-def').innerText = def;
+            document.getElementById('rpg-stat-hp').innerText = hp;
+            document.getElementById('lvl-sword').innerText = state.rpg.sword;
+            document.getElementById('cost-sword').innerText = `${state.rpg.sword * 100}`;
+            document.getElementById('lvl-helmet').innerText = state.rpg.helmet;
+            document.getElementById('cost-helmet').innerText = `${state.rpg.helmet * 100}`;
+            document.getElementById('lvl-armor').innerText = state.rpg.armor;
+            document.getElementById('cost-armor').innerText = `${state.rpg.armor * 150}`;
+            document.getElementById('lvl-boots').innerText = state.rpg.boots;
+            document.getElementById('cost-boots').innerText = `${state.rpg.boots * 200}`;
         }
 
         // ARCADE
@@ -1147,459 +913,429 @@
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        // ==================== RULETA UPGRADE (ANIMACIÓN SINCRONIZADA CON PREMIO) ====================
-        function updateUpgradeUI() {
-            const bet = parseFloat(document.getElementById('upgrade-bet-input').value) || 0;
-            const mult = parseFloat(document.getElementById('upgrade-mult-range').value) || 2.0;
-
-            document.getElementById('upgrade-mult-display').innerText = mult.toFixed(2) + 'x';
-            
-            let chance = Math.min(95, Math.max(5, (95 / mult)));
-            document.getElementById('upgrade-chance-display').innerText = chance.toFixed(1) + '%';
-
-            let winPreview = Math.floor(bet * mult);
-            document.getElementById('upgrade-win-preview').innerText = winPreview + ' $';
-
-            const circle = document.getElementById('upgrade-svg-circle');
-            let offset = 251.2 - (251.2 * chance / 100);
-            circle.style.strokeDashoffset = offset;
-        }
-
-        document.getElementById('upgrade-bet-input').addEventListener('input', updateUpgradeUI);
-        document.getElementById('upgrade-mult-range').addEventListener('input', updateUpgradeUI);
-
-        document.getElementById('btn-open-upgrade').addEventListener('click', () => {
+        // TRAGAPERRAS
+        document.getElementById('btn-open-slots').addEventListener('click', () => {
             document.getElementById('arcade-menu').classList.add('hidden');
-            document.getElementById('game-upgrade').classList.remove('hidden');
-            updateUpgradeUI();
+            document.getElementById('game-slots').classList.remove('hidden');
         });
-        document.getElementById('btn-back-to-arcade-upgrade').addEventListener('click', () => {
-            document.getElementById('game-upgrade').classList.add('hidden');
+        document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => {
+            document.getElementById('game-slots').classList.add('hidden');
             document.getElementById('arcade-menu').classList.remove('hidden');
         });
-        document.getElementById('btn-close-upgrade-x').addEventListener('click', () => {
+        document.getElementById('btn-close-slots-x').addEventListener('click', () => {
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        let currentWheelRotation = 0;
+        function setSlotBet(val) {
+            currentSlotBet = val;
+            document.getElementById('slots-msg').innerText = `Apuesta fijada en ${val}`;
+        }
 
-        document.getElementById('btn-spin-upgrade').addEventListener('click', () => {
-            const bet = parseFloat(document.getElementById('upgrade-bet-input').value) || 0;
-            const mult = parseFloat(document.getElementById('upgrade-mult-range').value) || 2.0;
-
-            if (bet <= 0 || state.money < bet) {
-                alert("Apuesta inválida o saldo insuficiente.");
+        let isSpinning = false;
+        document.getElementById('btn-spin-slots').addEventListener('click', () => {
+            if (isSpinning) return;
+            if (state.money < currentSlotBet) {
+                document.getElementById('slots-msg').innerText = "❌ ¡No tienes suficientes recursos!";
                 return;
             }
 
-            state.money -= bet;
+            isSpinning = true;
+            state.money -= currentSlotBet;
             updateUI();
 
-            const btn = document.getElementById('btn-spin-upgrade');
+            const btn = document.getElementById('btn-spin-slots');
             btn.disabled = true;
             btn.classList.add('opacity-50');
 
-            const statusMsg = document.getElementById('upgrade-status-msg');
-            statusMsg.innerText = "🎯 Girando ruleta...";
+            const grid = document.getElementById('slots-grid');
+            const msg = document.getElementById('slots-msg');
+            msg.innerText = "🎰 Girando rodillos...";
 
-            let chance = Math.min(95, Math.max(5, (95 / mult)));
-            let isWin = (Math.random() * 100) <= chance;
+            const weightedSymbols = ['😠','😠','😠','😠','😠','😠','💩','💩','💩','💩','💩','💥','💥','💥','💥','🔥','🔥','🔥','⚡','⚡','💎','👑'];
 
-            // Calcular ángulo exacto según el resultado para que coincida perfectamente con la aguja superior (0 grados)
-            let targetAngle;
-            if (isWin) {
-                // Caer en zona verde (entre 0 y el ángulo de probabilidad)
-                let greenAngleSpan = (chance / 100) * 360;
-                targetAngle = Math.random() * (greenAngleSpan - 10) + 5; // Margen de seguridad dentro del verde
-            } else {
-                // Caer en zona roja (resto de la ruleta)
-                let greenAngleSpan = (chance / 100) * 360;
-                targetAngle = Math.random() * (360 - greenAngleSpan - 20) + greenAngleSpan + 10;
-            }
+            let spinTicks = 0;
+            const spinInterval = setInterval(() => {
+                grid.innerHTML = '';
+                for (let i = 0; i < 25; i++) {
+                    const rand = weightedSymbols[Math.floor(Math.random() * weightedSymbols.length)];
+                    const cell = document.createElement('div');
+                    cell.innerText = rand;
+                    cell.className = 'animate-pulse';
+                    grid.appendChild(cell);
+                }
+                spinTicks++;
 
-            // Añadir varias vueltas completas (4 a 6 giros extra) para darle realismo
-            const extraSpins = 360 * (4 + Math.floor(Math.random() * 3));
-            currentWheelRotation += extraSpins + (360 - (currentWheelRotation % 360)) - targetAngle;
+                if (spinTicks >= 8) {
+                    clearInterval(spinInterval);
+                    revelarSlot();
+                }
+            }, 90);
 
-            const wheelWrapper = document.getElementById('upgrade-wheel-wrapper');
-            wheelWrapper.style.transform = `rotate(${currentWheelRotation}deg)`;
-
-            setTimeout(() => {
-                if (isWin) {
-                    let winAmt = Math.floor(bet * mult);
-                    state.money += winAmt;
-                    state.totalEarned += winAmt;
-                    statusMsg.innerText = `🎉 ¡ÉXITO! Has ganado +${winAmt} $`;
-                } else {
-                    statusMsg.innerText = "💥 ¡FALLO! Has perdido la apuesta.";
+            function revelarSlot() {
+                grid.innerHTML = '';
+                for (let i = 0; i < 25; i++) {
+                    const rand = weightedSymbols[Math.floor(Math.random() * weightedSymbols.length)];
+                    const cell = document.createElement('div');
+                    cell.innerText = rand;
+                    grid.appendChild(cell);
                 }
 
+                const luckRoll = Math.random();
+                let prizeMultiplier = 0;
+
+                if (luckRoll < 0.005) {
+                    prizeMultiplier = 500;
+                    msg.innerText = `🚨 ¡¡SUPER BOTE ÉPICO x500!! +${currentSlotBet * 500}`;
+                } else if (luckRoll < 0.02) {
+                    prizeMultiplier = 100;
+                    msg.innerText = `💥 ¡¡GRAN BOTE x100!! +${currentSlotBet * 100}`;
+                } else if (luckRoll < 0.08) {
+                    prizeMultiplier = 10;
+                    msg.innerText = `🎉 ¡Premio Medio x10! +${currentSlotBet * 10}`;
+                } else if (luckRoll < 0.18) {
+                    prizeMultiplier = 2;
+                    msg.innerText = `✨ Premio Pequeño x2: +${currentSlotBet * 2}`;
+                } else {
+                    msg.innerText = "💸 Nada esta vez... Sigue intentándolo";
+                }
+
+                if (prizeMultiplier > 0) {
+                    const winAmt = currentSlotBet * prizeMultiplier;
+                    state.money += winAmt;
+                    state.totalEarned += winAmt;
+                }
+
+                isSpinning = false;
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
                 updateUI();
                 saveCloudData();
-            }, 1250);
+            }
         });
 
-        // ==================== VIDEO BINGO ====================
-        let bingoCards = [
-            { active: true, numbers: [], marked: [], goldenIndex: -1 },
-            { active: true, numbers: [], marked: [], goldenIndex: -1 },
-            { active: false, numbers: [], marked: [], goldenIndex: -1 },
-            { active: false, numbers: [], marked: [], goldenIndex: -1 }
-        ];
-        let isBingoPlaying = false;
+        // MINAS
+        let minesCount = 3;
+        let minesActive = false;
+        let mineField = [];
+        let revealedCount = 0;
+        let currentMultiplier = 1.0;
+        let currentMinesBet = 50;
 
-        function initBingoCards() {
-            for (let i = 0; i < 4; i++) { generateSingleBingoCard(i); }
-            updateBingoTotalBet();
-            renderBingoCardsUI();
-        }
-
-        function generateSingleBingoCard(cardIndex) {
-            let nums = [];
-            while(nums.length < 15) {
-                let r = Math.floor(Math.random() * 60) + 1;
-                if(!nums.includes(r)) nums.push(r);
-            }
-            bingoCards[cardIndex].numbers = nums;
-            bingoCards[cardIndex].marked = new Array(15).fill(false);
-            bingoCards[cardIndex].goldenIndex = -1;
-        }
-
-        function refreshBingoCard(cardIndex) {
-            if (isBingoPlaying) return;
-            generateSingleBingoCard(cardIndex);
-            renderBingoCardsUI();
-        }
-
-        function toggleBingoCard(cardIndex) {
-            if (isBingoPlaying) return;
-            bingoCards[cardIndex].active = !bingoCards[cardIndex].active;
-            const btn = document.getElementById(`bingo-toggle-${cardIndex}`);
-            btn.className = bingoCards[cardIndex].active ? "bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold" : "bg-zinc-700 text-zinc-400 px-2 py-0.5 rounded text-[10px] font-bold";
-            btn.innerText = bingoCards[cardIndex].active ? "ON" : "OFF";
-            updateBingoTotalBet();
-            renderBingoCardsUI();
-        }
-
-        function updateBingoTotalBet() {
-            let activeCount = bingoCards.filter(c => c.active).length;
-            let betPerCard = parseInt(document.getElementById('bingo-bet-input').value) || 10;
-            document.getElementById('bingo-total-bet').innerText = activeCount * betPerCard;
-        }
-
-        document.getElementById('bingo-bet-input').addEventListener('input', updateBingoTotalBet);
-
-        function renderBingoCardsUI() {
-            for (let i = 0; i < 4; i++) {
-                const container = document.getElementById(`bingo-card-${i}`);
-                const label = document.getElementById(`bingo-label-${i}`);
-                container.innerHTML = '';
-                const card = bingoCards[i];
-                label.innerHTML = (isBingoPlaying && card.active && card.goldenIndex !== -1) ? `Cartón ${i+1} <span class="text-[10px] text-amber-400 font-bold ml-1">⭐ x5 Activo</span>` : `Cartón ${i+1}`;
-
-                card.numbers.forEach((num, idx) => {
-                    const cell = document.createElement('div');
-                    cell.className = "aspect-square rounded text-xs font-bold flex items-center justify-center transition ";
-                    if (card.marked[idx]) {
-                        cell.className += card.goldenIndex === idx ? "bg-amber-500 text-black border-2 border-yellow-200 font-black scale-105" : "bg-emerald-600 text-white border border-emerald-400";
-                    } else {
-                        cell.className += (isBingoPlaying && card.goldenIndex === idx) ? "bg-zinc-900 text-amber-300 border-2 border-amber-400 golden-cell-pulse" : "bg-zinc-900 text-zinc-300 border border-zinc-800";
-                    }
-                    cell.innerText = num;
-                    container.appendChild(cell);
-                });
-                container.parentElement.className = card.active ? "bg-zinc-950 border border-cyan-500/50 p-2 rounded-xl flex flex-col justify-between shadow-md" : "bg-zinc-950/40 border border-zinc-900 opacity-50 p-2 rounded-xl flex flex-col justify-between";
-            }
-        }
-
-        document.getElementById('btn-open-bingo').addEventListener('click', () => {
+        document.getElementById('btn-open-mines').addEventListener('click', () => {
             document.getElementById('arcade-menu').classList.add('hidden');
-            document.getElementById('game-bingo').classList.remove('hidden');
-            initBingoCards();
+            document.getElementById('game-mines').classList.remove('hidden');
+            initMinesBoardEmpty();
         });
-        document.getElementById('btn-back-to-arcade-bingo').addEventListener('click', () => {
-            if (isBingoPlaying) return;
-            document.getElementById('game-bingo').classList.add('hidden');
+        document.getElementById('btn-back-to-arcade-mines').addEventListener('click', () => {
+            document.getElementById('game-mines').classList.add('hidden');
             document.getElementById('arcade-menu').classList.remove('hidden');
         });
-        document.getElementById('btn-close-bingo-x').addEventListener('click', () => {
-            if (isBingoPlaying) return;
+        document.getElementById('btn-close-mines-x').addEventListener('click', () => {
             document.getElementById('arcade-modal').classList.add('hidden');
         });
 
-        document.getElementById('btn-play-bingo').addEventListener('click', () => {
-            if (isBingoPlaying) return;
-            let activeCards = bingoCards.filter(c => c.active);
-            if (activeCards.length === 0) return alert("¡Activa al menos un cartón!");
+        function setMinesCount(num) {
+            if (minesActive) return;
+            minesCount = num;
+            document.querySelectorAll('.mine-btn').forEach(b => {
+                b.className = "mine-btn bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded font-bold";
+            });
+            document.getElementById(`btn-m${num}`).className = "mine-btn bg-emerald-600 text-white px-2 py-0.5 rounded font-bold";
+        }
 
-            let betPerCard = parseInt(document.getElementById('bingo-bet-input').value) || 10;
-            let totalBet = activeCards.length * betPerCard;
-            if (state.money < totalBet) return alert("Saldo insuficiente.");
+        function initMinesBoardEmpty() {
+            const grid = document.getElementById('mines-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'aspect-square bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center text-lg';
+                cell.innerText = '❓';
+                grid.appendChild(cell);
+            }
+        }
 
-            state.money -= totalBet;
+        document.getElementById('btn-start-mines').addEventListener('click', () => {
+            currentMinesBet = parseInt(document.getElementById('mines-bet-input').value) || 50;
+            if (state.money < currentMinesBet) {
+                alert("¡No tienes suficientes recursos para esta apuesta!");
+                return;
+            }
+
+            state.money -= currentMinesBet;
             updateUI();
-            isBingoPlaying = true;
-            const btn = document.getElementById('btn-play-bingo');
-            btn.disabled = true;
-            btn.classList.add('opacity-50');
 
-            bingoCards.forEach(card => { card.marked = new Array(15).fill(false); card.goldenIndex = -1; });
-            let activeIndices = bingoCards.map((c, i) => c.active ? i : -1).filter(i => i !== -1);
-            if (Math.random() > 0.5 && activeIndices.length > 0) {
-                bingoCards[activeIndices[Math.floor(Math.random() * activeIndices.length)]].goldenIndex = Math.floor(Math.random() * 15);
-            }
-            renderBingoCardsUI();
+            minesActive = true;
+            revealedCount = 0;
+            currentMultiplier = 1.0;
 
-            let drawnBalls = [];
-            while(drawnBalls.length < 30) {
-                let b = Math.floor(Math.random() * 60) + 1;
-                if(!drawnBalls.includes(b)) drawnBalls.push(b);
-            }
+            document.getElementById('btn-start-mines').classList.add('hidden');
+            document.getElementById('btn-cashout-mines').classList.remove('hidden');
+            document.getElementById('mines-multiplier').innerText = "1.00x";
+            document.getElementById('mines-win-preview').innerText = `${currentMinesBet}`;
+            document.getElementById('cashout-amount').innerText = currentMinesBet;
 
-            let ballIndex = 0;
-            const msg = document.getElementById('bingo-msg');
-            msg.innerText = "🎱 Extrayendo bolas...";
-
-            const drawInterval = setInterval(() => {
-                if (ballIndex < drawnBalls.length) {
-                    let currentBall = drawnBalls[ballIndex];
-                    document.getElementById('bingo-last-ball').innerHTML = `Bola: <span class="text-xl font-black text-cyan-400 bg-zinc-900 px-3 py-0.5 rounded-full border border-cyan-500">${currentBall}</span> (${ballIndex + 1}/30)`;
-                    bingoCards.forEach(card => {
-                        if (card.active) {
-                            let idx = card.numbers.indexOf(currentBall);
-                            if (idx !== -1) card.marked[idx] = true;
-                        }
-                    });
-                    renderBingoCardsUI();
-                    ballIndex++;
-                } else {
-                    clearInterval(drawInterval);
-                    calcularPremiosBingo(betPerCard);
+            mineField = new Array(25).fill('safe');
+            let placed = 0;
+            while (placed < minesCount) {
+                let idx = Math.floor(Math.random() * 25);
+                if (mineField[idx] === 'safe') {
+                    mineField[idx] = 'mine';
+                    placed++;
                 }
-            }, 120);
-        });
-
-        function calcularPremiosBingo(betPerCard) {
-            let totalWin = 0;
-            bingoCards.forEach((card, cIdx) => {
-                if (!card.active) return;
-                let linesCompleted = 0;
-                [[0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14]].forEach(r => { if (r.every(i => card.marked[i])) linesCompleted++; });
-                let isFullBingo = card.marked.every(m => m);
-                let mult = isFullBingo ? 200 : (linesCompleted >= 2 ? 30 * linesCompleted : (linesCompleted === 1 ? 5 : 0));
-                if (card.goldenIndex !== -1 && card.marked[card.goldenIndex]) mult *= 5;
-                if (mult > 0) totalWin += (betPerCard * mult);
-            });
-
-            if (totalWin > 0) {
-                state.money += totalWin;
-                state.totalEarned += totalWin;
-                document.getElementById('bingo-msg').innerText = `🎉 ¡PREMIO: +${totalWin}!`;
-            } else {
-                document.getElementById('bingo-msg').innerText = "💸 Sin premio.";
             }
 
-            isBingoPlaying = false;
-            const btn = document.getElementById('btn-play-bingo');
-            btn.disabled = false;
-            btn.classList.remove('opacity-50');
+            const grid = document.getElementById('mines-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('button');
+                cell.className = 'aspect-square bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg flex items-center justify-center text-xl cursor-pointer transition';
+                cell.dataset.index = i;
+                cell.innerText = '💎';
+                cell.style.color = 'transparent';
+                cell.addEventListener('click', () => handleMineClick(i, cell));
+                grid.appendChild(cell);
+            }
+        });
+
+        function handleMineClick(idx, cell) {
+            if (!minesActive) return;
+            if (cell.disabled) return;
+
+            cell.disabled = true;
+            cell.style.color = 'white';
+
+            if (mineField[idx] === 'mine') {
+                cell.innerText = '💣';
+                cell.className = 'aspect-square bg-red-950 border border-red-500 rounded-lg flex items-center justify-center text-xl';
+                endMinesGame(false);
+            } else {
+                cell.innerText = '💎';
+                cell.className = 'aspect-square bg-emerald-950 border border-emerald-500 rounded-lg flex items-center justify-center text-xl';
+                revealedCount++;
+
+                let baseStep = 0.04 + (minesCount * 0.012);
+                currentMultiplier += (baseStep + (revealedCount * 0.01));
+                currentMultiplier = parseFloat(currentMultiplier.toFixed(3));
+                
+                let currentWin = Math.floor(currentMinesBet * currentMultiplier);
+                document.getElementById('mines-multiplier').innerText = `${currentMultiplier.toFixed(2)}x`;
+                document.getElementById('mines-win-preview').innerText = `${currentWin}`;
+                document.getElementById('cashout-amount').innerText = currentWin;
+            }
+        }
+
+        document.getElementById('btn-cashout-mines').addEventListener('click', () => {
+            if (!minesActive) return;
+            let finalWin = Math.floor(currentMinesBet * currentMultiplier);
+            state.money += finalWin;
+            state.totalEarned += finalWin;
             updateUI();
+            alert(`🎉 ¡Has cobrado con éxito ${finalWin} (${currentMultiplier.toFixed(2)}x)!`);
+            endMinesGame(true);
+        });
+
+        function endMinesGame(won) {
+            minesActive = false;
+            const cells = document.getElementById('mines-grid').children;
+            for (let i = 0; i < 25; i++) {
+                cells[i].disabled = true;
+                if (mineField[i] === 'mine') {
+                    cells[i].innerText = '💣';
+                    cells[i].style.color = 'white';
+                }
+            }
+
+            if (!won) {
+                alert("💥 ¡BOOM! Has pisado una mina y perdido la apuesta.");
+            }
+
+            document.getElementById('btn-start-mines').classList.remove('hidden');
+            document.getElementById('btn-cashout-mines').classList.add('hidden');
             saveCloudData();
         }
 
-        // ==================== BLACKJACK ====================
-        let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjCurrentBet = 50, bjHasInsurance = false, bjInsuranceCost = 0;
-
-        document.getElementById('btn-open-blackjack').addEventListener('click', () => {
-            document.getElementById('arcade-menu').classList.add('hidden');
-            document.getElementById('game-blackjack').classList.remove('hidden');
-            resetBjTable();
+        // MAZMORRA
+        document.getElementById('btn-open-battle-inside').addEventListener('click', () => {
+            document.getElementById('arcade-modal').classList.add('hidden');
+            document.getElementById('battle-modal').classList.remove('hidden');
         });
-        document.getElementById('btn-back-to-arcade-bj').addEventListener('click', () => {
-            document.getElementById('game-blackjack').classList.add('hidden');
-            document.getElementById('arcade-menu').classList.remove('hidden');
+        document.getElementById('btn-back-to-arcade-from-battle').addEventListener('click', () => {
+            document.getElementById('battle-modal').classList.add('hidden');
+            document.getElementById('arcade-modal').classList.remove('hidden');
         });
-        document.getElementById('btn-close-bj-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
-
-        function setBjBetQuick(type) {
-            const input = document.getElementById('bj-bet-input');
-            let current = parseInt(input.value) || 10;
-            if (type === 'min') input.value = 10;
-            else if (type === 'double') input.value = current * 2;
-            else if (type === 'max') input.value = Math.max(10, Math.floor(state.money));
-        }
-
-        function createDeck() {
-            const suits = ['♠', '♣', '♥', '♦'];
-            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-            let deck = [];
-            suits.forEach(s => values.forEach(v => {
-                let w = parseInt(v) || (['J','Q','K'].includes(v) ? 10 : 11);
-                deck.push({ suit: s, val: v, weight: w });
-            }));
-            return deck.sort(() => Math.random() - 0.5);
-        }
-
-        function calculateHand(hand) {
-            let sum = 0, aces = 0;
-            hand.forEach(c => { sum += c.weight; if (c.val === 'A') aces++; });
-            while (sum > 21 && aces > 0) { sum -= 10; aces--; }
-            return sum;
-        }
-
-        document.getElementById('btn-start-bj').addEventListener('click', () => {
-            bjCurrentBet = parseInt(document.getElementById('bj-bet-input').value) || 0;
-            if (bjCurrentBet <= 0 || state.money < bjCurrentBet) return alert("Apuesta inválida o saldo insuficiente.");
-
-            state.money -= bjCurrentBet;
-            updateUI();
-
-            bjDeck = createDeck();
-            bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
-            bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
-            bjHasInsurance = false;
-
-            document.getElementById('bj-bet-section').classList.add('hidden');
-            document.getElementById('bj-table-section').classList.remove('hidden');
-            document.getElementById('btn-bj-new-round').classList.add('hidden');
-
-            renderBjHands(false);
-            if (bjDealerHand[0].val === 'A') {
-                document.getElementById('bj-insurance-box').classList.remove('hidden');
-            } else if (calculateHand(bjPlayerHand) === 21 || calculateHand(bjDealerHand) === 21) {
-                finishBjRound();
-            } else {
-                document.getElementById('bj-actions-section').classList.remove('hidden');
-                document.getElementById('btn-bj-double').style.display = state.money >= bjCurrentBet ? 'block' : 'none';
-            }
+        document.getElementById('btn-close-battle-x').addEventListener('click', () => {
+            document.getElementById('battle-modal').classList.add('hidden');
+        });
+        document.getElementById('btn-close-battle').addEventListener('click', () => {
+            document.getElementById('battle-modal').classList.add('hidden');
         });
 
-        function resolveInsurance(buy) {
-            document.getElementById('bj-insurance-box').classList.add('hidden');
-            if (buy && state.money >= Math.floor(bjCurrentBet / 2)) {
-                bjInsuranceCost = Math.floor(bjCurrentBet / 2);
-                state.money -= bjInsuranceCost;
-                bjHasInsurance = true;
+        document.getElementById('btn-upgrade-sword').addEventListener('click', () => {
+            const cost = state.rpg.sword * 100;
+            if (state.money >= cost) {
+                state.money -= cost;
+                state.rpg.sword += 1;
                 updateUI();
+                saveCloudData();
             }
-            if (calculateHand(bjDealerHand) === 21 || calculateHand(bjPlayerHand) === 21) {
-                finishBjRound();
-            } else {
-                document.getElementById('bj-actions-section').classList.remove('hidden');
+        });
+        document.getElementById('btn-upgrade-helmet').addEventListener('click', () => {
+            const cost = state.rpg.helmet * 100;
+            if (state.money >= cost) {
+                state.money -= cost;
+                state.rpg.helmet += 1;
+                updateUI();
+                saveCloudData();
             }
-        }
+        });
+        document.getElementById('btn-upgrade-armor').addEventListener('click', () => {
+            const cost = state.rpg.armor * 150;
+            if (state.money >= cost) {
+                state.money -= cost;
+                state.rpg.armor += 1;
+                updateUI();
+                saveCloudData();
+            }
+        });
+        document.getElementById('btn-upgrade-boots').addEventListener('click', () => {
+            const cost = state.rpg.boots * 200;
+            if (state.money >= cost) {
+                state.money -= cost;
+                state.rpg.boots += 1;
+                updateUI();
+                saveCloudData();
+            }
+        });
 
-        function renderBjHands(revealDealer) {
-            const dc = document.getElementById('bj-dealer-cards'), pc = document.getElementById('bj-player-cards');
-            dc.innerHTML = ''; pc.innerHTML = '';
-            bjDealerHand.forEach((c, idx) => {
-                const el = document.createElement('div');
-                el.className = `w-10 h-14 bg-white ${['♥','♦'].includes(c.suit)?'text-red-600':'text-black'} font-bold rounded flex flex-col items-center justify-center text-xs shadow`;
-                el.innerText = (idx === 1 && !revealDealer) ? '🂠' : c.val + c.suit;
-                dc.appendChild(el);
-            });
-            bjPlayerHand.forEach(c => {
-                const el = document.createElement('div');
-                el.className = `w-10 h-14 bg-white ${['♥','♦'].includes(c.suit)?'text-red-600':'text-black'} font-bold rounded flex flex-col items-center justify-center text-xs shadow`;
-                el.innerText = c.val + c.suit;
-                pc.appendChild(el);
-            });
-            document.getElementById('bj-player-score').innerText = calculateHand(bjPlayerHand);
-            document.getElementById('bj-dealer-score').innerText = revealDealer ? calculateHand(bjDealerHand) : bjDealerHand[0].weight;
-        }
+        document.getElementById('btn-start-fight').addEventListener('click', () => {
+            const heroAtk = 10 + (state.rpg.sword * 5);
+            const bossHpMax = state.rpg.bossLvl * 60;
+            let bossHp = bossHpMax;
+            let heroHpMax = 100 + (state.rpg.helmet * 20);
+            let heroHp = heroHpMax;
 
-        function bjHit() {
-            document.getElementById('btn-bj-double').style.display = 'none';
-            bjPlayerHand.push(bjDeck.pop());
-            renderBjHands(false);
-            if (calculateHand(bjPlayerHand) > 21) finishBjRound();
-        }
+            const log = document.getElementById('battle-log');
+            log.innerText = "⚔️ Combatiendo...";
 
-        function bjDouble() {
-            if (state.money < bjCurrentBet) return;
-            state.money -= bjCurrentBet;
-            bjCurrentBet *= 2;
-            updateUI();
-            bjPlayerHand.push(bjDeck.pop());
-            renderBjHands(false);
-            bjStand();
-        }
+            const interval = setInterval(() => {
+                bossHp -= heroAtk;
+                heroHp -= Math.max(1, (state.rpg.bossLvl * 8) - (state.rpg.armor * 2));
 
-        function bjStand() {
-            document.getElementById('bj-actions-section').classList.add('hidden');
-            while (calculateHand(bjDealerHand) < 17) bjDealerHand.push(bjDeck.pop());
-            finishBjRound();
-        }
+                if (bossHp < 0) bossHp = 0;
+                if (heroHp < 0) heroHp = 0;
 
-        function finishBjRound() {
-            document.getElementById('bj-actions-section').classList.add('hidden');
-            renderBjHands(true);
-            let pVal = calculateHand(bjPlayerHand), dVal = calculateHand(bjDealerHand);
-            let payout = 0, insWin = bjHasInsurance && dVal === 21 ? bjInsuranceCost * 3 : 0;
-            let status = document.getElementById('bj-status-text');
+                document.getElementById('hero-hp-text').innerText = `${heroHp}/${heroHpMax}`;
+                document.getElementById('hero-hp-bar').style.width = `${(heroHp / heroHpMax) * 100}%`;
 
-            if (pVal > 21) status.innerText = "💥 ¡Te pasaste!";
-            else if (pVal === 21 && bjPlayerHand.length === 2 && dVal !== 21) { payout = Math.floor(bjCurrentBet * 2.5); status.innerText = "🔥 ¡BLACKJACK x2.5!"; }
-            else if (dVal > 21 || pVal > dVal) { payout = bjCurrentBet * 2; status.innerText = "🏆 ¡Ganaste!"; }
-            else if (pVal === dVal) { payout = bjCurrentBet; status.innerText = "🤝 Empate."; }
-            else status.innerText = "💸 Gana el crupier.";
+                document.getElementById('boss-hp-text').innerText = `${bossHp}/${bossHpMax}`;
+                document.getElementById('boss-hp-bar').style.width = `${(bossHp / bossHpMax) * 100}%`;
 
-            let total = payout + insWin;
-            if (total > 0) { state.money += total; state.totalEarned += total; }
-            updateUI();
-            saveCloudData();
-            document.getElementById('btn-bj-new-round').classList.remove('hidden');
-        }
+                if (bossHp <= 0) {
+                    clearInterval(interval);
+                    const reward = state.rpg.bossLvl * 150;
+                    state.money += reward;
+                    state.totalEarned += reward;
+                    state.rpg.bossLvl += 1;
+                    log.innerText = `🏆 ¡VICTORIA! Ganaste ${reward}`;
+                    document.getElementById('boss-name').innerText = `👹 Boss Nivel ${state.rpg.bossLvl}`;
+                    updateUI();
+                    saveCloudData();
+                } else if (heroHp <= 0) {
+                    clearInterval(interval);
+                    log.innerText = "☠️ ¡Derrotado! Mejora tu equipo";
+                }
+            }, 300);
+        });
 
-        function resetBjTable() {
-            document.getElementById('bj-table-section').classList.add('hidden');
-            document.getElementById('bj-bet-section').classList.remove('hidden');
-            document.getElementById('btn-bj-new-round').classList.add('hidden');
-            document.getElementById('bj-insurance-box').classList.add('hidden');
-            document.getElementById('bj-status-text').innerText = "¡Tu turno!";
-        }
-
-        // RESTO DE MINIJUEGOS Y RANKING
-        document.getElementById('btn-open-slots').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-slots').classList.remove('hidden'); });
-        document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => { document.getElementById('game-slots').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
-        document.getElementById('btn-close-slots-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
-
-        document.getElementById('btn-open-mines').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-mines').classList.remove('hidden'); });
-        document.getElementById('btn-back-to-arcade-mines').addEventListener('click', () => { document.getElementById('game-mines').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
-        document.getElementById('btn-close-mines-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
-
-        document.getElementById('btn-open-crash').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-crash').classList.remove('hidden'); });
-        document.getElementById('btn-back-to-arcade-crash').addEventListener('click', () => { document.getElementById('game-crash').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
-        document.getElementById('btn-close-crash-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
-
+        // RANKING
         document.getElementById('btn-open-ranking').addEventListener('click', async () => {
             document.getElementById('ranking-modal').classList.remove('hidden');
             const list = document.getElementById('ranking-list');
-            list.innerHTML = '<p class="text-center text-zinc-500 py-6">Cargando...</p>';
-            try {
-                const { data } = await db.from('players').select('*');
-                const sorted = (data || []).map(d => ({
-                    username: d.username,
-                    totalEarned: d.state ? d.state.totalEarned || 0 : 0,
-                    prestigeLvl: d.state ? d.state.prestigeLvl || 0 : 0
-                })).sort((a, b) => b.totalEarned - a.totalEarned);
+            list.innerHTML = '<p class="text-center text-zinc-500 py-6">Cargando clasificación de la nube...</p>';
 
-                list.innerHTML = sorted.length === 0 ? '<p class="text-center text-zinc-500 py-6">Aún no hay jugadores</p>' : '';
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { "X-Master-Key": JSONBIN_MASTER_KEY }
+                });
+                const data = await res.json();
+                const players = data.record.players || {};
+
+                const getPlayerTier = (prestigeLevel) => {
+                    const level = Math.max(0, Number(prestigeLevel) || 0);
+                    let tier = CURRENCY_TIERS[0];
+                    for (const candidate of CURRENCY_TIERS) {
+                        if (level >= candidate.minPrestige) tier = candidate;
+                    }
+                    return tier;
+                };
+
+                const sorted = Object.values(players).sort((a, b) =>
+                    (Number(b.totalEarned) || 0) - (Number(a.totalEarned) || 0)
+                );
+
+                list.innerHTML = '';
+                if (sorted.length === 0) {
+                    list.innerHTML = '<p class="text-center text-zinc-500 py-6">Aún no hay jugadores registrados</p>';
+                    return;
+                }
+
                 sorted.forEach((p, index) => {
                     const row = document.createElement('div');
                     row.className = `flex justify-between items-center p-3 rounded-xl border ${p.username === state.username ? 'bg-rose-950/40 border-rose-500/50' : 'bg-zinc-950 border-zinc-800'}`;
-                    row.innerHTML = `<div class="flex items-center gap-3"><span class="font-bold ${index === 0 ? 'text-amber-400' : 'text-zinc-500'}">#${index+1}</span><div><div class="font-bold text-zinc-200">${p.username}</div><div class="text-xs text-amber-300">${p.prestigeLvl > 0 ? '⭐'.repeat(p.prestigeLvl) : ''}</div></div></div><div class="text-right font-black text-emerald-400">$ ${Math.floor(p.totalEarned).toLocaleString()}</div>`;
+
+                    const left = document.createElement('div');
+                    left.className = 'flex items-center gap-3 min-w-0';
+
+                    const rank = document.createElement('span');
+                    rank.className = `font-bold ${index === 0 ? 'text-amber-400 text-base' : 'text-zinc-500'}`;
+                    rank.textContent = `#${index + 1}`;
+
+                    const identity = document.createElement('div');
+                    identity.className = 'min-w-0';
+
+                    const name = document.createElement('div');
+                    name.className = 'font-bold text-zinc-200 truncate';
+                    name.textContent = p.username || 'Jugador';
+
+                    const prestige = Math.max(0, Number(p.prestigeLvl) || 0);
+                    const stars = document.createElement('div');
+                    stars.className = 'text-xs text-amber-300 break-words';
+                    stars.textContent = prestige > 0 ? '⭐'.repeat(Math.min(prestige, 30)) + (prestige > 30 ? ` ×${prestige}` : '') : 'Sin prestigio';
+
+                    identity.appendChild(name);
+                    identity.appendChild(stars);
+                    left.appendChild(rank);
+                    left.appendChild(identity);
+
+                    const right = document.createElement('div');
+                    right.className = 'text-right shrink-0 ml-2';
+
+                    const tier = getPlayerTier(prestige);
+                    const total = document.createElement('div');
+                    total.className = 'font-black text-emerald-400';
+                    total.textContent = `${tier.symbol} ${Math.floor(Number(p.totalEarned) || 0).toLocaleString('es-ES')}`;
+
+                    const currency = document.createElement('div');
+                    currency.className = 'text-[10px] text-zinc-400';
+                    currency.textContent = tier.name;
+
+                    right.appendChild(total);
+                    right.appendChild(currency);
+                    row.appendChild(left);
+                    row.appendChild(right);
                     list.appendChild(row);
                 });
             } catch(e) {
-                list.innerHTML = '<p class="text-center text-red-400 py-6">Error</p>';
+                list.innerHTML = '<p class="text-center text-red-400 py-6">Error al cargar la clasificación</p>';
             }
         });
 
-        document.getElementById('btn-close-ranking').addEventListener('click', () => document.getElementById('ranking-modal').classList.add('hidden'));
-        document.getElementById('btn-close-ranking-x').addEventListener('click', () => document.getElementById('ranking-modal').classList.add('hidden'));
+        document.getElementById('btn-close-ranking').addEventListener('click', () => {
+            document.getElementById('ranking-modal').classList.add('hidden');
+        });
+        document.getElementById('btn-close-ranking-x').addEventListener('click', () => {
+            document.getElementById('ranking-modal').classList.add('hidden');
+        });
     </script>
 </body>
 </html>
