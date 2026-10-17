@@ -36,6 +36,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:.35rem}
 .cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.7rem;background:linear-gradient(#2a1d45,#170f2b);border:1px solid rgba(139,92,246,.4);border-radius:.6rem;padding:0}
 #reels{background:#000;border:3px solid #ffd54a;border-radius:1rem;padding:.5rem;box-shadow:0 0 25px rgba(255,213,74,.45)}
+.tg{padding:.2rem .6rem;font-size:.7rem;background:#444}.tg.on{background:#059669}.off{opacity:.35}#g-bingo .grid5{cursor:pointer}
 .bn{font-size:.62rem;text-align:center;padding:.25rem 0;border-radius:.3rem;background:#1b1030;color:#a99cc9}
 .bn.hit{background:#ffd54a;color:#000;font-weight:800;box-shadow:0 0 8px #ffd54a}
 .card{display:inline-flex;align-items:center;justify-content:center;width:2.6rem;height:3.6rem;border-radius:.5rem;background:#fff;color:#111;font-weight:800;margin-right:.3rem}
@@ -88,7 +89,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
   <div id="betbox" class="row hide" style="margin-bottom:.6rem"><input id="bet" type="number" value="50" min="1"><button onclick="bm(.5)">½</button><button onclick="bm(2)">×2</button><button onclick="bm(0)">MAX</button></div>
 
   <div id="g-menu">
-    <button class="menu" onclick="show('bingo','🎱 Video Bingo')">🎱 Video Bingo<div class="small">4 cartones · líneas x1.5 · cartón lleno x50</div></button>
+    <button class="menu" onclick="show('bingo','🎱 Video Bingo')">🎱 Video Bingo<div class="small">Elige cartones · línea x6 · cartón lleno x200</div></button>
     <button class="menu" onclick="show('bj','🃏 Blackjack')">🃏 Blackjack<div class="small">Blackjack natural paga x2.5</div></button>
     <button class="menu" onclick="show('slots','🎰 Royal')">🎰 BURX Royal<div class="small">5 columnas · 3 filas · combos desde la izquierda</div></button>
     <button class="menu" onclick="show('mines','💣 Minas')">💣 Minas<div class="small">Cobra antes de pisar una mina</div></button>
@@ -97,10 +98,8 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
 
   <div id="g-bingo" class="game hide col">
     <div id="ball" class="panel" style="text-align:center">Pulsa JUGAR 🎱</div>
-    <div class="row" style="display:grid;grid-template-columns:1fr 1fr">
-      <div id="bc0" class="grid5 panel"></div><div id="bc1" class="grid5 panel"></div>
-      <div id="bc2" class="grid5 panel"></div><div id="bc3" class="grid5 panel"></div>
-    </div>
+    <div class="small" style="text-align:center">Toca un cartón para cambiar sus números · ON/OFF para elegir cuáles juegas · la apuesta es por cartón</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;align-items:start"><div id="bw0" class="panel"><div class="row small"><b>Cartón 1</b><button id="bt0" class="tg on" onclick="bTog(0)">ON</button></div><div id="bc0" class="grid5" style="margin-top:.4rem" onclick="bReroll(0)"></div></div><div id="bw1" class="panel"><div class="row small"><b>Cartón 2</b><button id="bt1" class="tg on" onclick="bTog(1)">ON</button></div><div id="bc1" class="grid5" style="margin-top:.4rem" onclick="bReroll(1)"></div></div><div id="bw2" class="panel"><div class="row small"><b>Cartón 3</b><button id="bt2" class="tg on" onclick="bTog(2)">ON</button></div><div id="bc2" class="grid5" style="margin-top:.4rem" onclick="bReroll(2)"></div></div><div id="bw3" class="panel"><div class="row small"><b>Cartón 4</b><button id="bt3" class="tg on" onclick="bTog(3)">ON</button></div><div id="bc3" class="grid5" style="margin-top:.4rem" onclick="bReroll(3)"></div></div></div>
     <button class="gold big" onclick="bingo()">JUGAR BINGO 🎱</button>
   </div>
 
@@ -211,22 +210,33 @@ setInterval(()=>{if(S.auto1>0)pay(S.auto1*1.5)},1000);
 function openArcade(){$('arcade').classList.add('open');menu()}
 function closeArcade(){menu();$('arcade').classList.remove('open')}
 function menu(){stopCrash();document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('atitle').textContent='🕹️ Minijuegos'}
-function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots')drawReels(reels);if(g=='mines')mGrid()}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots')drawReels(reels);if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
 
 /* ---------- Bingo ---------- */
-let bingoBusy=false;
+let bingoBusy=false,bc=[[],[],[],[]],bon=[true,true,true,true];
+const bnums=()=>sh([...Array(60).keys()].map(x=>x+1)).slice(0,25);
+function bDraw(i){
+  $('bc'+i).innerHTML=bc[i].map(n=>`<div class="bn" data-n="${n}">${n}</div>`).join('');
+  $('bw'+i).classList.toggle('off',!bon[i]);$('bt'+i).className='tg'+(bon[i]?' on':'');$('bt'+i).textContent=bon[i]?'ON':'OFF';
+}
+function bInit(){for(let i=0;i<4;i++){bc[i]=bnums();bDraw(i)}$('ball').textContent='Elige tus cartones y pulsa JUGAR 🎱'}
+function bTog(i){if(bingoBusy)return;bon[i]=!bon[i];bDraw(i)}
+function bReroll(i){if(bingoBusy)return;bc[i]=bnums();bDraw(i)}
 function bingo(){
-  if(bingoBusy)return;const b=bet();if(!b)return;bingoBusy=true;
-  const all=[...Array(60).keys()].map(x=>x+1),cards=[0,1,2,3].map(()=>sh(all).slice(0,25)),balls=sh(all).slice(0,25),drawn=new Set();
-  cards.forEach((c,i)=>$('bc'+i).innerHTML=c.map(n=>`<div class="bn" data-n="${n}">${n}</div>`).join(''));
+  if(bingoBusy)return;const act=[0,1,2,3].filter(i=>bon[i]);
+  if(!act.length)return toast('Activa al menos un cartón');
+  const u=Math.floor(+$('bet').value);
+  if(!(u>0)||u*act.length>S.money)return toast('Apuesta inválida o saldo insuficiente');
+  S.money-=u*act.length;ui();bingoBusy=true;for(let i=0;i<4;i++)bDraw(i);
+  const balls=sh([...Array(60).keys()].map(x=>x+1)).slice(0,25),drawn=new Set();
   const L=[[0,6,12,18,24],[4,8,12,16,20]];for(let r=0;r<5;r++){L.push([0,1,2,3,4].map(c=>r*5+c),[0,1,2,3,4].map(c=>c*5+r))}
   let k=0;const t=setInterval(()=>{
     const n=balls[k++];drawn.add(n);$('ball').textContent='🎱 Bola '+n+' ('+k+'/25)';
     document.querySelectorAll('#g-bingo [data-n="'+n+'"]').forEach(e=>e.classList.add('hit'));
     if(k<25)return;clearInterval(t);
     let lines=0,full=0;
-    cards.forEach(c=>{const h=c.map(n=>drawn.has(n));lines+=L.filter(x=>x.every(i=>h[i])).length;if(h.every(Boolean))full++});
-    const w=Math.floor(b*(lines*1.5+full*50));
+    act.forEach(i=>{const h=bc[i].map(n=>drawn.has(n));lines+=L.filter(x=>x.every(j=>h[j])).length;if(h.every(Boolean))full++});
+    const w=u*(lines*6+full*200);
     $('ball').textContent=w?`🎉 ${lines} líneas · +$${fmt(w)}`:'💥 Sin premio';
     if(w)pay(w);bingoBusy=false;
   },180);
