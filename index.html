@@ -1229,12 +1229,14 @@
             state.money -= armBet;
             updateUI();
 
+            // PROBABILIDADES AJUSTADAS A 50/50:
+            // 50% Oponente Imposible / 50% Oponentes Ganables
             const roll = Math.random();
-            if (roll < 0.40) {
+            if (roll < 0.25) {
                 armOpponent = { name: "Novato", mult: 1.8, force: 1.8, type: 'easy' };
-            } else if (roll < 0.70) {
+            } else if (roll < 0.40) {
                 armOpponent = { name: "Luchador Pro", mult: 3.0, force: 3.2, type: 'medium' };
-            } else if (roll < 0.85) {
+            } else if (roll < 0.50) {
                 armOpponent = { name: "Campeón BURX", mult: 6.0, force: 4.8, type: 'hard' };
             } else {
                 armOpponent = { name: "El Inmortal (Trampa)", mult: 0, force: 7.5, type: 'impossible' };
