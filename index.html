@@ -70,6 +70,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
     <div class="row"><button onclick="openArcade()">🕹️ Minijuegos</button><button onclick="openRank()">🏆 Ranking</button></div>
   </div>
   <div class="money"><span class="sym">$</span><span id="money">0</span></div>
+  <div id="rates" class="small" style="text-align:center"></div>
 </header>
 
 <main><button id="click">😠</button></main>
@@ -79,8 +80,8 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
     <div class="bar"><div id="pfill"></div></div>
     <div class="small" id="pnum" style="text-align:center">0 / 200.000</div>
     <button id="pbtn" class="gold big hide" style="margin-top:.5rem" onclick="doPrestige()">⭐ SUBIR DE PRESTIGIO</button></div>
-  <div class="panel row"><div><b>Fuerza de Clic</b><div class="small">Nivel <span id="lvl-click">1</span></div></div><button class="pink" onclick="buy('click')"><span class="sym">$</span><span id="cost-click">15</span></button></div>
-  <div class="panel row"><div><b>Auto-BURX</b><div class="small">Cantidad <span id="lvl-auto1">0</span> · +1.5/s cada uno</div></div><button class="green" onclick="buy('auto1')"><span class="sym">$</span><span id="cost-auto1">40</span></button></div>
+  <div class="panel row"><div><b>Fuerza de Clic</b><div class="small">Nivel <span id="lvl-click">1</span><span id="mc"></span></div></div><button class="pink" onclick="buy('click')"><span class="sym">$</span><span id="cost-click">15</span></button></div>
+  <div class="panel row"><div><b>Auto-BURX</b><div class="small">Cantidad <span id="lvl-auto1">0</span> · +1.5/s cada uno</div><div class="small" id="ma"></div></div><button class="green" onclick="buy('auto1')"><span class="sym">$</span><span id="cost-auto1">40</span></button></div>
 </section>
 
 <footer class="wrap" style="margin:.5rem 0 1rem"><button class="big" onclick="openInfo()">ℹ️ Información del juego</button></footer>
@@ -166,14 +167,20 @@ const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 const rnd=n=>Math.random()*n|0;
 const db=supabase.createClient("https://uomqjazepfbdkoguzwvu.supabase.co","sb_publishable_GVsDncI196Usfvit5Zb93g_qQbbJAB2");
 const def=()=>({money:0,clickLvl:1,auto1:0,prestige:0,prog:0,costs:{click:15,auto1:40}});
+const MI=25,MS=1.5; // cada MI niveles de una mejora, su producción se multiplica x MS
 const PB=2e5,PF=5,PBONUS=3; // meta del 1er prestigio, dificultad x por prestigio, bonus x por prestigio
 const CURS=[{n:'Dólar',s:'$'},{n:'Oro',s:'🪙'},{n:'Platino',s:'💠'},{n:'Diamante',s:'💎'}];
 const cur=()=>CURS[S.prestige<2?0:S.prestige<4?1:S.prestige<6?2:3],sym=()=>cur().s;
 const goal=()=>PB*Math.pow(PF,S.prestige),pm=()=>Math.pow(PBONUS,S.prestige);
+const mult=l=>Math.pow(MS,Math.floor(l/MI)),perClick=()=>S.clickLvl*mult(S.clickLvl)*pm(),perSec=()=>S.auto1*1.5*mult(S.auto1)*pm();
+const f1=n=>n<1000?n.toLocaleString('es-ES',{maximumFractionDigits:1}):fmt(n);
 let S=def(),user=null,dirty=false;
 
 function ui(){
   $('money').textContent=fmt(S.money);
+  $('rates').textContent=`👆 ${sym()}${f1(perClick())} por clic · ⏱️ ${sym()}${f1(perSec())}/s`;
+  $('mc').textContent=` · bonus x${mult(S.clickLvl).toFixed(2)} · siguiente en nivel ${(Math.floor(S.clickLvl/MI)+1)*MI}`;
+  $('ma').textContent=`Bonus x${mult(S.auto1).toFixed(2)} · siguiente en cantidad ${(Math.floor(S.auto1/MI)+1)*MI}`;
   document.querySelectorAll('.sym').forEach(e=>e.textContent=sym());
   const g=goal(),pc=Math.min(100,S.prog/g*100);
   $('pfill').style.width=pc+'%';$('plabel').textContent=`Prestigio ${S.prestige} · ${cur().n}`;$('pbonus').textContent=`Bonus ×${fmt(pm())}`;
@@ -238,8 +245,8 @@ async function openRank(){
 
 /* ---------- Clicker ---------- */
 $('click').addEventListener('click',e=>{
-  const g=S.clickLvl*pm();pay(g);
-  const n=document.createElement('div');n.className='float';n.textContent='+'+fmt(g);
+  const g=perClick();pay(g);
+  const n=document.createElement('div');n.className='float';n.textContent='+'+f1(g);
   n.style.left=(e.clientX||innerWidth/2)-12+'px';n.style.top=(e.clientY||innerHeight/2)-30+'px';
   document.body.appendChild(n);setTimeout(()=>n.remove(),800);
 });
@@ -248,7 +255,7 @@ function buy(k){
   S.money-=c;k=='click'?S.clickLvl++:S.auto1++;
   S.costs[k]=Math.floor(c*(k=='click'?1.35:1.38))+1;ui();
 }
-setInterval(()=>{if(S.auto1>0)pay(S.auto1*1.5*pm())},1000);
+setInterval(()=>{if(S.auto1>0)pay(perSec())},1000);
 
 /* ---------- Navegación minijuegos ---------- */
 function openArcade(){$('arcade').classList.add('open');menu()}
@@ -408,7 +415,7 @@ function slotsInfo(){
 function openInfo(){
   const cs=CURS.map((c,i)=>`${c.s} ${c.n} (${['prestigio 0-1','prestigio 2-3','prestigio 4-5','prestigio 6 o más'][i]})`).join('<br>');
   $('info-body').innerHTML=`
-  <div><b style="color:#ffd54a">Cómo se juega</b><br>Toca 😠 para ganar dinero. Compra <b>Fuerza de Clic</b> (más dinero por toque) y <b>Auto-BURX</b> (cada uno te da +1,5 por segundo).</div>
+  <div><b style="color:#ffd54a">Cómo se juega</b><br>Toca 😠 para ganar dinero. Compra <b>Fuerza de Clic</b> (más dinero por toque) y <b>Auto-BURX</b> (cada uno te da +1,5 por segundo). Cada ${MI} niveles de una mejora, su producción se multiplica x${MS} (acumulable).</div>
   <div><b style="color:#ffd54a">Prestigio</b><br>La barra se llena con todo lo que ganas: clics, Auto-BURX y ganancias netas del casino (premio menos apuesta). La primera meta es ${fmt(PB)} y cada prestigio pide x${PF} más. Al subir se reinician tu dinero y tus mejoras, pero ganas un bonus permanente de x${PBONUS} (acumulable) en clics y Auto-BURX. Tu bonus ahora: x${fmt(pm())}.</div>
   <div><b style="color:#ffd54a">Divisas</b><br>${cs}<br>Solo cambia el símbolo del dinero.</div>
   <div><b style="color:#ffd54a">🎱 Bingo</b><br>4 cartones de 25 números (1-60) que puedes activar o desactivar y cambiar tocándolos. Se sacan 25 bolas. La apuesta es por cartón activo. Cada línea (fila, columna o diagonal) paga x6 y un cartón lleno x200.</div>
