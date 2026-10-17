@@ -41,9 +41,22 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
 .bn.hit{background:#ffd54a;color:#000;font-weight:800;box-shadow:0 0 8px #ffd54a}
 .card{display:inline-flex;align-items:center;justify-content:center;width:2.6rem;height:3.6rem;border-radius:.5rem;background:#fff;color:#111;font-weight:800;margin-right:.3rem}
 .card.red{color:#d11}.card.back{background:linear-gradient(#8b5cf6,#4c1d95);color:#fff}
-#sky{height:11rem;border-radius:1rem;text-align:center;padding-top:1rem;background:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#fff,transparent),radial-gradient(2px 2px at 85% 20%,#ffd54a,transparent),linear-gradient(#05020d,#1a0a2e);border:1px solid rgba(255,213,74,.3)}
-#cm{font-family:Bungee;font-size:2.4rem;color:#ffd54a;text-shadow:0 0 18px rgba(255,213,74,.8)}
-.fly{animation:shake .15s infinite}@keyframes shake{50%{transform:translateY(-3px) rotate(-3deg)}}
+.reel{height:174px;overflow:hidden;border-radius:.6rem;background:linear-gradient(#2a1d45,#170f2b);border:1px solid rgba(139,92,246,.4)}
+.strip{will-change:transform;filter:blur(1.5px)}
+.rc{height:58px;display:flex;align-items:center;justify-content:center;font-size:2rem}
+#sky{position:relative;height:14rem;border-radius:1rem;overflow:hidden;background:linear-gradient(#05020d,#1a0a2e 70%,#3b1050);border:1px solid rgba(255,213,74,.3)}
+#stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1.5px 1.5px at 80px 90px,#fff,transparent),radial-gradient(1px 1px at 140px 20px,#ffd54a,transparent),radial-gradient(1px 1px at 50px 70px,#fff,transparent);background-size:160px 120px}
+.moving #stars{animation:sd .6s linear infinite}@keyframes sd{to{background-position:0 120px}}
+#ci{position:absolute;left:10%;bottom:8%;font-size:2.6rem;line-height:1;z-index:2;transition:left .1s linear,bottom .1s linear}
+#rk{display:inline-block}.moving #rk{animation:wob .12s infinite alternate}@keyframes wob{to{transform:translate(1px,-2px) rotate(3deg)}}
+#fl{position:absolute;left:-.6rem;bottom:-.8rem;font-size:1.5rem;display:none;animation:fk .1s infinite alternate}
+@keyframes fk{from{transform:rotate(-135deg) scale(.8)}to{transform:rotate(-135deg) scale(1.3)}}
+.puff{position:absolute;width:.8rem;height:.8rem;margin:0 0 0 .5rem;border-radius:50%;background:radial-gradient(#ffd54a,#ff7a1a 50%,transparent 70%);animation:pf .6s ease-out forwards;z-index:1}
+@keyframes pf{to{opacity:0;transform:translate(-14px,14px) scale(2.5)}}
+#ci.boom{animation:bm .5s ease-out forwards}@keyframes bm{0%{transform:scale(.6)}60%{transform:scale(2.6)}100%{transform:scale(2.1)}}
+.shake{animation:sk .4s}@keyframes sk{20%{transform:translate(-5px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,-3px)}80%{transform:translate(4px,3px)}}
+#cm{position:absolute;top:.6rem;left:0;right:0;text-align:center;z-index:3;font-family:Bungee;font-size:2.4rem;color:#ffd54a;text-shadow:0 0 18px rgba(255,213,74,.8)}
+#cs{position:absolute;bottom:.4rem;left:0;right:0;text-align:center;z-index:3}
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translate(-50%,120px);background:#ffd54a;color:#000;font-weight:800;padding:.7rem 1.2rem;border-radius:2rem;z-index:99;transition:transform .3s}
 #toast.show{transform:translate(-50%,0)}
 </style>
@@ -86,7 +99,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
 <div id="arcade" class="modal"><div class="box">
   <div class="row" style="margin-bottom:.6rem"><button id="back" class="hide" onclick="menu()">⬅</button><h2 id="atitle">🕹️ Minijuegos</h2><button onclick="closeArcade()">✕</button></div>
   <div class="panel small" style="margin-bottom:.6rem">Saldo: <b style="color:#34d399">$<span class="bal">0</span></b></div>
-  <div id="betbox" class="row hide" style="margin-bottom:.6rem"><input id="bet" type="number" value="50" min="1"><button onclick="bm(.5)">½</button><button onclick="bm(2)">×2</button><button onclick="bm(0)">MAX</button></div>
+  <div id="betbox" class="row hide" style="margin-bottom:.6rem"><input id="bet" type="number" value="50" min="1" oninput="bTot()"><button onclick="bm(.5)">½</button><button onclick="bm(2)">×2</button><button onclick="bm(0)">MAX</button></div>
 
   <div id="g-menu">
     <button class="menu" onclick="show('bingo','🎱 Video Bingo')">🎱 Video Bingo<div class="small">Elige cartones · línea x6 · cartón lleno x200</div></button>
@@ -100,6 +113,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
     <div id="ball" class="panel" style="text-align:center">Pulsa JUGAR 🎱</div>
     <div class="small" style="text-align:center">Toca un cartón para cambiar sus números · ON/OFF para elegir cuáles juegas · la apuesta es por cartón</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;align-items:start"><div id="bw0" class="panel"><div class="row small"><b>Cartón 1</b><button id="bt0" class="tg on" onclick="bTog(0)">ON</button></div><div id="bc0" class="grid5" style="margin-top:.4rem" onclick="bReroll(0)"></div></div><div id="bw1" class="panel"><div class="row small"><b>Cartón 2</b><button id="bt1" class="tg on" onclick="bTog(1)">ON</button></div><div id="bc1" class="grid5" style="margin-top:.4rem" onclick="bReroll(1)"></div></div><div id="bw2" class="panel"><div class="row small"><b>Cartón 3</b><button id="bt2" class="tg on" onclick="bTog(2)">ON</button></div><div id="bc2" class="grid5" style="margin-top:.4rem" onclick="bReroll(2)"></div></div><div id="bw3" class="panel"><div class="row small"><b>Cartón 4</b><button id="bt3" class="tg on" onclick="bTog(3)">ON</button></div><div id="bc3" class="grid5" style="margin-top:.4rem" onclick="bReroll(3)"></div></div></div>
+    <div id="btot" class="panel" style="text-align:center;font-weight:800;color:#ffd54a"></div>
     <button class="gold big" onclick="bingo()">JUGAR BINGO 🎱</button>
   </div>
 
@@ -126,7 +140,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
   </div>
 
   <div id="g-crash" class="game hide col">
-    <div id="sky"><div id="ci" style="font-size:3rem">🚀</div><div id="cm">1.00x</div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
+    <div id="sky"><div id="stars"></div><div id="ci"><span id="rk">🚀</span><div id="fl">🔥</div></div><div id="cm">1.00x</div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
     <button id="c-btn" class="gold big" onclick="cAct()">LANZAR 🚀</button>
   </div>
 </div></div>
@@ -151,7 +165,7 @@ function ui(){
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
 function pay(n){S.money+=n;ui()}
 function bet(){const b=Math.floor(+$('bet').value);if(!(b>0)||b>S.money){toast('Apuesta inválida o saldo insuficiente');return 0}S.money-=b;ui();return b}
-function bm(f){$('bet').value=f?Math.max(1,Math.floor($('bet').value*f)):Math.floor(S.money)}
+function bm(f){$('bet').value=f?Math.max(1,Math.floor($('bet').value*f)):Math.floor(S.money);bTot()}
 
 /* ---------- Guardado ---------- */
 async function save(){
@@ -210,14 +224,15 @@ setInterval(()=>{if(S.auto1>0)pay(S.auto1*1.5)},1000);
 function openArcade(){$('arcade').classList.add('open');menu()}
 function closeArcade(){menu();$('arcade').classList.remove('open')}
 function menu(){stopCrash();document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('atitle').textContent='🕹️ Minijuegos'}
-function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots')drawReels(reels);if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots')setReels(reels);if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
 
 /* ---------- Bingo ---------- */
 let bingoBusy=false,bc=[[],[],[],[]],bon=[true,true,true,true];
 const bnums=()=>sh([...Array(60).keys()].map(x=>x+1)).slice(0,25);
+function bTot(){const n=bon.filter(Boolean).length,u=Math.floor(+$('bet').value)||0;$('btot').textContent=`Apuesta total: $${fmt(u*n)} (${n} cartón${n==1?'':'es'} × $${fmt(u)})`}
 function bDraw(i){
   $('bc'+i).innerHTML=bc[i].map(n=>`<div class="bn" data-n="${n}">${n}</div>`).join('');
-  $('bw'+i).classList.toggle('off',!bon[i]);$('bt'+i).className='tg'+(bon[i]?' on':'');$('bt'+i).textContent=bon[i]?'ON':'OFF';
+  $('bw'+i).classList.toggle('off',!bon[i]);$('bt'+i).className='tg'+(bon[i]?' on':'');$('bt'+i).textContent=bon[i]?'ON':'OFF';bTot();
 }
 function bInit(){for(let i=0;i<4;i++){bc[i]=bnums();bDraw(i)}$('ball').textContent='Elige tus cartones y pulsa JUGAR 🎱'}
 function bTog(i){if(bingoBusy)return;bon[i]=!bon[i];bDraw(i)}
@@ -275,18 +290,31 @@ function bjEnd(){
 }
 
 /* ---------- Tragaperras ---------- */
-const SY=['🍒','🍒','🍒','🍋','🍋','🍋','🔔','🔔','🔮','👑','💎'],VAL={'🍒':1,'🍋':1,'🔔':2,'🔮':3,'👑':5,'💎':8};
+const SY=['🍒','🍒','🍒','🍋','🍋','🍋','🔔','🔔','🔮','👑','💎'],VAL={'🍒':1,'🍋':1,'🔔':2,'🔮':3,'👑':5,'💎':8},RH=58;
 let reels=Array(15).fill('🍒'),spinning=false;
-const drawReels=r=>$('reels').innerHTML=r.map(s=>`<div class="cell">${s}</div>`).join('');
+function setReels(g){
+  $('reels').innerHTML=[0,1,2,3,4].map(c=>`<div class="reel"><div class="strip" style="filter:none">${[0,1,2].map(r=>`<div class="rc">${g[r*5+c]}</div>`).join('')}</div></div>`).join('');
+}
 function spin(){
   if(spinning)return;const b=bet();if(!b)return;spinning=true;
-  const fin=Array.from({length:15},()=>SY[rnd(SY.length)]);let t=0;
-  const iv=setInterval(()=>{
-    t++;reels=reels.map((s,i)=>t>6+(i%5)*4?fin[i]:SY[rnd(SY.length)]);drawReels(reels);
-    if(t<6+4*5)return;clearInterval(iv);spinning=false;
+  const fin=Array.from({length:15},()=>SY[rnd(SY.length)]);
+  $('reels').innerHTML=[0,1,2,3,4].map(c=>{
+    const arr=[fin[c],fin[5+c],fin[10+c]];
+    for(let i=0;i<16+c*8;i++)arr.push(SY[rnd(SY.length)]);
+    arr.push(reels[c],reels[5+c],reels[10+c]);
+    return `<div class="reel"><div class="strip" style="transform:translateY(${-(arr.length-3)*RH}px)">${arr.map(x=>`<div class="rc">${x}</div>`).join('')}</div></div>`;
+  }).join('');
+  void $('reels').offsetHeight;
+  const T=c=>1+c*.3;
+  document.querySelectorAll('#reels .strip').forEach((el,c)=>{
+    el.style.transition=`transform ${T(c)}s cubic-bezier(.2,.75,.25,1)`;el.style.transform='translateY(0)';
+    el.addEventListener('transitionend',()=>el.style.filter='none',{once:true});
+  });
+  setTimeout(()=>{
+    reels=fin;setReels(fin);spinning=false;
     let w=0;for(let r=0;r<3;r++){let n=1;while(n<5&&fin[r*5+n]==fin[r*5])n++;if(n>=3)w+=b*VAL[fin[r*5]]*(n-2)*4}
     $('slots-msg').textContent=w?`🎉 Premio: +$${fmt(w)}`:'💥 Sin premio';if(w)pay(w);
-  },80);
+  },T(4)*1000+150);
 }
 
 /* ---------- Minas ---------- */
@@ -316,16 +344,31 @@ function mCash(){
 
 /* ---------- Cohete ---------- */
 let C={on:false};
-function stopCrash(){if(C.t)clearInterval(C.t);C.on=false;if($('c-btn'))$('c-btn').textContent='LANZAR 🚀'}
+function stopCrash(){if(C.t)clearInterval(C.t);C.on=false;$('c-btn').textContent='LANZAR 🚀';$('sky').classList.remove('moving')}
+function cPos(p){const e=$('ci');e.style.left=(10+p*68)+'%';e.style.bottom=(8+p*52)+'%'}
+function cReset(){
+  const e=$('ci');e.style.transition='none';e.className='';e.style.opacity='';$('rk').textContent='🚀';$('fl').style.display='none';
+  cPos(0);void e.offsetHeight;e.style.transition='';$('cm').textContent='1.00x';$('cm').style.color='';
+}
+function puff(){const e=$('ci'),p=document.createElement('i');p.className='puff';p.style.left=e.style.left;p.style.bottom=e.style.bottom;$('sky').appendChild(p);setTimeout(()=>p.remove(),600)}
 function cAct(){
-  if(C.on){const w=Math.floor(C.b*C.m);stopCrash();pay(w);$('cs').textContent=`🎉 Cobraste $${fmt(w)} (${C.m.toFixed(2)}x)`;$('ci').className='';return}
+  if(C.on){
+    const w=Math.floor(C.b*C.m),m=C.m;stopCrash();pay(w);
+    $('cs').textContent=`🎉 Cobraste $${fmt(w)} (${m.toFixed(2)}x)`;
+    const e=$('ci');e.style.transition='left .7s ease-in,bottom .7s ease-in,opacity .7s';e.style.left='110%';e.style.bottom='115%';e.style.opacity=0;return;
+  }
   const b=bet();if(!b)return;
-  C={on:true,b,m:1,pt:Math.max(1,Math.min(100,.97/(1-Math.random())))};
-  $('ci').textContent='🚀';$('ci').className='fly';$('cs').textContent='Volando... ¡cobra a tiempo!';$('c-btn').textContent='COBRAR 💰';
+  cReset();C={on:true,b,m:1,pt:Math.max(1,Math.min(100,.97/(1-Math.random())))};
+  $('sky').classList.add('moving');$('fl').style.display='block';$('cs').textContent='Volando... ¡cobra a tiempo!';$('c-btn').textContent='COBRAR 💰';
   C.t=setInterval(()=>{
-    C.m*=1.012;$('cm').textContent=C.m.toFixed(2)+'x';
-    if(C.m<C.pt)return;
-    const m=C.m;stopCrash();$('ci').textContent='💥';$('ci').className='';$('cs').textContent=`💥 Explotó en ${m.toFixed(2)}x`;
+    C.m*=1.012;const m=C.m;$('cm').textContent=m.toFixed(2)+'x';
+    $('cm').style.color=m>=5?'#ff5c9f':m>=2?'#34d399':'';
+    puff();cPos(Math.min(1,Math.log(m)/Math.log(15)));
+    $('stars').style.animationDuration=Math.max(.12,.8-Math.log(m)*.25)+'s';
+    if(m<C.pt)return;
+    stopCrash();$('fl').style.display='none';$('rk').textContent='💥';$('ci').classList.add('boom');
+    $('sky').classList.add('shake');setTimeout(()=>$('sky').classList.remove('shake'),500);
+    $('cm').style.color='#ff3d3d';$('cs').textContent=`💥 Explotó en ${m.toFixed(2)}x`;
   },80);
 }
 ui();
