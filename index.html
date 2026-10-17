@@ -1229,7 +1229,6 @@
             state.money -= armBet;
             updateUI();
 
-            // Selección aleatoria de oponente estilo Casino
             const roll = Math.random();
             if (roll < 0.40) {
                 armOpponent = { name: "Novato", mult: 1.8, force: 1.8, type: 'easy' };
@@ -1254,7 +1253,6 @@
 
             updateArmVisuals();
 
-            // Cuenta regresiva de 12s
             armTimer = setInterval(() => {
                 armTimeLeft--;
                 document.getElementById('arm-time').innerText = armTimeLeft;
@@ -1263,12 +1261,10 @@
                 }
             }, 1000);
 
-            // Bucle de fuerza constante del oponente
             armLoopTimer = setInterval(() => {
                 if (!armActive) return;
 
                 let push = armOpponent.force;
-                // Si es la pelea trampa/imposible, empuja progresivamente más fuerte
                 if (armOpponent.type === 'impossible') {
                     push += (12 - armTimeLeft) * 0.8;
                 }
@@ -1285,7 +1281,6 @@
             }, 100);
         });
 
-        // Clic de empuje del jugador
         document.getElementById('btn-push-arm').addEventListener('click', () => {
             if (!armActive) return;
             armForce += 4.5;
@@ -1315,8 +1310,21 @@
             if (armTimer) clearInterval(armTimer);
             if (armLoopTimer) clearInterval(armLoopTimer);
 
-            document.getElementById('btn-start-arm').classList.remove('hidden');
-            document.getElementById('btn-push-arm').classList.add('hidden');
+            const btnPush = document.getElementById('btn-push-arm');
+            btnPush.disabled = true;
+            btnPush.classList.add('hidden');
+
+            const btnStart = document.getElementById('btn-start-arm');
+            btnStart.disabled = true;
+            btnStart.classList.add('opacity-50', 'cursor-not-allowed');
+            btnStart.classList.remove('hidden');
+
+            // Cooldown de 1 segundo para evitar clics accidentales de re-enganche
+            setTimeout(() => {
+                btnStart.disabled = false;
+                btnStart.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnPush.disabled = false;
+            }, 1000);
         }
 
         function finishArmMatch(won) {
