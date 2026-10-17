@@ -154,7 +154,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
   </div>
 
   <div id="g-crash" class="game hide col">
-    <div id="sky"><div id="stars"></div><div id="ci"><span id="rk">🚀</span><div id="fl">🔥</div></div><div id="cm">1.00x</div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
+    <div id="sky"><div id="stars"></div><div id="ci"><span id="rk">🚀</span><div id="fl">🔥</div></div><div id="cm">1.00x</div><div id="cw" style="position:absolute;top:3.7rem;left:0;right:0;text-align:center;z-index:3;font-weight:800;color:#34d399"></div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
     <button id="c-btn" class="gold big" onclick="cAct()">LANZAR 🚀</button>
   </div>
 </div></div>
@@ -385,27 +385,27 @@ function stopCrash(){if(C.t)clearInterval(C.t);C.on=false;$('c-btn').textContent
 function cPos(p){const e=$('ci');e.style.left=(10+p*68)+'%';e.style.bottom=(8+p*52)+'%'}
 function cReset(){
   const e=$('ci');e.style.transition='none';e.className='';e.style.opacity='';$('rk').textContent='🚀';$('fl').style.display='none';
-  cPos(0);void e.offsetHeight;e.style.transition='';$('cm').textContent='1.00x';$('cm').style.color='';
+  cPos(0);void e.offsetHeight;e.style.transition='';$('cm').textContent='1.00x';$('cm').style.color='';$('cw').textContent='';$('cw').style.color='#34d399';
 }
 function puff(){const e=$('ci'),p=document.createElement('i');p.className='puff';p.style.left=e.style.left;p.style.bottom=e.style.bottom;$('sky').appendChild(p);setTimeout(()=>p.remove(),600)}
 function cAct(){
   if(C.on){
     const w=Math.floor(C.b*C.m),m=C.m;stopCrash();pay(w,C.b);
-    $('cs').textContent=`🎉 Cobraste ${sym()}${fmt(w)} (${m.toFixed(2)}x)`;
+    $('cs').textContent=`🎉 Cobraste ${sym()}${fmt(w)} (${m.toFixed(2)}x)`;$('cw').textContent=`+${sym()}${fmt(w-C.b)} de beneficio`;
     const e=$('ci');e.style.transition='left .7s ease-in,bottom .7s ease-in,opacity .7s';e.style.left='110%';e.style.bottom='115%';e.style.opacity=0;return;
   }
   const b=bet();if(!b)return;
   cReset();C={on:true,b,m:1,pt:Math.max(1,Math.min(100,.97/(1-Math.random())))};
-  $('sky').classList.add('moving');$('fl').style.display='block';$('cs').textContent='Volando... ¡cobra a tiempo!';$('c-btn').textContent='COBRAR 💰';
+  $('sky').classList.add('moving');$('fl').style.display='block';$('cs').textContent='Volando... ¡cobra a tiempo!';$('c-btn').textContent=`COBRAR ${sym()}${fmt(b)} 💰`;$('cw').textContent=`Ganancia: ${sym()}${fmt(b)}`;
   C.t=setInterval(()=>{
-    C.m*=1.012;const m=C.m;$('cm').textContent=m.toFixed(2)+'x';
+    C.m*=1.012;const m=C.m,wn=Math.floor(C.b*m);$('cm').textContent=m.toFixed(2)+'x';$('cw').textContent=`Ganancia: ${sym()}${fmt(wn)}`;$('c-btn').textContent=`COBRAR ${sym()}${fmt(wn)} 💰`;
     $('cm').style.color=m>=5?'#ff5c9f':m>=2?'#34d399':'';
     puff();cPos(Math.min(1,Math.log(m)/Math.log(15)));
     $('stars').style.animationDuration=Math.max(.12,.8-Math.log(m)*.25)+'s';
     if(m<C.pt)return;
     stopCrash();$('fl').style.display='none';$('rk').textContent='💥';$('ci').classList.add('boom');
     $('sky').classList.add('shake');setTimeout(()=>$('sky').classList.remove('shake'),500);
-    $('cm').style.color='#ff3d3d';$('cs').textContent=`💥 Explotó en ${m.toFixed(2)}x`;
+    $('cm').style.color='#ff3d3d';$('cw').style.color='#ff5c5c';$('cw').textContent=`Perdiste ${sym()}${fmt(C.b)}`;$('cs').textContent=`💥 Explotó en ${m.toFixed(2)}x`;
   },80);
 }
 function slotsInfo(){
