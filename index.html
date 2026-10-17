@@ -36,3 +36,289 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.2re
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:.35rem}
 .cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.7rem;background:linear-gradient(#2a1d45,#170f2b);border:1px solid rgba(139,92,246,.4);border-radius:.6rem;padding:0}
 #reels{background:#000;border:3px solid #ffd54a;border-radius:1rem;padding:.5rem;box-shadow:0 0 25px rgba(255,213,74,.45)}
+.bn{font-size:.62rem;text-align:center;padding:.25rem 0;border-radius:.3rem;background:#1b1030;color:#a99cc9}
+.bn.hit{background:#ffd54a;color:#000;font-weight:800;box-shadow:0 0 8px #ffd54a}
+.card{display:inline-flex;align-items:center;justify-content:center;width:2.6rem;height:3.6rem;border-radius:.5rem;background:#fff;color:#111;font-weight:800;margin-right:.3rem}
+.card.red{color:#d11}.card.back{background:linear-gradient(#8b5cf6,#4c1d95);color:#fff}
+#sky{height:11rem;border-radius:1rem;text-align:center;padding-top:1rem;background:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#fff,transparent),radial-gradient(2px 2px at 85% 20%,#ffd54a,transparent),linear-gradient(#05020d,#1a0a2e);border:1px solid rgba(255,213,74,.3)}
+#cm{font-family:Bungee;font-size:2.4rem;color:#ffd54a;text-shadow:0 0 18px rgba(255,213,74,.8)}
+.fly{animation:shake .15s infinite}@keyframes shake{50%{transform:translateY(-3px) rotate(-3deg)}}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translate(-50%,120px);background:#ffd54a;color:#000;font-weight:800;padding:.7rem 1.2rem;border-radius:2rem;z-index:99;transition:transform .3s}
+#toast.show{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<header class="wrap col" style="align-items:center">
+  <div class="row" style="width:100%">
+    <span class="small">Jugador: <b id="uname" style="color:#ff5c9f">-</b></span>
+    <div class="row"><button onclick="openArcade()">🕹️ Minijuegos</button><button onclick="openRank()">🏆 Ranking</button></div>
+  </div>
+  <div class="money">$<span id="money">0</span></div>
+</header>
+
+<main><button id="click">😠</button></main>
+
+<section class="wrap col" style="margin-bottom:.5rem">
+  <div class="panel row"><div><b>Fuerza de Clic</b><div class="small">Nivel <span id="lvl-click">1</span></div></div><button class="pink" onclick="buy('click')">$<span id="cost-click">15</span></button></div>
+  <div class="panel row"><div><b>Auto-BURX</b><div class="small">Cantidad <span id="lvl-auto1">0</span> · +1.5/s cada uno</div></div><button class="green" onclick="buy('auto1')">$<span id="cost-auto1">40</span></button></div>
+</section>
+
+<!-- LOGIN -->
+<div id="login" class="modal open"><div class="box col" style="text-align:center">
+  <div style="font-size:3rem">😠</div><h2>BURX Clicker</h2>
+  <input id="in-user" placeholder="Apodo (letras y números)" maxlength="18" autocomplete="username">
+  <input id="in-pass" type="password" placeholder="Contraseña (mín. 6)" autocomplete="current-password">
+  <button class="pink big" onclick="auth(false)">ENTRAR</button>
+  <button class="green big" onclick="auth(true)">CREAR CUENTA</button>
+  <button class="big" onclick="guest()">Jugar sin cuenta</button>
+  <div id="login-msg" class="small" style="min-height:1rem;color:#ffd54a"></div>
+</div></div>
+
+<!-- RANKING -->
+<div id="rank" class="modal"><div class="box">
+  <div class="row"><h2>🏆 Ranking</h2><button onclick="$('rank').classList.remove('open')">✕</button></div>
+  <div id="rank-list" class="col" style="margin-top:.8rem"></div>
+</div></div>
+
+<!-- MINIJUEGOS -->
+<div id="arcade" class="modal"><div class="box">
+  <div class="row" style="margin-bottom:.6rem"><button id="back" class="hide" onclick="menu()">⬅</button><h2 id="atitle">🕹️ Minijuegos</h2><button onclick="closeArcade()">✕</button></div>
+  <div class="panel small" style="margin-bottom:.6rem">Saldo: <b style="color:#34d399">$<span class="bal">0</span></b></div>
+  <div id="betbox" class="row hide" style="margin-bottom:.6rem"><input id="bet" type="number" value="50" min="1"><button onclick="bm(.5)">½</button><button onclick="bm(2)">×2</button><button onclick="bm(0)">MAX</button></div>
+
+  <div id="g-menu">
+    <button class="menu" onclick="show('bingo','🎱 Video Bingo')">🎱 Video Bingo<div class="small">4 cartones · líneas x1.5 · cartón lleno x50</div></button>
+    <button class="menu" onclick="show('bj','🃏 Blackjack')">🃏 Blackjack<div class="small">Blackjack natural paga x2.5</div></button>
+    <button class="menu" onclick="show('slots','🎰 Royal')">🎰 BURX Royal<div class="small">5 columnas · 3 filas · combos desde la izquierda</div></button>
+    <button class="menu" onclick="show('mines','💣 Minas')">💣 Minas<div class="small">Cobra antes de pisar una mina</div></button>
+    <button class="menu" onclick="show('crash','🚀 Cohete')">🚀 Cohete<div class="small">Cobra antes de que explote</div></button>
+  </div>
+
+  <div id="g-bingo" class="game hide col">
+    <div id="ball" class="panel" style="text-align:center">Pulsa JUGAR 🎱</div>
+    <div class="row" style="display:grid;grid-template-columns:1fr 1fr">
+      <div id="bc0" class="grid5 panel"></div><div id="bc1" class="grid5 panel"></div>
+      <div id="bc2" class="grid5 panel"></div><div id="bc3" class="grid5 panel"></div>
+    </div>
+    <button class="gold big" onclick="bingo()">JUGAR BINGO 🎱</button>
+  </div>
+
+  <div id="g-bj" class="game hide col">
+    <div class="panel"><div class="small">Crupier: <b id="bj-d">-</b></div><div id="bj-dc" style="min-height:3.8rem"></div>
+      <div id="bj-msg" style="text-align:center;font-weight:800;color:#ffd54a;margin:.4rem 0">Haz tu apuesta</div>
+      <div class="small">Tú: <b id="bj-p">-</b></div><div id="bj-pc" style="min-height:3.8rem"></div></div>
+    <button id="bj-deal" class="green big" onclick="bjStart()">REPARTIR 🃏</button>
+    <div id="bj-act" class="row hide"><button class="green big" onclick="bjHit()">Pedir</button><button class="gold big" onclick="bjStand()">Plantarse</button></div>
+  </div>
+
+  <div id="g-slots" class="game hide col">
+    <div id="reels" class="grid5"></div>
+    <div id="slots-msg" style="text-align:center;font-weight:800;color:#ffd54a;min-height:1.2rem">¡Tira de la palanca!</div>
+    <button id="spin" class="gold big" onclick="spin()">GIRAR 🎰</button>
+  </div>
+
+  <div id="g-mines" class="game hide col">
+    <div class="row"><span class="small">Minas:</span><select id="mcount"><option>3</option><option>5</option><option>10</option></select></div>
+    <div id="mgrid" class="grid5 panel"></div>
+    <div class="row panel small"><span>Mult: <b id="mmult" style="color:#ffd54a">1.00x</b></span><span>Ganancia: <b id="mwin" style="color:#34d399">0</b></span></div>
+    <button id="m-start" class="green big" onclick="mStart()">INICIAR 💣</button>
+    <button id="m-cash" class="gold big hide" onclick="mCash()">COBRAR 💰</button>
+  </div>
+
+  <div id="g-crash" class="game hide col">
+    <div id="sky"><div id="ci" style="font-size:3rem">🚀</div><div id="cm">1.00x</div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
+    <button id="c-btn" class="gold big" onclick="cAct()">LANZAR 🚀</button>
+  </div>
+</div></div>
+
+<div id="toast"></div>
+
+<script>
+const $=i=>document.getElementById(i),fmt=n=>Math.floor(n).toLocaleString('es-ES');
+const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const rnd=n=>Math.random()*n|0;
+const db=supabase.createClient("https://uomqjazepfbdkoguzwvu.supabase.co","sb_publishable_GVsDncI196Usfvit5Zb93g_qQbbJAB2");
+const def=()=>({money:0,clickLvl:1,auto1:0,costs:{click:15,auto1:40}});
+let S=def(),user=null,dirty=false;
+
+function ui(){
+  $('money').textContent=fmt(S.money);
+  document.querySelectorAll('.bal').forEach(e=>e.textContent=fmt(S.money));
+  $('lvl-click').textContent=S.clickLvl;$('cost-click').textContent=fmt(S.costs.click);
+  $('lvl-auto1').textContent=S.auto1;$('cost-auto1').textContent=fmt(S.costs.auto1);
+  dirty=true;
+}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
+function pay(n){S.money+=n;ui()}
+function bet(){const b=Math.floor(+$('bet').value);if(!(b>0)||b>S.money){toast('Apuesta inválida o saldo insuficiente');return 0}S.money-=b;ui();return b}
+function bm(f){$('bet').value=f?Math.max(1,Math.floor($('bet').value*f)):Math.floor(S.money)}
+
+/* ---------- Guardado ---------- */
+async function save(){
+  localStorage.setItem('burx',JSON.stringify(S));
+  if(!user||!dirty)return;dirty=false;
+  const {error}=await db.from('profiles').upsert({id:user.id,username:user.user_metadata.username,money:Math.floor(S.money),data:S});
+  if(error){dirty=true;console.error(error)}
+}
+setInterval(save,5000);addEventListener('beforeunload',save);
+
+/* ---------- Cuenta ---------- */
+async function auth(create){
+  const u=$('in-user').value.trim().toLowerCase().replace(/[^a-z0-9]/g,''),p=$('in-pass').value,m=$('login-msg');
+  if(u.length<3||p.length<6)return m.textContent='Apodo de 3+ letras/números y contraseña de 6+.';
+  m.textContent='Conectando...';
+  const email=u+'@burx.game';
+  const r=create?await db.auth.signUp({email,password:p,options:{data:{username:u}}}):await db.auth.signInWithPassword({email,password:p});
+  if(r.error)return m.textContent=r.error.message.includes('Invalid login')?'Apodo o contraseña incorrectos.':r.error.message;
+  if(!r.data.session)return m.textContent='Desactiva "Confirm email" en Supabase > Auth > Providers > Email.';
+  start(r.data.user,create);
+}
+async function start(u,isNew){
+  user=u;$('uname').textContent=u.user_metadata.username;
+  const {data}=await db.from('profiles').select('data').eq('id',u.id).maybeSingle();
+  S=Object.assign(def(),data&&data.data||{});
+  $('login').classList.remove('open');ui();if(!data||isNew)save();
+}
+function guest(){
+  try{S=Object.assign(def(),JSON.parse(localStorage.getItem('burx'))||{})}catch(e){}
+  $('uname').textContent='Invitado';$('login').classList.remove('open');ui();
+}
+db.auth.getSession().then(({data})=>{if(data.session)start(data.session.user)});
+
+async function openRank(){
+  $('rank').classList.add('open');const l=$('rank-list');l.innerHTML='<div class="small">Cargando...</div>';
+  const {data,error}=await db.from('profiles').select('username,money').order('money',{ascending:false}).limit(20);
+  if(error||!data)return l.innerHTML='<div class="small">No se pudo cargar el ranking.</div>';
+  l.innerHTML=data.map((r,i)=>`<div class="panel row"><span>${['🥇','🥈','🥉'][i]||i+1+'.'} <b>${r.username}</b></span><b style="color:#34d399">$${fmt(r.money)}</b></div>`).join('')||'<div class="small">Aún no hay nadie.</div>';
+}
+
+/* ---------- Clicker ---------- */
+$('click').addEventListener('click',e=>{
+  S.money+=S.clickLvl;ui();
+  const n=document.createElement('div');n.className='float';n.textContent='+'+S.clickLvl;
+  n.style.left=(e.clientX||innerWidth/2)-12+'px';n.style.top=(e.clientY||innerHeight/2)-30+'px';
+  document.body.appendChild(n);setTimeout(()=>n.remove(),800);
+});
+function buy(k){
+  const c=S.costs[k];if(S.money<c)return toast('Te falta dinero');
+  S.money-=c;k=='click'?S.clickLvl++:S.auto1++;
+  S.costs[k]=Math.floor(c*(k=='click'?1.35:1.38))+1;ui();
+}
+setInterval(()=>{if(S.auto1>0)pay(S.auto1*1.5)},1000);
+
+/* ---------- Navegación minijuegos ---------- */
+function openArcade(){$('arcade').classList.add('open');menu()}
+function closeArcade(){menu();$('arcade').classList.remove('open')}
+function menu(){stopCrash();document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('atitle').textContent='🕹️ Minijuegos'}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots')drawReels(reels);if(g=='mines')mGrid()}
+
+/* ---------- Bingo ---------- */
+let bingoBusy=false;
+function bingo(){
+  if(bingoBusy)return;const b=bet();if(!b)return;bingoBusy=true;
+  const all=[...Array(60).keys()].map(x=>x+1),cards=[0,1,2,3].map(()=>sh(all).slice(0,25)),balls=sh(all).slice(0,25),drawn=new Set();
+  cards.forEach((c,i)=>$('bc'+i).innerHTML=c.map(n=>`<div class="bn" data-n="${n}">${n}</div>`).join(''));
+  const L=[[0,6,12,18,24],[4,8,12,16,20]];for(let r=0;r<5;r++){L.push([0,1,2,3,4].map(c=>r*5+c),[0,1,2,3,4].map(c=>c*5+r))}
+  let k=0;const t=setInterval(()=>{
+    const n=balls[k++];drawn.add(n);$('ball').textContent='🎱 Bola '+n+' ('+k+'/25)';
+    document.querySelectorAll('#g-bingo [data-n="'+n+'"]').forEach(e=>e.classList.add('hit'));
+    if(k<25)return;clearInterval(t);
+    let lines=0,full=0;
+    cards.forEach(c=>{const h=c.map(n=>drawn.has(n));lines+=L.filter(x=>x.every(i=>h[i])).length;if(h.every(Boolean))full++});
+    const w=Math.floor(b*(lines*1.5+full*50));
+    $('ball').textContent=w?`🎉 ${lines} líneas · +$${fmt(w)}`:'💥 Sin premio';
+    if(w)pay(w);bingoBusy=false;
+  },180);
+}
+
+/* ---------- Blackjack ---------- */
+let bj=null;
+const dk=()=>({r:'A23456789TJQK'[rnd(13)],s:'♠♥♦♣'[rnd(4)]});
+const cv=h=>{let t=0,a=0;h.forEach(c=>{t+=c.r=='A'?(a++,11):'TJQK'.includes(c.r)?10:+c.r});while(t>21&&a>0){t-=10;a--}return t};
+const cr=c=>`<span class="card ${'♥♦'.includes(c.s)?'red':''}">${c.r=='T'?'10':c.r}${c.s}</span>`;
+function bjDraw(hide){
+  $('bj-pc').innerHTML=bj.p.map(cr).join('');$('bj-p').textContent=cv(bj.p);
+  $('bj-dc').innerHTML=hide?cr(bj.d[0])+'<span class="card back">?</span>':bj.d.map(cr).join('');
+  $('bj-d').textContent=hide?'?':cv(bj.d);
+}
+function bjStart(){
+  const b=bet();if(!b)return;
+  bj={b,p:[dk(),dk()],d:[dk(),dk()]};
+  $('bj-deal').classList.add('hide');$('bj-act').classList.remove('hide');$('bj-msg').textContent='¡Tu turno!';
+  bjDraw(true);if(cv(bj.p)==21)bjEnd();
+}
+function bjHit(){bj.p.push(dk());bjDraw(true);if(cv(bj.p)>=21)bjEnd()}
+function bjStand(){bjEnd()}
+function bjEnd(){
+  const p=cv(bj.p),nat=bj.p.length==2&&p==21;
+  if(p<=21&&!nat)while(cv(bj.d)<17)bj.d.push(dk());
+  const d=cv(bj.d),dnat=bj.d.length==2&&d==21;bjDraw(false);
+  let w=0,m;
+  if(p>21)m='💥 Te pasaste';
+  else if(nat&&!dnat){w=bj.b*2.5;m='🎉 ¡BLACKJACK!'}
+  else if(d>21||p>d){w=bj.b*2;m='🎉 ¡Ganas!'}
+  else if(p==d){w=bj.b;m='🤝 Empate'}
+  else m='😞 Gana la casa';
+  if(w)pay(Math.floor(w));$('bj-msg').textContent=m+(w?` (+$${fmt(w)})`:'');
+  $('bj-act').classList.add('hide');$('bj-deal').classList.remove('hide');$('bj-deal').textContent='NUEVA MANO 🃏';
+}
+
+/* ---------- Tragaperras ---------- */
+const SY=['🍒','🍒','🍒','🍋','🍋','🍋','🔔','🔔','🔮','👑','💎'],VAL={'🍒':1,'🍋':1,'🔔':2,'🔮':3,'👑':5,'💎':8};
+let reels=Array(15).fill('🍒'),spinning=false;
+const drawReels=r=>$('reels').innerHTML=r.map(s=>`<div class="cell">${s}</div>`).join('');
+function spin(){
+  if(spinning)return;const b=bet();if(!b)return;spinning=true;
+  const fin=Array.from({length:15},()=>SY[rnd(SY.length)]);let t=0;
+  const iv=setInterval(()=>{
+    t++;reels=reels.map((s,i)=>t>6+(i%5)*4?fin[i]:SY[rnd(SY.length)]);drawReels(reels);
+    if(t<6+4*5)return;clearInterval(iv);spinning=false;
+    let w=0;for(let r=0;r<3;r++){let n=1;while(n<5&&fin[r*5+n]==fin[r*5])n++;if(n>=3)w+=b*VAL[fin[r*5]]*(n-2)*4}
+    $('slots-msg').textContent=w?`🎉 Premio: +$${fmt(w)}`:'💥 Sin premio';if(w)pay(w);
+  },80);
+}
+
+/* ---------- Minas ---------- */
+let M=null;
+function mGrid(){
+  $('mgrid').innerHTML='';
+  for(let i=0;i<25;i++){const c=document.createElement('button');c.className='cell';c.textContent='❓';c.onclick=()=>mPick(i,c);$('mgrid').appendChild(c)}
+}
+function mStart(){
+  const b=bet();if(!b)return;const n=+$('mcount').value,mines=new Set();
+  while(mines.size<n)mines.add(rnd(25));
+  M={b,n,mines,open:0,mult:1,on:true};mGrid();mInfo();
+  $('m-start').classList.add('hide');$('m-cash').classList.remove('hide');
+}
+function mInfo(){$('mmult').textContent=M.mult.toFixed(2)+'x';$('mwin').textContent='$'+fmt(M.b*M.mult);$('m-cash').textContent=`COBRAR $${fmt(M.b*M.mult)} 💰`}
+function mReveal(){document.querySelectorAll('#mgrid .cell').forEach((c,i)=>{if(M.mines.has(i)&&c.textContent=='❓'){c.textContent='💣';c.style.opacity=.6}})}
+function mEnd(){M.on=false;mReveal();$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}
+function mPick(i,c){
+  if(!M||!M.on||c.disabled)return;c.disabled=true;
+  if(M.mines.has(i)){c.textContent='💥';mEnd();return toast('💥 ¡BOOM!')}
+  c.textContent='💎';M.mult*=(25-M.open)/(25-M.n-M.open)*0.98;M.open++;mInfo();
+  if(M.open==25-M.n)mCash();
+}
+function mCash(){
+  if(!M||!M.on||!M.open)return;const w=Math.floor(M.b*M.mult);pay(w);mEnd();toast('💰 Cobraste $'+fmt(w));
+}
+
+/* ---------- Cohete ---------- */
+let C={on:false};
+function stopCrash(){if(C.t)clearInterval(C.t);C.on=false;if($('c-btn'))$('c-btn').textContent='LANZAR 🚀'}
+function cAct(){
+  if(C.on){const w=Math.floor(C.b*C.m);stopCrash();pay(w);$('cs').textContent=`🎉 Cobraste $${fmt(w)} (${C.m.toFixed(2)}x)`;$('ci').className='';return}
+  const b=bet();if(!b)return;
+  C={on:true,b,m:1,pt:Math.max(1,Math.min(100,.97/(1-Math.random())))};
+  $('ci').textContent='🚀';$('ci').className='fly';$('cs').textContent='Volando... ¡cobra a tiempo!';$('c-btn').textContent='COBRAR 💰';
+  C.t=setInterval(()=>{
+    C.m*=1.012;$('cm').textContent=C.m.toFixed(2)+'x';
+    if(C.m<C.pt)return;
+    const m=C.m;stopCrash();$('ci').textContent='💥';$('ci').className='';$('cs').textContent=`💥 Explotó en ${m.toFixed(2)}x`;
+  },80);
+}
+ui();
+</script>
+</body>
+</html>
