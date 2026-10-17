@@ -33,11 +33,16 @@
             100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
         }
 
-        #upgrade-wheel-wrapper {
-            transition: transform 1.2s cubic-bezier(0.15, 0.85, 0.35, 1);
+        /* PULSO DORADO BINGO */
+        @keyframes goldPulse {
+            0%, 100% { border-color: rgba(250, 204, 21, 1); box-shadow: 0 0 8px rgba(250, 204, 21, 0.6); }
+            50% { border-color: rgba(250, 204, 21, 0.3); box-shadow: 0 0 2px rgba(250, 204, 21, 0.2); }
+        }
+        .golden-cell-pulse {
+            animation: goldPulse 1.2s infinite ease-in-out;
         }
 
-        /* ESTILOS PARA LA TRAGAPERRAS LOCK & SPIN */
+        /* TRAGAPERRAS LOCK & SPIN */
         @keyframes pulse-gold {
             0%, 100% { box-shadow: 0 0 10px rgba(250, 204, 21, 0.8); transform: scale(1); }
             50% { box-shadow: 0 0 18px rgba(250, 204, 21, 1); transform: scale(1.03); }
@@ -88,7 +93,6 @@
                 <button id="btn-copy-pass" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-1 my-1">
                     📋 Copiar Contraseña
                 </button>
-                <div class="text-[10px] text-zinc-400 mt-1 text-center">La necesitarás si entras desde otro dispositivo.</div>
             </div>
 
             <button id="btn-login-cloud" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer">
@@ -103,52 +107,16 @@
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
             <div class="text-4xl mb-2">🔑</div>
             <h2 class="text-xl font-bold mb-1 text-amber-400">Datos de la Cuenta</h2>
-            <p class="text-xs text-zinc-400 mb-4">Esta es tu contraseña guardada en la nube:</p>
-
-            <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl mb-4">
+            <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl mb-4 text-left">
                 <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Apodo:</div>
                 <div id="profile-modal-user" class="text-sm font-bold text-rose-400 mb-3"></div>
-
                 <div class="text-[10px] text-zinc-500 font-bold uppercase mb-1">Contraseña Secreta:</div>
                 <div id="profile-modal-pass" class="bg-black/60 text-amber-300 font-mono text-center p-2 rounded-lg text-sm font-bold tracking-wider select-all border border-amber-500/30 mb-2"></div>
-
                 <button id="btn-copy-profile-pass" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2 rounded-lg text-xs transition">
                     📋 Copiar Contraseña
                 </button>
             </div>
-
-            <button id="btn-close-view-pass" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-xl transition text-xs">
-                Cerrar
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL GUÍA -->
-    <div id="guide-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-purple-500/50 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[85vh] flex flex-col">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xl font-bold text-purple-400 flex items-center gap-2">📜 Guía de Prestigio y Tiers</h2>
-            </div>
-            <div class="overflow-y-auto flex-1 space-y-3 pr-1 text-xs text-zinc-300 text-left">
-                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-                    <div class="font-bold text-rose-400 mb-1">✨ ¿Qué es el Prestigio?</div>
-                    <p class="text-zinc-400">Reinicia tus fábricas a cambio de un multiplicador permanente y mayor velocidad.</p>
-                </div>
-            </div>
-            <button id="btn-close-guide" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition text-xs cursor-pointer">Entendido</button>
-        </div>
-    </div>
-
-    <!-- MODAL CONFIRMACIÓN PRESTIGIO -->
-    <div id="prestige-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-purple-500/50 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
-            <div class="text-5xl mb-2 animate-bounce">✨</div>
-            <h2 class="text-2xl font-bold mb-1 text-purple-400">¡Ascenso de Prestigio!</h2>
-            <p class="text-xs text-zinc-300 mb-4">¿Deseas ascender al siguiente nivel?</p>
-            <div class="flex gap-2">
-                <button id="btn-cancel-prestige" class="w-1/2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition text-xs">Cancelar</button>
-                <button id="btn-confirm-prestige" class="w-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl transition text-xs shadow-lg">¡ASCENDER! ✨</button>
-            </div>
+            <button id="btn-close-view-pass" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-xl transition text-xs">Cerrar</button>
         </div>
     </div>
 
@@ -156,7 +124,7 @@
     <div id="ranking-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-md w-full shadow-2xl max-h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-amber-400 flex items-center gap-2">🏆 Clasificación</h2>
+                <h2 class="text-xl font-bold text-amber-400 flex items-center gap-2">🏆 Clasificación de Amigos</h2>
                 <button id="btn-close-ranking-x" class="text-zinc-400 hover:text-white text-xl font-bold px-2">&times;</button>
             </div>
             <div id="ranking-list" class="overflow-y-auto flex-1 space-y-2 pr-1 text-sm"></div>
@@ -164,7 +132,7 @@
         </div>
     </div>
 
-    <!-- MODAL ARCADE -->
+    <!-- MODAL SALÓN DE MINIJUEGOS -->
     <div id="arcade-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl max-h-[92vh] flex flex-col">
 
@@ -180,80 +148,49 @@
                     <span class="text-sm font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
                 </div>
 
+                <p class="text-xs text-zinc-400 mb-4">Elige a qué minijuego quieres jugar:</p>
                 <div class="space-y-3 flex-1 overflow-y-auto">
-                    <button id="btn-open-armwrestle" class="w-full bg-gradient-to-r from-orange-900/60 to-red-900/60 hover:from-orange-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-orange-300">🦾 Pulseadas BURX</div><div class="text-xs text-zinc-400">Rival aleatorio y clics veloces.</div></div><span class="text-2xl">🦾</span>
+                    <button id="btn-open-bingo" class="w-full bg-gradient-to-r from-cyan-900/60 to-purple-900/60 hover:from-cyan-800/80 border border-cyan-500/50 p-4 rounded-xl flex items-center justify-between transition text-left">
+                        <div>
+                            <div class="font-bold text-cyan-300">🎰 Video Bingo (4 Cartones)</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Líneas, bingos y números dorados aleatorios.</div>
+                        </div>
+                        <span class="text-2xl">🎱</span>
                     </button>
-                    <button id="btn-open-upgrade" class="w-full bg-gradient-to-r from-amber-900/60 to-emerald-900/60 hover:from-amber-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-amber-300">🎯 Ruleta Upgrade</div><div class="text-xs text-zinc-400">Ajusta tu probabilidad.</div></div><span class="text-2xl">🎯</span>
+
+                    <button id="btn-open-blackjack" class="w-full bg-gradient-to-r from-emerald-900/60 to-teal-900/60 hover:from-emerald-800/80 border border-emerald-500/50 p-4 rounded-xl flex items-center justify-between transition text-left">
+                        <div>
+                            <div class="font-bold text-emerald-300">🃏 Blackjack BURX</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Apuesta libre, doblar, seguro y Blackjack x2.5.</div>
+                        </div>
+                        <span class="text-2xl">🃏</span>
                     </button>
-                    <button id="btn-open-bingo" class="w-full bg-gradient-to-r from-cyan-900/60 to-purple-900/60 hover:from-cyan-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-cyan-300">🎰 Video Bingo (4 Cartones)</div><div class="text-xs text-zinc-400">Líneas y multiplicadores.</div></div><span class="text-2xl">🎱</span>
+
+                    <button id="btn-open-slots" class="w-full bg-gradient-to-r from-purple-900/60 to-rose-900/60 hover:from-purple-800/80 border border-purple-500/50 p-4 rounded-xl flex items-center justify-between transition text-left">
+                        <div>
+                            <div class="font-bold text-purple-300">🎰 BURX Royal (Lock & Spin)</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Tragaperras de 5 columnas con orbes y comodines.</div>
+                        </div>
+                        <span class="text-2xl">👑</span>
                     </button>
-                    <button id="btn-open-blackjack" class="w-full bg-gradient-to-r from-emerald-900/60 to-teal-900/60 hover:from-emerald-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-emerald-300">🃏 Blackjack BURX</div><div class="text-xs text-zinc-400">Consigue 21.</div></div><span class="text-2xl">🃏</span>
+
+                    <button id="btn-open-mines" class="w-full bg-gradient-to-r from-emerald-900/60 to-cyan-900/60 hover:from-emerald-800/80 border border-emerald-500/50 p-4 rounded-xl flex items-center justify-between transition text-left">
+                        <div>
+                            <div class="font-bold text-emerald-300">💣 Minas BURX</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Descubre diamantes sin pisar minas.</div>
+                        </div>
+                        <span class="text-2xl">💣</span>
                     </button>
-                    <button id="btn-open-slots" class="w-full bg-gradient-to-r from-purple-900/60 to-rose-900/60 hover:from-purple-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-purple-300">🎰 BURX Royal (Ajustada)</div><div class="text-xs text-zinc-400">Premios equilibrados.</div></div><span class="text-2xl">👑</span>
-                    </button>
-                    <button id="btn-open-mines" class="w-full bg-gradient-to-r from-emerald-900/60 to-cyan-900/60 hover:from-emerald-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-emerald-300">💣 Minas BURX</div><div class="text-xs text-zinc-400">Evita las minas y gana dinero.</div></div><span class="text-2xl">💣</span>
-                    </button>
-                    <button id="btn-open-crash" class="w-full bg-gradient-to-r from-amber-900/60 to-rose-900/60 hover:from-amber-800/80 p-4 rounded-xl flex items-center justify-between text-left">
-                        <div><div class="font-bold text-amber-300">🚀 Cohete BURX (Crash)</div><div class="text-xs text-zinc-400">Cobra antes de que explote.</div></div><span class="text-2xl">🚀</span>
+
+                    <button id="btn-open-crash" class="w-full bg-gradient-to-r from-amber-900/60 to-rose-900/60 hover:from-amber-800/80 border border-amber-500/50 p-4 rounded-xl flex items-center justify-between transition text-left">
+                        <div>
+                            <div class="font-bold text-amber-300">🚀 Cohete BURX (Crash)</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Sube el multiplicador y cobra antes de la explosión.</div>
+                        </div>
+                        <span class="text-2xl">🚀</span>
                     </button>
                 </div>
                 <button id="btn-close-arcade" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">Cerrar</button>
-            </div>
-
-            <!-- PULSEADAS -->
-            <div id="game-armwrestle" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
-                    <button id="btn-back-to-arcade-armwrestle" class="text-xs font-bold bg-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-orange-400">🦾 Pulseadas BURX</h2>
-                    <button id="btn-close-armwrestle-x" class="text-zinc-400 text-xl font-bold px-1">&times;</button>
-                </div>
-                <div class="bg-black/80 border border-orange-500/30 p-4 rounded-xl flex flex-col items-center mb-3">
-                    <div class="flex justify-between w-full text-xs font-bold mb-2">
-                        <span class="text-emerald-400">TÚ 🤛</span>
-                        <span class="text-orange-400">⏳ <span id="arm-time">12</span>s</span>
-                        <span id="arm-opp-display" class="text-red-400">Rival Aleatorio 🤜</span>
-                    </div>
-                    <div class="w-full bg-zinc-900 h-6 rounded-full overflow-hidden border-2 border-zinc-700 relative flex items-center mb-2">
-                        <div id="arm-force-bar" class="bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 h-full w-1/2 transition-all duration-75"></div>
-                    </div>
-                    <div id="arm-hands-display" class="text-4xl my-1">🤛⚡🤜</div>
-                </div>
-                <div id="arm-msg" class="text-center text-xs font-bold text-amber-300 mb-2 h-5">Ingresa apuesta y lanza el pulso</div>
-                <input type="number" id="arm-bet-input" value="50" min="1" class="w-full bg-zinc-900 border border-zinc-700 text-orange-400 font-bold rounded-lg p-2 text-center text-xs outline-none mb-2">
-                <button id="btn-start-arm" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-3 rounded-xl shadow-lg transition text-sm">LANZAR PULSEADA 🦾</button>
-                <button id="btn-push-arm" class="w-full hidden bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl shadow-lg text-lg animate-pulse">¡¡EMPUJA!! 💥</button>
-            </div>
-
-            <!-- RULETA UPGRADE -->
-            <div id="game-upgrade" class="hidden flex flex-col h-full">
-                <div class="flex justify-between items-center mb-2">
-                    <button id="btn-back-to-arcade-upgrade" class="text-xs font-bold bg-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-amber-400">🎯 Ruleta Upgrade</h2>
-                    <button id="btn-close-upgrade-x" class="text-zinc-400 text-xl font-bold px-1">&times;</button>
-                </div>
-                <div class="relative bg-black/80 border border-amber-500/30 p-3 rounded-xl flex flex-col items-center mb-3">
-                    <div class="relative w-36 h-36 flex items-center justify-center my-2">
-                        <div id="upgrade-wheel-wrapper" class="w-full h-full flex items-center justify-center">
-                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#ef4444" stroke-width="12"></circle>
-                                <circle id="upgrade-svg-circle" cx="50" cy="50" r="40" fill="transparent" stroke="#22c55e" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="125.6"></circle>
-                            </svg>
-                        </div>
-                        <span id="upgrade-chance-display" class="absolute text-base font-black text-emerald-400">50.0%</span>
-                    </div>
-                    <div id="upgrade-status-msg" class="text-xs font-bold text-amber-300 h-4">Ajusta tu apuesta y multiplicador</div>
-                </div>
-                <div class="bg-zinc-950 p-3 rounded-xl space-y-2 mb-2 text-xs">
-                    <div class="flex justify-between"><span>Apuesta:</span><input type="number" id="upgrade-bet-input" value="50" min="1" class="w-24 bg-zinc-900 border text-amber-400 text-center font-bold"></div>
-                    <div class="flex justify-between"><span>Multiplicador:</span><input type="range" id="upgrade-mult-range" min="1.1" max="10" step="0.1" value="2.0"><span id="upgrade-mult-display" class="font-bold text-amber-400">2.00x</span></div>
-                </div>
-                <button id="btn-spin-upgrade" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-3 rounded-xl shadow-lg transition text-sm">UPGRADE 🎯</button>
             </div>
 
             <!-- BINGO -->
@@ -284,7 +221,7 @@
                     <button id="btn-close-bj-x" class="text-zinc-400 text-xl font-bold px-1">&times;</button>
                 </div>
                 <div id="bj-bet-section" class="bg-zinc-950 p-3 rounded-xl flex flex-col gap-2 mb-2">
-                    <input type="number" id="bj-bet-input" value="50" min="1" class="w-full bg-zinc-900 border text-emerald-400 font-bold p-2 text-center text-xs">
+                    <input type="number" id="bj-bet-input" value="50" min="1" class="w-full bg-zinc-900 border border-zinc-700 text-emerald-400 font-bold p-2 text-center text-xs">
                     <button id="btn-start-bj" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl shadow-lg text-sm">REPARTIR CARTAS 🃏</button>
                 </div>
                 <div id="bj-table-section" class="hidden flex flex-col flex-1 justify-between bg-black/60 p-3 rounded-xl mb-2">
@@ -303,7 +240,7 @@
             <div id="game-slots" class="hidden flex flex-col h-full">
                 <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-slots" class="text-xs font-bold bg-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300">⬅️ Menú</button>
-                    <h2 class="text-base font-bold text-amber-400">🎰 BURX Royal (Ajustada)</h2>
+                    <h2 class="text-base font-bold text-amber-400">🎰 BURX Royal (Lock & Spin)</h2>
                     <button id="btn-close-slots-x" class="text-zinc-400 text-xl font-bold px-1">&times;</button>
                 </div>
                 <div id="slot-grid-royal" class="grid grid-cols-5 gap-1.5 bg-black/80 p-2.5 rounded-xl border-2 border-amber-500/40 mb-2 min-h-[160px]"></div>
@@ -314,7 +251,7 @@
                 </div>
             </div>
 
-            <!-- MINAS (REPARADO Y COMPLETO) -->
+            <!-- MINAS -->
             <div id="game-mines" class="hidden flex flex-col h-full">
                 <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-mines" class="text-xs font-bold bg-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300">⬅️ Menú</button>
@@ -341,7 +278,7 @@
                 </div>
             </div>
 
-            <!-- COHETE (REPARADO Y COMPLETO) -->
+            <!-- COHETE -->
             <div id="game-crash" class="hidden flex flex-col h-full">
                 <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-crash" class="text-xs font-bold bg-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300">⬅️ Menú</button>
@@ -439,7 +376,7 @@
             }
         }, 1000);
 
-        // MODALES
+        // LOGIN
         document.getElementById('btn-login-cloud').addEventListener('click', () => {
             const u = document.getElementById('input-username').value.trim();
             if (!u) return alert("Escribe un apodo");
@@ -509,7 +446,6 @@
 
         function revealMineCell(index, btnElement) {
             if (!minesGameActive || btnElement.disabled) return;
-
             btnElement.disabled = true;
 
             if (minesArray[index]) {
@@ -523,7 +459,7 @@
                 btnElement.className += " bg-emerald-700/80 border-emerald-400";
                 revealedCells++;
 
-                let mult = 1 + (revealedCells * (selectedMinesCount * 0.15));
+                let mult = 1 + (revealedCells * (selectedMinesCount * 0.12));
                 let win = Math.floor(minesCurrentBet * mult);
 
                 document.getElementById('mines-multiplier').innerText = `${mult.toFixed(2)}x`;
@@ -534,8 +470,7 @@
 
         function cashoutMines() {
             if (!minesGameActive || revealedCells === 0) return;
-
-            let mult = 1 + (revealedCells * (selectedMinesCount * 0.15));
+            let mult = 1 + (revealedCells * (selectedMinesCount * 0.12));
             let win = Math.floor(minesCurrentBet * mult);
 
             state.money += win;
@@ -562,7 +497,7 @@
             document.getElementById('arcade-menu').classList.remove('hidden');
         });
 
-        // ================= MINIJUEGO: COHETE BURX (CRASH) =================
+        // ================= MINIJUEGO: COHETE BURX =================
         let crashMultiplier = 1.00;
         let crashTimer = null;
         let crashActive = false;
@@ -571,7 +506,6 @@
 
         function handleCrashAction() {
             if (!crashActive && !crashExploded) {
-                // Iniciar Despegue
                 crashBet = parseInt(document.getElementById('crash-bet-input').value) || 0;
                 if (crashBet <= 0 || state.money < crashBet) return alert("Apuesta inválida o saldo insuficiente.");
 
@@ -595,7 +529,6 @@
                     document.getElementById('crash-icon').className = "text-5xl mb-2 rocket-flying";
 
                     if (crashMultiplier >= crashPoint) {
-                        // Explota
                         clearInterval(crashTimer);
                         crashActive = false;
                         crashExploded = true;
@@ -610,7 +543,6 @@
                 }, 100);
 
             } else if (crashActive) {
-                // Cobrar
                 clearInterval(crashTimer);
                 crashActive = false;
 
@@ -625,7 +557,6 @@
                 btn.className = "w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-3 rounded-xl shadow-lg text-sm";
 
             } else {
-                // Reset a estado inicial
                 crashExploded = false;
                 document.getElementById('crash-icon').innerText = "🚀";
                 document.getElementById('crash-icon').className = "text-5xl mb-2";
@@ -647,7 +578,7 @@
             document.getElementById('arcade-menu').classList.remove('hidden');
         });
 
-        // ================= TRAGAPERRAS ROYAL (REAJUSTADA) =================
+        // ================= TRAGAPERRAS ROYAL =================
         const SLOT_SYMBOLS = ['💎', '👑', '🔔', '🍋', '🍒', '🔮'];
         let slotGridState = Array(15).fill('🍒');
 
