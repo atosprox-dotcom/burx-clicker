@@ -94,11 +94,12 @@
             background: radial-gradient(circle, #713f12 0%, #18181b 100%) !important;
         }
         .symbol-cell {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
+            min-height: 48px;
         }
     </style>
 </head>
@@ -246,7 +247,7 @@
 
                 <p class="text-xs text-zinc-400 mb-4">Elige a qué quieres jugar para ganar más recursos:</p>
                 <div class="space-y-3 flex-1 overflow-y-auto">
-                    <!-- PULSEADAS BURX (ARMWRESTLING) -->
+                    <!-- PULSEADAS BURX -->
                     <button id="btn-open-armwrestle" class="w-full bg-gradient-to-r from-orange-900/60 to-red-900/60 hover:from-orange-800/80 hover:to-red-800/80 border border-orange-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
                             <div class="font-bold text-base text-orange-300">🦾 Pulseadas BURX</div>
@@ -572,7 +573,7 @@
                     🌟 LOCK & SPIN - RE-SPINS: <span id="slot-respins-count">3</span> 🌟
                 </div>
 
-                <div id="slot-grid-royal" class="grid grid-cols-5 gap-1.5 bg-black/80 p-2 rounded-xl border-2 border-amber-500/40 mb-2"></div>
+                <div id="slot-grid-royal" class="grid grid-cols-5 gap-1.5 bg-black/80 p-2.5 rounded-xl border-2 border-amber-500/40 mb-2 min-h-[160px]"></div>
 
                 <div id="slots-msg" class="text-center text-xs font-bold text-amber-400 mb-2 h-4">6 o más 🔮 activan Lock & Spin</div>
 
@@ -1202,7 +1203,7 @@
         let armLoopTimer = null;
         let armTimeLeft = 12;
         let armBet = 50;
-        let armForce = 50; // 0 = Pierdes, 100 = Ganas
+        let armForce = 50;
         let armOpponent = null;
 
         document.getElementById('btn-open-armwrestle').addEventListener('click', () => {
@@ -1229,8 +1230,6 @@
             state.money -= armBet;
             updateUI();
 
-            // PROBABILIDADES AJUSTADAS A 50/50:
-            // 50% Oponente Imposible / 50% Oponentes Ganables
             const roll = Math.random();
             if (roll < 0.25) {
                 armOpponent = { name: "Novato", mult: 1.8, force: 1.8, type: 'easy' };
@@ -1321,7 +1320,6 @@
             btnStart.classList.add('opacity-50', 'cursor-not-allowed');
             btnStart.classList.remove('hidden');
 
-            // Cooldown de 1 segundo para evitar clics accidentales de re-enganche
             setTimeout(() => {
                 btnStart.disabled = false;
                 btnStart.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1346,7 +1344,7 @@
             saveCloudData();
         }
 
-        // ==================== RULETA UPGRADE (ANIMACIÓN SINCRONIZADA CON PREMIO) ====================
+        // ==================== RULETA UPGRADE ====================
         function updateUpgradeUI() {
             const bet = parseFloat(document.getElementById('upgrade-bet-input').value) || 0;
             const mult = parseFloat(document.getElementById('upgrade-mult-range').value) || 2.0;
@@ -1756,11 +1754,132 @@
             document.getElementById('bj-status-text').innerText = "¡Tu turno!";
         }
 
-        // RESTO DE MINIJUEGOS Y RANKING
-        document.getElementById('btn-open-slots').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-slots').classList.remove('hidden'); });
-        document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => { document.getElementById('game-slots').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
+        // ==================== TRAGAPERRAS ROYAL (LOCK & SPIN) ====================
+        const SLOT_SYMBOLS = ['💎', '👑', '🔔', '🍋', '🍒', '🔮', '🃏'];
+        let slotGridState = Array(15).fill('❓');
+        let isSpinningSlots = false;
+
+        function setSlotBetQuick(type) {
+            const input = document.getElementById('slot-bet-input');
+            let current = parseInt(input.value) || 10;
+            if (type === 'min') input.value = 10;
+            else if (type === 'double') input.value = current * 2;
+            else if (type === 'max') input.value = Math.max(10, Math.floor(state.money));
+        }
+
+        function renderSlotGrid() {
+            const grid = document.getElementById('slot-grid-royal');
+            grid.innerHTML = '';
+            slotGridState.forEach((sym) => {
+                const cell = document.createElement('div');
+                cell.className = "symbol-cell bg-zinc-900 border border-zinc-800 rounded-lg shadow-inner";
+                if (sym === '🔮') {
+                    cell.className += " locked-orb";
+                }
+                cell.innerText = sym;
+                grid.appendChild(cell);
+            });
+        }
+
+        function initSlotGrid() {
+            slotGridState = [];
+            for (let i = 0; i < 15; i++) {
+                slotGridState.push(SLOT_SYMBOLS[Math.floor(Math.random() * (SLOT_SYMBOLS.length - 1))]);
+            }
+            renderSlotGrid();
+        }
+
+        document.getElementById('btn-open-slots').addEventListener('click', () => { 
+            document.getElementById('arcade-menu').classList.add('hidden'); 
+            document.getElementById('game-slots').classList.remove('hidden'); 
+            initSlotGrid();
+        });
+        document.getElementById('btn-back-to-arcade-slots').addEventListener('click', () => { 
+            document.getElementById('game-slots').classList.add('hidden'); 
+            document.getElementById('arcade-menu').classList.remove('hidden'); 
+        });
         document.getElementById('btn-close-slots-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
 
+        function spinSlotRoyal() {
+            if (isSpinningSlots) return;
+            const bet = parseInt(document.getElementById('slot-bet-input').value) || 0;
+            if (bet <= 0 || state.money < bet) {
+                alert("Apuesta inválida o saldo insuficiente.");
+                return;
+            }
+
+            state.money -= bet;
+            updateUI();
+            isSpinningSlots = true;
+
+            const btn = document.getElementById('btn-spin-slots-royal');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            const msg = document.getElementById('slots-msg');
+            msg.innerText = "🎰 Girando rodillos...";
+
+            let ticks = 0;
+            const spinInterval = setInterval(() => {
+                slotGridState = slotGridState.map(() => {
+                    const r = Math.random();
+                    if (r < 0.12) return '🔮';
+                    if (r < 0.20) return '🃏';
+                    return SLOT_SYMBOLS[Math.floor(Math.random() * (SLOT_SYMBOLS.length - 2))];
+                });
+                renderSlotGrid();
+                ticks++;
+
+                if (ticks > 12) {
+                    clearInterval(spinInterval);
+                    evaluateSlotResults(bet);
+                }
+            }, 80);
+        }
+
+        function evaluateSlotResults(bet) {
+            let winAmt = 0;
+            let orbCount = slotGridState.filter(s => s === '🔮').length;
+
+            let matches = {};
+            slotGridState.forEach(s => {
+                if (s !== '🔮') matches[s] = (matches[s] || 0) + 1;
+            });
+
+            let wildcardCount = matches['🃏'] || 0;
+
+            for (let sym in matches) {
+                if (sym !== '🃏') {
+                    let totalMatch = matches[sym] + wildcardCount;
+                    if (totalMatch >= 3) {
+                        winAmt += Math.floor(bet * (totalMatch * 0.8));
+                    }
+                }
+            }
+
+            if (orbCount >= 6) {
+                winAmt += bet * orbCount * 2;
+                document.getElementById('slots-msg').innerText = `🌟 ¡LOCK & SPIN! +${winAmt} $ (${orbCount} Orbes)`;
+            } else if (winAmt > 0) {
+                document.getElementById('slots-msg').innerText = `🎉 ¡PREMIO! +${winAmt} $`;
+            } else {
+                document.getElementById('slots-msg').innerText = "💥 Sin combinación ganadora.";
+            }
+
+            if (winAmt > 0) {
+                state.money += winAmt;
+                state.totalEarned += winAmt;
+            }
+
+            isSpinningSlots = false;
+            const btn = document.getElementById('btn-spin-slots-royal');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+            updateUI();
+            saveCloudData();
+        }
+
+        // RESTO DE MINIJUEGOS Y RANKING
         document.getElementById('btn-open-mines').addEventListener('click', () => { document.getElementById('arcade-menu').classList.add('hidden'); document.getElementById('game-mines').classList.remove('hidden'); });
         document.getElementById('btn-back-to-arcade-mines').addEventListener('click', () => { document.getElementById('game-mines').classList.add('hidden'); document.getElementById('arcade-menu').classList.remove('hidden'); });
         document.getElementById('btn-close-mines-x').addEventListener('click', () => document.getElementById('arcade-modal').classList.add('hidden'));
