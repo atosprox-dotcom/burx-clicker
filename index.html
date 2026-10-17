@@ -246,6 +246,15 @@
 
                 <p class="text-xs text-zinc-400 mb-4">Elige a qué quieres jugar para ganar más recursos:</p>
                 <div class="space-y-3 flex-1 overflow-y-auto">
+                    <!-- PULSEADAS BURX (ARMWRESTLING) -->
+                    <button id="btn-open-armwrestle" class="w-full bg-gradient-to-r from-orange-900/60 to-red-900/60 hover:from-orange-800/80 hover:to-red-800/80 border border-orange-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
+                        <div>
+                            <div class="font-bold text-base text-orange-300">🦾 Pulseadas BURX</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Apuesta libre, rival aleatorio y clics veloces para ganar el pulso.</div>
+                        </div>
+                        <span class="text-2xl">🦾</span>
+                    </button>
+
                     <!-- UPGRADE / RULETA -->
                     <button id="btn-open-upgrade" class="w-full bg-gradient-to-r from-amber-900/60 to-emerald-900/60 hover:from-amber-800/80 hover:to-emerald-800/80 border border-amber-500/50 p-4 rounded-xl flex items-center justify-between transition shadow-lg text-left">
                         <div>
@@ -303,7 +312,53 @@
                 <button id="btn-close-arcade" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 rounded-xl transition">Cerrar</button>
             </div>
 
-            <!-- UPGRADE / RULETA ESTILO CS CON ANIMACIÓN EXACTA -->
+            <!-- MINIJUEGO: PULSEADAS BURX -->
+            <div id="game-armwrestle" class="hidden flex flex-col h-full">
+                <div class="flex justify-between items-center mb-2">
+                    <button id="btn-back-to-arcade-armwrestle" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
+                    <h2 class="text-base font-bold text-orange-400">🦾 Pulseadas BURX</h2>
+                    <button id="btn-close-armwrestle-x" class="text-zinc-400 hover:text-white text-xl font-bold px-1">&times;</button>
+                </div>
+
+                <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 mb-2 flex justify-between items-center text-xs">
+                    <span class="text-zinc-400 font-bold">Saldo:</span>
+                    <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
+                </div>
+
+                <div class="bg-black/80 border border-orange-500/30 p-4 rounded-xl flex flex-col items-center justify-center mb-3">
+                    <div class="flex justify-between w-full text-xs font-bold mb-2">
+                        <span class="text-emerald-400">TÚ 🤛</span>
+                        <span class="text-orange-400">⏳ <span id="arm-time">12</span>s</span>
+                        <span id="arm-opp-display" class="text-red-400">Rival Aleatorio 🤜</span>
+                    </div>
+
+                    <div class="w-full bg-zinc-900 h-6 rounded-full overflow-hidden border-2 border-zinc-700 relative flex items-center mb-2">
+                        <div class="absolute inset-y-0 left-1/2 w-0.5 bg-yellow-400/80 z-10"></div>
+                        <div id="arm-force-bar" class="bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 h-full w-1/2 transition-all duration-75"></div>
+                    </div>
+
+                    <div id="arm-hands-display" class="text-4xl my-1">🤛⚡🤜</div>
+                </div>
+
+                <div id="arm-msg" class="text-center text-xs font-bold text-amber-300 mb-2 h-5">Ingresa apuesta y lanza el pulso</div>
+
+                <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl flex flex-col gap-2 text-xs mb-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-zinc-400 font-bold">Apuesta:</span>
+                        <input type="number" id="arm-bet-input" value="50" min="1" class="w-32 bg-zinc-900 border border-zinc-700 text-orange-400 font-bold rounded-lg px-2 py-1.5 text-center text-xs outline-none">
+                    </div>
+                </div>
+
+                <button id="btn-start-arm" class="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 text-white font-black py-3 rounded-xl shadow-lg transition text-sm">
+                    LANZAR PULSEADA 🦾
+                </button>
+
+                <button id="btn-push-arm" class="w-full hidden bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-95 text-white font-black py-4 rounded-xl transition shadow-lg text-lg animate-pulse">
+                    ¡¡EMPUJA!! 💥 (HAZ CLIC RÁPIDO)
+                </button>
+            </div>
+
+            <!-- UPGRADE / RULETA ESTILO CS -->
             <div id="game-upgrade" class="hidden flex flex-col h-full">
                 <div class="flex justify-between items-center mb-2">
                     <button id="btn-back-to-arcade-upgrade" class="text-xs font-bold bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-zinc-300 transition">⬅️ Menú</button>
@@ -316,15 +371,12 @@
                     <span class="font-black text-emerald-400"><span class="arcade-sym">$</span><span class="arcade-bal">0</span></span>
                 </div>
 
-                <!-- RULETA CIRCULAR CON ANIMACIÓN EXACTA -->
                 <div class="relative bg-black/80 border border-amber-500/30 p-3 rounded-xl flex flex-col items-center justify-center mb-3">
                     <div class="absolute top-1 text-amber-400 text-xl font-black z-25 drop-shadow">▼</div>
                     <div class="relative w-40 h-40 flex items-center justify-center my-2">
                         <div id="upgrade-wheel-wrapper" class="w-full h-full flex items-center justify-center">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                <!-- Círculo Base Rojo -->
                                 <circle cx="50" cy="50" r="40" fill="transparent" stroke="#ef4444" stroke-width="12"></circle>
-                                <!-- Círculo Variable Verde -->
                                 <circle id="upgrade-svg-circle" cx="50" cy="50" r="40" fill="transparent" stroke="#22c55e" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="125.6"></circle>
                             </svg>
                         </div>
@@ -336,7 +388,6 @@
                     <div id="upgrade-status-msg" class="text-xs font-bold text-amber-300 h-4 mt-1">Ajusta tu apuesta y multiplicador</div>
                 </div>
 
-                <!-- CONTROLES DE APUESTA Y MULTIPLICADOR -->
                 <div class="bg-zinc-950/80 border border-zinc-800 p-3 rounded-xl space-y-2 mb-2 text-xs">
                     <div class="flex items-center justify-between">
                         <span class="text-zinc-400 font-bold">Apuesta:</span>
@@ -394,32 +445,28 @@
                             <span id="bingo-label-0" class="text-cyan-300 font-bold">Cartón 1</span>
                             <button id="bingo-toggle-0" onclick="toggleBingoCard(0)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
-                        <div id="bingo-card-0" onclick="refreshBingoCard(0)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                        <div id="bingo-card-0" onclick="refreshBingoCard(0)" class="grid grid-cols-5 gap-1 cursor-pointer"></div>
                     </div>
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-1" class="text-cyan-300 font-bold">Cartón 2</span>
                             <button id="bingo-toggle-1" onclick="toggleBingoCard(1)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
-                        <div id="bingo-card-1" onclick="refreshBingoCard(1)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                        <div id="bingo-card-1" onclick="refreshBingoCard(1)" class="grid grid-cols-5 gap-1 cursor-pointer"></div>
                     </div>
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-2" class="text-cyan-300 font-bold">Cartón 3</span>
                             <button id="bingo-toggle-2" onclick="toggleBingoCard(2)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
-                        <div id="bingo-card-2" onclick="refreshBingoCard(2)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                        <div id="bingo-card-2" onclick="refreshBingoCard(2)" class="grid grid-cols-5 gap-1 cursor-pointer"></div>
                     </div>
                     <div class="bg-zinc-950 border border-zinc-800 p-2 rounded-xl flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-1 text-[11px]">
                             <span id="bingo-label-3" class="text-cyan-300 font-bold">Cartón 4</span>
                             <button id="bingo-toggle-3" onclick="toggleBingoCard(3)" class="bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">ON</button>
                         </div>
-                        <div id="bingo-card-3" onclick="refreshBingoCard(3)" class="grid grid-cols-5 gap-1 cursor-pointer" title="Clica para actualizar números"></div>
-                        <div class="text-[9px] text-zinc-500 text-center mt-1">🔄 Clica para refrescar</div>
+                        <div id="bingo-card-3" onclick="refreshBingoCard(3)" class="grid grid-cols-5 gap-1 cursor-pointer"></div>
                     </div>
                 </div>
 
@@ -1142,10 +1189,152 @@
         });
         document.getElementById('btn-close-arcade').addEventListener('click', () => {
             document.getElementById('arcade-modal').classList.add('hidden');
+            stopArmMatch();
         });
         document.getElementById('btn-close-arcade-x').addEventListener('click', () => {
             document.getElementById('arcade-modal').classList.add('hidden');
+            stopArmMatch();
         });
+
+        // ==================== PULSEADAS BURX (ARMWRESTLING) ====================
+        let armActive = false;
+        let armTimer = null;
+        let armLoopTimer = null;
+        let armTimeLeft = 12;
+        let armBet = 50;
+        let armForce = 50; // 0 = Pierdes, 100 = Ganas
+        let armOpponent = null;
+
+        document.getElementById('btn-open-armwrestle').addEventListener('click', () => {
+            document.getElementById('arcade-menu').classList.add('hidden');
+            document.getElementById('game-armwrestle').classList.remove('hidden');
+        });
+        document.getElementById('btn-back-to-arcade-armwrestle').addEventListener('click', () => {
+            document.getElementById('game-armwrestle').classList.add('hidden');
+            document.getElementById('arcade-menu').classList.remove('hidden');
+            stopArmMatch();
+        });
+        document.getElementById('btn-close-armwrestle-x').addEventListener('click', () => {
+            document.getElementById('arcade-modal').classList.add('hidden');
+            stopArmMatch();
+        });
+
+        document.getElementById('btn-start-arm').addEventListener('click', () => {
+            armBet = parseFloat(document.getElementById('arm-bet-input').value) || 0;
+            if (armBet <= 0 || state.money < armBet) {
+                alert("Apuesta inválida o saldo insuficiente.");
+                return;
+            }
+
+            state.money -= armBet;
+            updateUI();
+
+            // Selección aleatoria de oponente estilo Casino
+            const roll = Math.random();
+            if (roll < 0.40) {
+                armOpponent = { name: "Novato", mult: 1.8, force: 1.8, type: 'easy' };
+            } else if (roll < 0.70) {
+                armOpponent = { name: "Luchador Pro", mult: 3.0, force: 3.2, type: 'medium' };
+            } else if (roll < 0.85) {
+                armOpponent = { name: "Campeón BURX", mult: 6.0, force: 4.8, type: 'hard' };
+            } else {
+                armOpponent = { name: "El Inmortal (Trampa)", mult: 0, force: 7.5, type: 'impossible' };
+            }
+
+            armActive = true;
+            armTimeLeft = 12;
+            armForce = 50;
+
+            document.getElementById('arm-time').innerText = armTimeLeft;
+            document.getElementById('arm-opp-display').innerText = `${armOpponent.name} 🤜`;
+            document.getElementById('arm-msg').innerText = `Rival: ${armOpponent.name} | Multiplicador: x${armOpponent.mult}`;
+
+            document.getElementById('btn-start-arm').classList.add('hidden');
+            document.getElementById('btn-push-arm').classList.remove('hidden');
+
+            updateArmVisuals();
+
+            // Cuenta regresiva de 12s
+            armTimer = setInterval(() => {
+                armTimeLeft--;
+                document.getElementById('arm-time').innerText = armTimeLeft;
+                if (armTimeLeft <= 0) {
+                    finishArmMatch(armForce >= 50);
+                }
+            }, 1000);
+
+            // Bucle de fuerza constante del oponente
+            armLoopTimer = setInterval(() => {
+                if (!armActive) return;
+
+                let push = armOpponent.force;
+                // Si es la pelea trampa/imposible, empuja progresivamente más fuerte
+                if (armOpponent.type === 'impossible') {
+                    push += (12 - armTimeLeft) * 0.8;
+                }
+
+                armForce -= push;
+
+                if (armForce <= 0) {
+                    finishArmMatch(false);
+                } else if (armForce >= 100) {
+                    finishArmMatch(true);
+                } else {
+                    updateArmVisuals();
+                }
+            }, 100);
+        });
+
+        // Clic de empuje del jugador
+        document.getElementById('btn-push-arm').addEventListener('click', () => {
+            if (!armActive) return;
+            armForce += 4.5;
+            if (armForce >= 100) {
+                finishArmMatch(true);
+            } else {
+                updateArmVisuals();
+            }
+        });
+
+        function updateArmVisuals() {
+            const bar = document.getElementById('arm-force-bar');
+            bar.style.width = `${Math.max(0, Math.min(100, armForce))}%`;
+
+            const hands = document.getElementById('arm-hands-display');
+            if (armForce > 65) {
+                hands.innerText = "💪🤛  🤜";
+            } else if (armForce < 35) {
+                hands.innerText = "🤛  🤜💥";
+            } else {
+                hands.innerText = "🤛⚡🤜";
+            }
+        }
+
+        function stopArmMatch() {
+            armActive = false;
+            if (armTimer) clearInterval(armTimer);
+            if (armLoopTimer) clearInterval(armLoopTimer);
+
+            document.getElementById('btn-start-arm').classList.remove('hidden');
+            document.getElementById('btn-push-arm').classList.add('hidden');
+        }
+
+        function finishArmMatch(won) {
+            stopArmMatch();
+            const msg = document.getElementById('arm-msg');
+
+            if (won && armOpponent.type !== 'impossible') {
+                const winAmt = Math.floor(armBet * armOpponent.mult);
+                state.money += winAmt;
+                state.totalEarned += winAmt;
+                msg.innerText = `🎉 ¡GANASTE EL PULSO! +${winAmt} $ (x${armOpponent.mult})`;
+            } else {
+                msg.innerText = `💥 ¡DERROTA! ${armOpponent.name} te venció el brazo.`;
+            }
+
+            updateUI();
+            saveCloudData();
+        }
 
         // ==================== RULETA UPGRADE (ANIMACIÓN SINCRONIZADA CON PREMIO) ====================
         function updateUpgradeUI() {
@@ -1153,7 +1342,7 @@
             const mult = parseFloat(document.getElementById('upgrade-mult-range').value) || 2.0;
 
             document.getElementById('upgrade-mult-display').innerText = mult.toFixed(2) + 'x';
-            
+
             let chance = Math.min(95, Math.max(5, (95 / mult)));
             document.getElementById('upgrade-chance-display').innerText = chance.toFixed(1) + '%';
 
@@ -1205,19 +1394,15 @@
             let chance = Math.min(95, Math.max(5, (95 / mult)));
             let isWin = (Math.random() * 100) <= chance;
 
-            // Calcular ángulo exacto según el resultado para que coincida perfectamente con la aguja superior (0 grados)
             let targetAngle;
             if (isWin) {
-                // Caer en zona verde (entre 0 y el ángulo de probabilidad)
                 let greenAngleSpan = (chance / 100) * 360;
-                targetAngle = Math.random() * (greenAngleSpan - 10) + 5; // Margen de seguridad dentro del verde
+                targetAngle = Math.random() * (greenAngleSpan - 10) + 5;
             } else {
-                // Caer en zona roja (resto de la ruleta)
                 let greenAngleSpan = (chance / 100) * 360;
                 targetAngle = Math.random() * (360 - greenAngleSpan - 20) + greenAngleSpan + 10;
             }
 
-            // Añadir varias vueltas completas (4 a 6 giros extra) para darle realismo
             const extraSpins = 360 * (4 + Math.floor(Math.random() * 3));
             currentWheelRotation += extraSpins + (360 - (currentWheelRotation % 360)) - targetAngle;
 
