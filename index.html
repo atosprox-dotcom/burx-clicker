@@ -73,7 +73,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 .bf{height:100%;background:linear-gradient(90deg,#8b5cf6,#ff3d8b,#ffd54a)}
 .lt{font-family:Bungee,cursive;font-size:1.8rem;line-height:1;text-shadow:0 0 8px currentColor}
 .lA,.lK{color:#ff5c9f}.lQ,.lJ{color:#8be9ff}.lT{color:#34d399}.lN{color:#ffd54a}
-#slots-info .lt{font-size:1.05rem}
+#ginfo-body .lt{font-size:1.05rem}
 .wild{filter:drop-shadow(0 0 8px #ffd54a)}.orbc{display:inline-block;filter:drop-shadow(0 0 8px #a855f7);animation:pl 1s infinite alternate}
 @keyframes pl{to{transform:scale(1.15)}}
 .rc.winc{background:radial-gradient(rgba(255,213,74,.35),transparent 70%);box-shadow:inset 0 0 0 2px #ffd54a;border-radius:.5rem;animation:wn .5s infinite alternate}
@@ -132,6 +132,8 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 .bcard .bg{gap:1px;padding:2px}
 .bcard .bx{font-size:.6rem;border-radius:.2rem}
 .bcard .bx.line{box-shadow:0 0 0 1px #34d399,0 0 6px #34d399}
+#arcade .box{display:flex;flex-direction:column;overflow:hidden}
+#abody{overflow:auto;min-height:0;flex:1}
 </style>
 </head>
 <body>
@@ -184,7 +186,8 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 
 <!-- MINIJUEGOS -->
 <div id="arcade" class="modal"><div class="box">
-  <div class="row" style="margin-bottom:.6rem"><button id="back" class="hide" onclick="menu()">⬅</button><h2 id="atitle">🕹️ Minijuegos</h2><button onclick="closeArcade()">✕</button></div>
+  <div class="row" style="margin-bottom:.6rem"><button id="back" class="hide" onclick="menu()">⬅</button><h2 id="atitle">🕹️ Minijuegos</h2><div class="row" style="gap:.3rem"><button id="gi" class="hide gold" onclick="gInfo()" style="padding:.4rem .7rem">ℹ️ Info</button><button onclick="closeArcade()">✕</button></div></div>
+  <div id="abody">
   <div class="panel small" style="margin-bottom:.6rem">Saldo: <b style="color:#34d399"><span class="sym">$</span><span class="bal">0</span></b></div>
   <div id="betbox" class="row hide" style="margin-bottom:.6rem"><input id="bet" type="number" value="50" min="1" oninput="bTot()"><button onclick="bm(.5)">½</button><button onclick="bm(2)">×2</button><button onclick="bm(0)">MAX</button></div>
 
@@ -206,7 +209,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
     <div id="bcards" class="bcards"></div>
     <div id="btot" class="panel" style="text-align:center;font-weight:800;color:#ffd54a"></div>
     <div class="row"><button id="bplay" class="gold big" onclick="bingo()">JUGAR BINGO 🎱</button><button id="bskip" class="big hide" onclick="bFast=true">⏩ Rápido</button></div>
-    <div id="binfo" class="panel small" style="line-height:1.5"></div>
+    
   </div>
 
   <div id="g-bj" class="game hide col">
@@ -224,7 +227,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
     <div id="ls" class="hide"><div class="row small" style="margin-bottom:.3rem"><b style="color:#ffd54a">🔮 LOCK &amp; SPIN</b><span>Respins: <b id="ls-r">3</b> · Total: <b id="ls-t" style="color:#34d399">0</b></span></div><div id="lsboard" class="grid5"></div></div>
     <div id="slots-msg" style="text-align:center;font-weight:800;color:#ffd54a;min-height:1.4rem">¡Tira de la palanca!</div>
     <button id="spin" class="gold big" onclick="spin()">GIRAR 🎰</button>
-    <div id="slots-info" class="panel small" style="line-height:1.5"></div>
+    
   </div>
 
   <div id="g-mines" class="game hide col">
@@ -240,6 +243,12 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
     <div id="sky"><div id="stars"></div><div id="ci"><span id="rk">🚀</span><div id="fl">🔥</div></div><div id="cm">1.00x</div><div id="cw" style="position:absolute;top:3.7rem;left:0;right:0;text-align:center;z-index:3;font-weight:800;color:#34d399"></div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
     <button id="c-btn" class="gold big" onclick="cAct()">LANZAR 🚀</button>
   </div>
+</div></div></div>
+
+<div id="ginfo" class="modal"><div class="box">
+  <div class="row"><h2 id="ginfo-title">ℹ️ Info</h2><button onclick="$('ginfo').classList.remove('open')">✕</button></div>
+  <div id="ginfo-body" class="small" style="margin-top:.8rem;line-height:1.55"></div>
+  <button class="big" style="margin-top:.8rem" onclick="$('ginfo').classList.remove('open')">Cerrar</button>
 </div></div>
 
 <div id="toast"></div>
@@ -357,8 +366,8 @@ setInterval(()=>{
 /* ---------- Navegación minijuegos ---------- */
 function openArcade(){$('arcade').classList.add('open');menu()}
 function closeArcade(){menu();$('arcade').classList.remove('open')}
-function menu(){stopCrash();if(M&&M.on){M.on=false;$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('atitle').textContent='🕹️ Minijuegos'}
-function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
+function menu(){stopCrash();if(M&&M.on){M.on=false;$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('gi').classList.add('hide');curG=null;$('ginfo').classList.remove('open');$('atitle').textContent='🕹️ Minijuegos'}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('gi').classList.remove('hide');curG=g;$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
 
 /* ---------- Bingo 90 ---------- */
 const BM=60;
@@ -443,7 +452,7 @@ async function bingo(){
   $('bplay').classList.remove('hide');$('bskip').classList.add('hide');bingoBusy=false;
 }
 function bingoInfo(){
-  $('binfo').innerHTML=`<b style="color:#ffd54a">Cómo funciona</b><br>Bingo de 90 bolas: cada cartón tiene 15 números repartidos en 3 filas de 5. Se sacan hasta ${BM} bolas. <b>Línea</b> = completar una fila (solo cuenta hasta la bola ${BLT[BLT.length-1][0]}). <b>Bingo</b> = cartón completo (la partida termina). <b>Cuanto antes ocurra, más paga.</b> Premios por cartón (x tu apuesta):<br><b>Línea:</b> ${BLT.map(([m,v])=>`≤${m}: x${v}`).join(' · ')}<br><b>Bingo:</b> ${BBT.map(([m,v])=>`≤${m}: x${v}`).join(' · ')}<br><span style="color:#a99cc9">Devolución teórica aproximada: 88%.</span>`;
+  return `<b style="color:#ffd54a">Cómo funciona</b><br>Bingo de 90 bolas: cada cartón tiene 15 números repartidos en 3 filas de 5. Se sacan hasta ${BM} bolas. <b>Línea</b> = completar una fila (solo cuenta hasta la bola ${BLT[BLT.length-1][0]}). <b>Bingo</b> = cartón completo (la partida termina). <b>Cuanto antes ocurra, más paga.</b> Premios por cartón (x tu apuesta):<br><b>Línea:</b> ${BLT.map(([m,v])=>`≤${m}: x${v}`).join(' · ')}<br><b>Bingo:</b> ${BBT.map(([m,v])=>`≤${m}: x${v}`).join(' · ')}<br><span style="color:#a99cc9">Devolución teórica aproximada: 88%.</span>`;
 }
 
 /* ---------- Blackjack ---------- */
@@ -684,7 +693,17 @@ function slotsInfo(){
   const xf=v=>String(+(v/10).toFixed(2)).replace('.',',');
   const grp=[['W'],['B','P'],['H'],['C','L'],['A','K'],['N'],['Q','J','T']];
   const rows=grp.map(g=>{const p=PAY[g[0]];return `<div class="row" style="gap:.2rem"><span style="min-width:4.6rem">${g.map(sg).join(' ')}</span>${[2,3,4,5].map(n=>`<span style="width:3.4rem;text-align:right">${p[n]?'x'+xf(p[n]):'-'}</span>`).join('')}</div>`}).join('');
-  $('slots-info').innerHTML=`<b style="color:#ffd54a">Cómo funciona</b><br>Hay <b>10 líneas</b> fijas que pagan de izquierda a derecha. Los premios son múltiplos de tu apuesta total.<br>👸 <b>Dama (comodín)</b>: sustituye a todos menos a 🔮 y <b>duplica</b> el premio cuando sustituye.<br>🔮 <b>6 o más orbes</b> activan <b>LOCK & SPIN</b>: las orbes se bloquean, tienes 3 respins y cada orbe nueva los reinicia. Cada orbe da un premio o un bote: MINI x${JP.MINI}, MINOR x${JP.MINOR}, MAJOR x${JP.MAJOR}. Si llenas las 15 casillas, ¡GRAND x${JP.GRAND}!<div class="col" style="margin-top:.5rem;gap:.25rem"><div class="row" style="gap:.2rem;color:#a99cc9"><span style="min-width:4.6rem">Símbolo</span><span style="width:3.4rem;text-align:right">2</span><span style="width:3.4rem;text-align:right">3</span><span style="width:3.4rem;text-align:right">4</span><span style="width:3.4rem;text-align:right">5</span></div>${rows}</div><div style="margin-top:.4rem;color:#a99cc9">Devolución teórica aproximada: 92%.</div>`;
+  return `<b style="color:#ffd54a">Cómo funciona</b><br>Hay <b>10 líneas</b> fijas que pagan de izquierda a derecha. Los premios son múltiplos de tu apuesta total.<br>👸 <b>Dama (comodín)</b>: sustituye a todos menos a 🔮 y <b>duplica</b> el premio cuando sustituye.<br>🔮 <b>6 o más orbes</b> activan <b>LOCK & SPIN</b>: las orbes se bloquean, tienes 3 respins y cada orbe nueva los reinicia. Cada orbe da un premio o un bote: MINI x${JP.MINI}, MINOR x${JP.MINOR}, MAJOR x${JP.MAJOR}. Si llenas las 15 casillas, ¡GRAND x${JP.GRAND}!<div class="col" style="margin-top:.5rem;gap:.25rem"><div class="row" style="gap:.2rem;color:#a99cc9"><span style="min-width:4.6rem">Símbolo</span><span style="width:3.4rem;text-align:right">2</span><span style="width:3.4rem;text-align:right">3</span><span style="width:3.4rem;text-align:right">4</span><span style="width:3.4rem;text-align:right">5</span></div>${rows}</div><div style="margin-top:.4rem;color:#a99cc9">Devolución teórica aproximada: 92%.</div>`;
+}
+let curG=null;
+const GN={bingo:'🎱 Bingo',bj:'🃏 Blackjack',slots:'🎰 Lady Royal',mines:'💣 Minas',crash:'🚀 Cohete'};
+function bjInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>Acércate a 21 sin pasarte. Del 2 al 10 valen su número, J, Q y K valen 10 y el As vale 11 o 1.<br><b>Pedir</b>: una carta más. <b>Plantarse</b>: te quedas con lo que tienes. <b>Doblar ×2</b>: solo con tus 2 primeras cartas; doblas la apuesta, recibes una carta y te plantas.<br>El crupier pide hasta llegar a 17.<br><b>Pagos</b>: ganar x2 · Blackjack natural (As + figura con 2 cartas) x2,5 · empate devuelve tu apuesta. Si el crupier hace Blackjack natural, gana a un 21 normal.`}
+function minesInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>El tablero tiene 25 casillas con 3, 5 o 10 minas escondidas (eliges cuántas antes de empezar).<br>Cada 💎 que descubres sube el multiplicador y puedes <b>cobrar</b> cuando quieras. Si pisas una 💣 pierdes la apuesta.<br>Con más minas el multiplicador sube más rápido, pero el riesgo es mayor. Bajo el tablero ves el siguiente multiplicador y el riesgo de la próxima casilla. Si descubres todas las seguras, cobras automáticamente.`}
+function crashInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>El cohete despega y el multiplicador sube. Pulsa <b>COBRAR</b> antes de que explote: ganas tu apuesta × el multiplicador.<br>Puede explotar en cualquier momento, incluso nada más despegar. En el panel y en el botón ves en tiempo real cuánto ganarías. Si explota antes de cobrar, pierdes la apuesta.<br><span style="color:#a99cc9">Devolución teórica aproximada: 97%.</span>`}
+function gInfo(){
+  if(!curG)return;
+  const I={bingo:bingoInfo,slots:slotsInfo,bj:bjInfo,mines:minesInfo,crash:crashInfo};
+  $('ginfo-title').textContent='ℹ️ '+GN[curG];$('ginfo-body').innerHTML=I[curG]();$('ginfo').classList.add('open');
 }
 function openInfo(){
   const cs=CURS.map((c,i)=>`${c.s} ${c.n} (${['prestigio 0-1','prestigio 2-3','prestigio 4-5','prestigio 6 o más'][i]})`).join('<br>');
@@ -692,15 +711,11 @@ function openInfo(){
   <div><b style="color:#ffd54a">Cómo se juega</b><br>Toca 😠 para ganar dinero. Compra <b>Fuerza de Clic</b> (más dinero por toque) y <b>Auto-BURX</b> (cada uno te da +1,5 por segundo). Cada ${MI} niveles de una mejora, su producción se multiplica x${MS} (acumulable). Si haces clics rápidos sin parar: ${COMBO.map(([x,v])=>`${x}s → x${v}`).join(' · ')} (solo en clics; se pierde si paras).</div>
   <div><b style="color:#ffd54a">Prestigio</b><br>La barra se llena con todo lo que ganas: clics, Auto-BURX y ganancias netas del casino (premio menos apuesta). La primera meta es ${fmt(PB)} y cada prestigio pide x${PF} más. Al subir se reinician tu dinero y tus mejoras, pero ganas +x${PBONUS} por prestigio en clics y Auto-BURX. Tu bonus ahora: x${f1(pm())}.</div>
   <div><b style="color:#ffd54a">Divisas</b><br>${cs}<br>Solo cambia el símbolo del dinero.</div>
-  <div><b style="color:#ffd54a">🎱 Bingo</b><br>Bingo de 90 bolas con cartones de 15 números. Activa los cartones que quieras (la apuesta es por cartón). Completar una fila es Línea (hasta la bola 45) y el cartón entero es Bingo (hasta la 60). Cuanto antes ocurra, más paga.</div>
-  <div><b style="color:#ffd54a">🃏 Blackjack</b><br>Acércate a 21 sin pasarte. El crupier pide hasta llegar a 17. Ganar paga x2, Blackjack natural x2,5 y el empate devuelve tu apuesta.</div>
-  <div><b style="color:#ffd54a">🎰 Tragaperras</b><br>Lady Royal: 10 líneas, 👸 comodín que duplica y 🔮 Lock & Spin con botes MINI, MINOR, MAJOR y GRAND. La tabla de premios está debajo de la tragaperras.</div>
-  <div><b style="color:#ffd54a">💣 Minas</b><br>Tablero de 25 casillas con 3, 5 o 10 minas. Cada 💎 sube el multiplicador y puedes cobrar cuando quieras. Si pisas una mina, pierdes la apuesta.</div>
-  <div><b style="color:#ffd54a">🚀 Cohete</b><br>El multiplicador sube y puede explotar en cualquier momento. Cobra antes de que explote.</div>
+  <div><b style="color:#ffd54a">Minijuegos</b><br>Cada minijuego tiene su propia explicación: abre el juego y pulsa el botón <b>ℹ️ Info</b> de arriba.</div>
   <div><b style="color:#ffd54a">Guardado</b><br>Con cuenta, tu progreso se guarda en la nube cada pocos segundos y el ranking ordena por el dinero total que has obtenido en toda la partida. Como invitado, solo en este dispositivo. El dinero es ficticio.</div>`;
   $('info').classList.add('open');
 }
-slotsInfo();bingoInfo();ui();
+ui();
 </script>
 </body>
 </html>
