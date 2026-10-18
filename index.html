@@ -134,6 +134,9 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 .bcard .bx.line{box-shadow:0 0 0 1px #34d399,0 0 6px #34d399}
 #arcade .box{display:flex;flex-direction:column;overflow:hidden}
 #abody{overflow:auto;min-height:0;flex:1}
+#reels.flash{animation:rf 1.2s}@keyframes rf{0%,50%,100%{box-shadow:0 0 25px rgba(255,213,74,.45)}25%,75%{box-shadow:0 0 45px 8px #ffd54a}}
+.wlp{stroke-dasharray:1400;stroke-dashoffset:1400;animation:wd .7s ease-out forwards}@keyframes wd{to{stroke-dashoffset:0}}
+.wlb{animation:pop .5s}
 </style>
 </head>
 <body>
@@ -141,7 +144,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 
 <header class="wrap col" style="align-items:center">
   <div class="row" style="width:100%">
-    <span class="small">Jugador: <b id="uname" style="color:#ff5c9f">-</b></span>
+    <span class="small">Jugador: <b id="uname" style="color:#ff5c9f">-</b> <button onclick="logout()" style="padding:.15rem .5rem;font-size:.65rem;margin-left:.3rem">🚪 Salir</button></span>
     <div class="row"><button onclick="openArcade()">🕹️ Minijuegos</button><button onclick="openRank()">🏆 Ranking</button></div>
   </div>
   <div class="money"><span class="sym">$</span><span id="money">0</span></div>
@@ -223,7 +226,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 
   <div id="g-slots" class="game hide col">
     <div id="jps" style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem"></div>
-    <div id="reels" class="grid5"></div>
+    <div id="rwrap" style="position:relative"><div id="reels" class="grid5"></div><svg id="wl" style="position:absolute;top:0;left:0;pointer-events:none;z-index:4"></svg></div>
     <div id="ls" class="hide"><div class="row small" style="margin-bottom:.3rem"><b style="color:#ffd54a">🔮 LOCK &amp; SPIN</b><span>Respins: <b id="ls-r">3</b> · Total: <b id="ls-t" style="color:#34d399">0</b></span></div><div id="lsboard" class="grid5"></div></div>
     <div id="slots-msg" style="text-align:center;font-weight:800;color:#ffd54a;min-height:1.4rem">¡Tira de la palanca!</div>
     <button id="spin" class="gold big" onclick="spin()">GIRAR 🎰</button>
@@ -299,7 +302,8 @@ function bm(f){$('bet').value=f?Math.max(1,Math.floor($('bet').value*f)):Math.fl
 
 /* ---------- Guardado ---------- */
 async function save(){
-  localStorage.setItem('burx',JSON.stringify(S));
+  if($('login').classList.contains('open'))return;
+  if(!user)localStorage.setItem('burx',JSON.stringify(S));
   if(!user||!dirty)return;dirty=false;
   const {error}=await db.from('profiles').upsert({id:user.id,username:user.user_metadata.username,money:Math.floor(S.total||0),data:S});
   if(error){dirty=true;console.error(error)}
@@ -322,6 +326,13 @@ async function start(u,isNew){
   const {data}=await db.from('profiles').select('data').eq('id',u.id).maybeSingle();
   S=Object.assign(def(),data&&data.data||{});if(!S.total)S.total=Math.max(S.money,S.prog);
   $('login').classList.remove('open');ui();if(!data||isNew)save();
+}
+async function logout(){
+  if(!confirm('¿Cerrar sesión?'))return;
+  await save();
+  try{await db.auth.signOut()}catch(e){}
+  user=null;S=def();dirty=false;$('uname').textContent='-';ui();
+  $('in-user').value='';$('in-pass').value='';$('login-msg').textContent='';$('login').classList.add('open');
 }
 function guest(){
   try{S=Object.assign(def(),JSON.parse(localStorage.getItem('burx'))||{})}catch(e){}
@@ -565,10 +576,20 @@ function setReels(g,win){
   $('reels').innerHTML=[0,1,2,3,4].map(c=>`<div class="reel"><div class="strip" style="filter:none">${[0,1,2].map(r=>{const i=r*5+c;return `<div class="rc${win&&win.has(i)?' winc':''}">${sg(g[i])}</div>`}).join('')}</div></div>`).join('');
 }
 function slotJp(){const b=Math.floor(+$('bet').value)||0;$('jps').innerHTML=Object.entries(JP).map(([k,v])=>`<div class="jp j${k}"><b>${k}</b><span>${sym()}${fmt(b*v)}</span></div>`).join('')}
+const LC=['#ff3d8b','#34d399','#38bdf8','#fbbf24','#a78bfa','#fb923c','#f472b6','#4ade80','#60a5fa','#facc15'];
+function lineSvg(wins){
+  const svg=$('wl'),rb=$('reels').getBoundingClientRect();
+  svg.setAttribute('width',rb.width);svg.setAttribute('height',rb.height);svg.setAttribute('viewBox',`0 0 ${rb.width} ${rb.height}`);
+  const P=i=>{const b=cellEl(i).getBoundingClientRect();return [b.left-rb.left+b.width/2,b.top-rb.top+b.height/2,b.left-rb.left]};
+  svg.innerHTML=wins.map(w=>{
+    const col=LC[w.li%LC.length],pts=w.cells.map(i=>P(i).slice(0,2).join(',')).join(' '),[,y,x0]=P(w.cells[0]);
+    return `<polyline class="wlp" points="${pts}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px ${col})"/><g class="wlb"><circle cx="${x0+10}" cy="${y}" r="9" fill="${col}" stroke="#000" stroke-width="1.5"/><text x="${x0+10}" y="${y+3.5}" text-anchor="middle" font-size="10" font-weight="800" fill="#000">${w.li+1}</text></g>`;
+  }).join('');
+}
 function slDone(){spinning=false;$('spin').disabled=false}
 async function spin(){
   if(spinning)return;const b=bet();if(!b)return;spinning=true;$('spin').disabled=true;const tok=++slTok;
-  const m=$('slots-msg');m.className='';m.textContent='';
+  const m=$('slots-msg');m.className='';m.textContent='';$('wl').innerHTML='';
   const fin=Array.from({length:15},rs);
   $('reels').innerHTML=[0,1,2,3,4].map(c=>{
     const arr=[fin[c],fin[5+c],fin[10+c]];
@@ -586,7 +607,7 @@ async function spin(){
   reels=fin;const ev=evalGrid(fin),unit=b/10,win=Math.floor(ev.tot*unit),wc=new Set();
   ev.wins.forEach(w=>w.cells.forEach(i=>wc.add(i)));
   setReels(fin,wc);
-  if(win){pay(win,b);m.className='win';m.textContent=`🎉 +${sym()}${fmt(win)}`}
+  if(win){pay(win,b);m.className='win';m.textContent=`🎉 +${sym()}${fmt(win)} · ${ev.wins.length} línea${ev.wins.length>1?'s':''}`;lineSvg(ev.wins);const R=$('reels');R.classList.remove('flash');void R.offsetWidth;R.classList.add('flash')}
   else m.textContent=ev.sc>=3&&ev.sc<6?`🔮 ${ev.sc} orbes · ¡faltaban ${6-ev.sc}!`:'💥 Sin premio';
   if(ev.sc>=6){m.textContent=`🔮 ¡${ev.sc} ORBES! LOCK & SPIN`+(win?` · +${sym()}${fmt(win)}`:'');await sl(1600);await lockSpin(fin,b);slDone();return}
   slDone();
@@ -596,13 +617,13 @@ async function spin(){
     if(tok!==slTok)return;
     document.querySelectorAll('#reels .rc').forEach(e=>e.classList.remove('winc'));
     w.cells.forEach(i=>cellEl(i).classList.add('winc'));
-    m.className='';m.textContent=`Línea ${w.li+1}: ${w.n}× ${SG[w.sym]} → +${sym()}${fmt(w.mult*unit)}`;await sl(1000);
+    lineSvg([w]);m.className='';m.textContent=`Línea ${w.li+1}: ${w.n}× ${SG[w.sym]} → +${sym()}${fmt(w.mult*unit)}`;await sl(1000);
   }
   if(tok!==slTok)return;
-  wc.forEach(i=>cellEl(i).classList.add('winc'));m.className='win';m.textContent=`🎉 Total +${sym()}${fmt(win)}`;
+  lineSvg(ev.wins);wc.forEach(i=>cellEl(i).classList.add('winc'));m.className='win';m.textContent=`🎉 Total +${sym()}${fmt(win)}`;
 }
 async function lockSpin(fin,b){
-  $('reels').classList.add('hide');$('ls').classList.remove('hide');
+  $('rwrap').classList.add('hide');$('ls').classList.remove('hide');
   const F=fNew(fin),m=$('slots-msg'),B=$('lsboard');
   const draw=nw=>{
     B.innerHTML=Array.from({length:15},(_,i)=>{const o=F.o[i];return o?`<div class="oc on${nw&&nw.includes(i)?' nw':''}${o.jp?' j'+o.jp:''}">${o.jp||sym()+fmt(o.m*b)}</div>`:'<div class="oc"></div>'}).join('');
@@ -617,7 +638,7 @@ async function lockSpin(fin,b){
   await sl(900);
   const tot=Math.floor(fTot(F)*b),grand=Object.keys(F.o).length>=15;
   pay(tot);m.className='win';m.textContent=`${grand?'👑 ¡¡GRAND!! ':'🏆 '}Lock & Spin: +${sym()}${fmt(tot)}`;
-  await sl(2600);$('ls').classList.add('hide');$('reels').classList.remove('hide');setReels(reels);
+  await sl(2600);$('ls').classList.add('hide');$('rwrap').classList.remove('hide');setReels(reels);$('wl').innerHTML='';
 }
 
 /* ---------- Minas ---------- */
