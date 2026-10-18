@@ -183,7 +183,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 <!-- RANKING -->
 <div id="rank" class="modal"><div class="box">
   <div class="row"><h2>🏆 Ranking</h2><button onclick="$('rank').classList.remove('open')">✕</button></div>
-  <div class="small" style="margin-top:.4rem">Ordenado por el dinero total obtenido en toda la partida</div>
+  <div class="small" style="margin-top:.4rem">Ordenado por el dinero total obtenido en el clicker (clics y Auto-BURX)</div>
   <div id="rank-list" class="col" style="margin-top:.8rem"></div>
 </div></div>
 
@@ -290,7 +290,9 @@ function ui(){
   dirty=true;
 }
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
-function pay(n,stake){const g=Math.max(0,n-(stake||0));S.money+=n;S.prog+=g;S.total=(S.total||0)+g;ui()}
+const CASINO_COUNTS=false; // true = las ganancias netas de los minijuegos también suman a la barra de prestigio y al ranking
+function earn(n){S.money+=n;S.prog+=n;S.total=(S.total||0)+n;ui()}
+function pay(n,stake){const g=Math.max(0,n-(stake||0));S.money+=n;if(CASINO_COUNTS){S.prog+=g;S.total=(S.total||0)+g}ui()}
 function doPrestige(){
   if(S.prog<goal())return;
   if(!confirm('¿Subir de prestigio? Se reinicia tu dinero y tus mejoras, pero ganas un bonus permanente.'))return;
@@ -353,7 +355,7 @@ async function openRank(){
 
 /* ---------- Clicker ---------- */
 $('click').addEventListener('click',e=>{
-  const now=Date.now();if(now-cl>GAP)cs=now;cl=now;const g=perClick()*comboMult();pay(g);
+  const now=Date.now();if(now-cl>GAP)cs=now;cl=now;const g=perClick()*comboMult();earn(g);
   const n=document.createElement('div');n.className='float';n.textContent='+'+f1(g);
   n.style.left=(e.clientX||innerWidth/2)-12+'px';n.style.top=(e.clientY||innerHeight/2)-30+'px';
   document.body.appendChild(n);setTimeout(()=>n.remove(),800);
@@ -363,7 +365,7 @@ function buy(k){
   S.money-=c;k=='click'?S.clickLvl++:S.auto1++;
   S.costs[k]=Math.floor(c*(k=='click'?1.35:1.38))+1;ui();
 }
-setInterval(()=>{if(S.auto1>0)pay(perSec())},1000);
+setInterval(()=>{if(S.auto1>0)earn(perSec())},1000);
 let lastM=1;
 setInterval(()=>{
   const now=Date.now();if(cs&&now-cl>GAP)cs=0;
@@ -730,10 +732,10 @@ function openInfo(){
   const cs=CURS.map((c,i)=>`${c.s} ${c.n} (${['prestigio 0-1','prestigio 2-3','prestigio 4-5','prestigio 6 o más'][i]})`).join('<br>');
   $('info-body').innerHTML=`
   <div><b style="color:#ffd54a">Cómo se juega</b><br>Toca 😠 para ganar dinero. Compra <b>Fuerza de Clic</b> (más dinero por toque) y <b>Auto-BURX</b> (cada uno te da +1,5 por segundo). Cada ${MI} niveles de una mejora, su producción se multiplica x${MS} (acumulable). Si haces clics rápidos sin parar: ${COMBO.map(([x,v])=>`${x}s → x${v}`).join(' · ')} (solo en clics; se pierde si paras).</div>
-  <div><b style="color:#ffd54a">Prestigio</b><br>La barra se llena con todo lo que ganas: clics, Auto-BURX y ganancias netas del casino (premio menos apuesta). La primera meta es ${fmt(PB)} y cada prestigio pide x${PF} más. Al subir se reinician tu dinero y tus mejoras, pero ganas +x${PBONUS} por prestigio en clics y Auto-BURX. Tu bonus ahora: x${f1(pm())}.</div>
+  <div><b style="color:#ffd54a">Prestigio</b><br>La barra se llena solo con el dinero que ganas en el clicker (clics y Auto-BURX). Los minijuegos no suman a la barra ni al ranking, pero te ayudan a pagar mejoras. La primera meta es ${fmt(PB)} y cada prestigio pide x${PF} más. Al subir se reinician tu dinero y tus mejoras, pero ganas +x${PBONUS} por prestigio en clics y Auto-BURX. Tu bonus ahora: x${f1(pm())}.</div>
   <div><b style="color:#ffd54a">Divisas</b><br>${cs}<br>Solo cambia el símbolo del dinero.</div>
   <div><b style="color:#ffd54a">Minijuegos</b><br>Cada minijuego tiene su propia explicación: abre el juego y pulsa el botón <b>ℹ️ Info</b> de arriba.</div>
-  <div><b style="color:#ffd54a">Guardado</b><br>Con cuenta, tu progreso se guarda en la nube cada pocos segundos y el ranking ordena por el dinero total que has obtenido en toda la partida. Como invitado, solo en este dispositivo. El dinero es ficticio.</div>`;
+  <div><b style="color:#ffd54a">Guardado</b><br>Con cuenta, tu progreso se guarda en la nube cada pocos segundos y el ranking ordena por el dinero total que has obtenido en el clicker. Como invitado, solo en este dispositivo. El dinero es ficticio.</div>`;
   $('info').classList.add('open');
 }
 ui();
