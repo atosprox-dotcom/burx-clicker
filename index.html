@@ -71,6 +71,34 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 @keyframes gpop{0%{transform:scale(.3) rotate(-30deg)}60%{transform:scale(1.4) rotate(10deg)}100%{transform:scale(1)}}
 @keyframes bt{0%{transform:scale(.6)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
 .bf{height:100%;background:linear-gradient(90deg,#8b5cf6,#ff3d8b,#ffd54a)}
+.lt{font-family:Bungee,cursive;font-size:1.8rem;line-height:1;text-shadow:0 0 8px currentColor}
+.lA,.lK{color:#ff5c9f}.lQ,.lJ{color:#8be9ff}.lT{color:#34d399}.lN{color:#ffd54a}
+#slots-info .lt{font-size:1.05rem}
+.wild{filter:drop-shadow(0 0 8px #ffd54a)}.orbc{display:inline-block;filter:drop-shadow(0 0 8px #a855f7);animation:pl 1s infinite alternate}
+@keyframes pl{to{transform:scale(1.15)}}
+.rc.winc{background:radial-gradient(rgba(255,213,74,.35),transparent 70%);box-shadow:inset 0 0 0 2px #ffd54a;border-radius:.5rem;animation:wn .5s infinite alternate}
+@keyframes wn{to{transform:scale(1.08)}}
+.jp{display:flex;justify-content:space-between;align-items:center;padding:.3rem .6rem;border-radius:.6rem;font-weight:800;font-size:.8rem;border:1px solid rgba(255,255,255,.3)}
+.jGRAND{background:linear-gradient(90deg,#b91c1c,#f59e0b)}.jMAJOR{background:linear-gradient(90deg,#86198f,#ec4899)}.jMINOR{background:linear-gradient(90deg,#1d4ed8,#38bdf8)}.jMINI{background:linear-gradient(90deg,#047857,#4ade80)}
+#lsboard{background:#000;border:3px solid #a855f7;border-radius:1rem;padding:.5rem;gap:.35rem;box-shadow:0 0 25px rgba(168,85,247,.5)}
+.oc{height:58px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#150a26;border:1px solid #3b2566;font-weight:800;font-size:.62rem;text-align:center;line-height:1}
+.oc.on{background:radial-gradient(circle at 35% 30%,#e9d5ff,#a855f7 45%,#4c1d95);border-color:#e9d5ff;box-shadow:0 0 12px #a855f7;color:#fff}
+.oc.jGRAND{background:radial-gradient(#fbbf24,#b91c1c)}.oc.jMAJOR{background:radial-gradient(#f9a8d4,#86198f)}.oc.jMINOR{background:radial-gradient(#7dd3fc,#1d4ed8)}.oc.jMINI{background:radial-gradient(#86efac,#047857)}
+.oc.nw{animation:orbin .6s cubic-bezier(.2,.9,.3,1.4)}
+#lsboard.sp .oc:not(.on){animation:shim .25s infinite alternate}
+@keyframes orbin{0%{transform:scale(0) rotate(-90deg)}100%{transform:none}}@keyframes shim{to{background:#2a1450}}
+.bball{width:4.4rem;height:4.4rem;margin:.5rem auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Bungee,cursive;font-size:1.7rem;color:#fff;text-shadow:0 2px 4px #000;background:radial-gradient(circle at 35% 30%,#fff -10%,var(--bc,#a855f7) 40%,#000 150%);box-shadow:0 5px 16px rgba(0,0,0,.6),0 0 18px var(--bc,#a855f7)}
+.bball.drop{animation:bdrop .5s cubic-bezier(.3,1.4,.5,1)}@keyframes bdrop{0%{transform:translateY(-50px) scale(.3) rotate(-200deg);opacity:0}100%{transform:none;opacity:1}}
+.bhist{display:flex;gap:.25rem;justify-content:center;flex-wrap:wrap;min-height:1.6rem}
+.ch{font-style:normal;width:1.6rem;height:1.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.5)}
+.msgb{text-align:center;font-weight:800;color:#ffd54a;min-height:1.4rem}
+.bcard{position:relative;overflow:hidden}.bcard.full{box-shadow:0 0 25px #ffd54a;border-color:#ffd54a}.bcard.off{opacity:.4}
+.bg{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;background:#0f0820;padding:3px;border-radius:.5rem;cursor:pointer}
+.bx{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;background:#f3e8ff;color:#2a1450;border-radius:.3rem}
+.bx.e{background:#2a1450;color:transparent}
+.bx.hit{background:radial-gradient(circle,#ffe27a,#f5a300);color:#3b2000;animation:stamp .4s cubic-bezier(.2,1.6,.4,1)}
+@keyframes stamp{0%{transform:scale(2.2);opacity:.2}100%{transform:scale(1);opacity:1}}
+.bx.line{box-shadow:0 0 0 2px #34d399,0 0 10px #34d399;animation:lf .5s 3}@keyframes lf{50%{transform:scale(1.18)}}
 .tg{padding:.2rem .6rem;font-size:.7rem;background:#444}.tg.on{background:#059669}.off{opacity:.35}#g-bingo .grid5{cursor:pointer}
 .bn{font-size:.62rem;text-align:center;padding:.25rem 0;border-radius:.3rem;background:#1b1030;color:#a99cc9}
 .bn.hit{background:#ffd54a;color:#000;font-weight:800;box-shadow:0 0 8px #ffd54a}
@@ -94,6 +122,16 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 #cs{position:absolute;bottom:.4rem;left:0;right:0;text-align:center;z-index:3}
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translate(-50%,120px);background:#ffd54a;color:#000;font-weight:800;padding:.7rem 1.2rem;border-radius:2rem;z-index:99;transition:transform .3s}
 #toast.show{transform:translate(-50%,0)}
+/* bingo compacto: 4 cartones visibles a la vez */
+.bball{width:3.2rem;height:3.2rem;margin:0;font-size:1.25rem;flex:none}
+.ch{width:1.4rem;height:1.4rem;font-size:.6rem}
+.bhist{justify-content:flex-start;min-height:1.4rem;gap:.2rem;margin-top:.3rem}
+.bcards{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.bcard{padding:.35rem}
+.bcard .tg{padding:.1rem .5rem;font-size:.65rem}
+.bcard .bg{gap:1px;padding:2px}
+.bcard .bx{font-size:.6rem;border-radius:.2rem}
+.bcard .bx.line{box-shadow:0 0 0 1px #34d399,0 0 6px #34d399}
 </style>
 </head>
 <body>
@@ -151,19 +189,24 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
   <div id="betbox" class="row hide" style="margin-bottom:.6rem"><input id="bet" type="number" value="50" min="1" oninput="bTot()"><button onclick="bm(.5)">½</button><button onclick="bm(2)">×2</button><button onclick="bm(0)">MAX</button></div>
 
   <div id="g-menu">
-    <button class="menu" onclick="show('bingo','🎱 Video Bingo')">🎱 Video Bingo<div class="small">Elige cartones · línea x6 · cartón lleno x200</div></button>
+    <button class="menu" onclick="show('bingo','🎱 Video Bingo')">🎱 Video Bingo<div class="small">Bingo 90 · cuanto antes, más paga</div></button>
     <button class="menu" onclick="show('bj','🃏 Blackjack')">🃏 Blackjack<div class="small">Blackjack natural paga x2.5</div></button>
-    <button class="menu" onclick="show('slots','🎰 Royal')">🎰 BURX Royal<div class="small">5 columnas · 3 filas · combos desde la izquierda</div></button>
+    <button class="menu" onclick="show('slots','🎰 Lady Royal')">🎰 Lady Royal<div class="small">10 líneas · comodín · Lock &amp; Spin con botes</div></button>
     <button class="menu" onclick="show('mines','💣 Minas')">💣 Minas<div class="small">Cobra antes de pisar una mina</div></button>
     <button class="menu" onclick="show('crash','🚀 Cohete')">🚀 Cohete<div class="small">Cobra antes de que explote</div></button>
   </div>
 
   <div id="g-bingo" class="game hide col">
-    <div id="ball" class="panel" style="text-align:center">Pulsa JUGAR 🎱</div>
-    <div class="small" style="text-align:center">Toca un cartón para cambiar sus números · ON/OFF para elegir cuáles juegas · la apuesta es por cartón</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;align-items:start"><div id="bw0" class="panel"><div class="row small"><b>Cartón 1</b><button id="bt0" class="tg on" onclick="bTog(0)">ON</button></div><div id="bc0" class="grid5" style="margin-top:.4rem" onclick="bReroll(0)"></div></div><div id="bw1" class="panel"><div class="row small"><b>Cartón 2</b><button id="bt1" class="tg on" onclick="bTog(1)">ON</button></div><div id="bc1" class="grid5" style="margin-top:.4rem" onclick="bReroll(1)"></div></div><div id="bw2" class="panel"><div class="row small"><b>Cartón 3</b><button id="bt2" class="tg on" onclick="bTog(2)">ON</button></div><div id="bc2" class="grid5" style="margin-top:.4rem" onclick="bReroll(2)"></div></div><div id="bw3" class="panel"><div class="row small"><b>Cartón 4</b><button id="bt3" class="tg on" onclick="bTog(3)">ON</button></div><div id="bc3" class="grid5" style="margin-top:.4rem" onclick="bReroll(3)"></div></div></div>
+    <div class="panel row" style="padding:.4rem .6rem;gap:.6rem">
+      <div id="bball" class="bball">🎱</div>
+      <div style="flex:1"><div class="small">Bola <b id="bk">0</b>/60 · Líneas hasta la 45 · Bingo hasta la 60</div><div id="bhist" class="bhist"></div></div>
+    </div>
+    <div id="bmsg" class="msgb">Elige tus cartones y pulsa JUGAR</div>
+    <div class="small" style="text-align:center;font-size:.7rem">Toca un cartón para cambiarlo · ON/OFF para elegir · apuesta por cartón</div>
+    <div id="bcards" class="bcards"></div>
     <div id="btot" class="panel" style="text-align:center;font-weight:800;color:#ffd54a"></div>
-    <button class="gold big" onclick="bingo()">JUGAR BINGO 🎱</button>
+    <div class="row"><button id="bplay" class="gold big" onclick="bingo()">JUGAR BINGO 🎱</button><button id="bskip" class="big hide" onclick="bFast=true">⏩ Rápido</button></div>
+    <div id="binfo" class="panel small" style="line-height:1.5"></div>
   </div>
 
   <div id="g-bj" class="game hide col">
@@ -176,8 +219,10 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
   </div>
 
   <div id="g-slots" class="game hide col">
+    <div id="jps" style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem"></div>
     <div id="reels" class="grid5"></div>
-    <div id="slots-msg" style="text-align:center;font-weight:800;color:#ffd54a;min-height:1.2rem">¡Tira de la palanca!</div>
+    <div id="ls" class="hide"><div class="row small" style="margin-bottom:.3rem"><b style="color:#ffd54a">🔮 LOCK &amp; SPIN</b><span>Respins: <b id="ls-r">3</b> · Total: <b id="ls-t" style="color:#34d399">0</b></span></div><div id="lsboard" class="grid5"></div></div>
+    <div id="slots-msg" style="text-align:center;font-weight:800;color:#ffd54a;min-height:1.4rem">¡Tira de la palanca!</div>
     <button id="spin" class="gold big" onclick="spin()">GIRAR 🎰</button>
     <div id="slots-info" class="panel small" style="line-height:1.5"></div>
   </div>
@@ -313,37 +358,92 @@ setInterval(()=>{
 function openArcade(){$('arcade').classList.add('open');menu()}
 function closeArcade(){menu();$('arcade').classList.remove('open')}
 function menu(){stopCrash();if(M&&M.on){M.on=false;$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('atitle').textContent='🕹️ Minijuegos'}
-function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots')setReels(reels);if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
 
-/* ---------- Bingo ---------- */
-let bingoBusy=false,bc=[[],[],[],[]],bon=[true,true,true,true];
-const bnums=()=>sh([...Array(60).keys()].map(x=>x+1)).slice(0,25);
-function bTot(){const n=bon.filter(Boolean).length,u=Math.floor(+$('bet').value)||0;$('btot').textContent=`Apuesta total: ${sym()}${fmt(u*n)} (${n} cartón${n==1?'':'es'} × ${sym()}${fmt(u)})`}
-function bDraw(i){
-  $('bc'+i).innerHTML=bc[i].map(n=>`<div class="bn" data-n="${n}">${n}</div>`).join('');
-  $('bw'+i).classList.toggle('off',!bon[i]);$('bt'+i).className='tg'+(bon[i]?' on':'');$('bt'+i).textContent=bon[i]?'ON':'OFF';bTot();
+/* ---------- Bingo 90 ---------- */
+const BM=60;
+const BLT=[[20,140],[25,49],[30,20],[35,10],[40,5],[45,2.8]];
+const BBT=[[50,800],[55,240],[60,60]];
+const tier=(t,k)=>{for(const [m,v] of t)if(k<=m)return v;return 0};
+const shf=sh;
+function genCard(){
+  for(;;){
+    const rows=[0,1,2].map(()=>shf([0,1,2,3,4,5,6,7,8]).slice(0,5));
+    const cnt=Array(9).fill(0);rows.forEach(r=>r.forEach(c=>cnt[c]++));
+    if(cnt.some(x=>x==0))continue;
+    const cols=cnt.map((k,c)=>{const lo=c?c*10:1,hi=c==8?90:c*10+9;return shf(Array.from({length:hi-lo+1},(_,i)=>lo+i)).slice(0,k).sort((a,b)=>a-b)});
+    const idx=Array(9).fill(0),card=[];
+    for(let r=0;r<3;r++)for(let c=0;c<9;c++)card.push(rows[r].includes(c)?cols[c][idx[c]++]:0);
+    return card;
+  }
 }
-function bInit(){for(let i=0;i<4;i++){bc[i]=bnums();bDraw(i)}$('ball').textContent='Elige tus cartones y pulsa JUGAR 🎱'}
+function bingoRun(cards){
+  const balls=shf(Array.from({length:90},(_,i)=>i+1)).slice(0,BM),ev=[];let total=0;
+  const hit=cards.map(()=>new Set()),rd=cards.map(()=>[0,0,0]);
+  for(let k=1;k<=BM;k++){
+    const n=balls[k-1];let end=false;
+    cards.forEach((c,ci)=>{
+      const i=c.indexOf(n);if(i<0)return;hit[ci].add(n);
+      const r=Math.floor(i/9);
+      if(!rd[ci][r]&&c.slice(r*9,r*9+9).every(x=>!x||hit[ci].has(x))){rd[ci][r]=k;const m=tier(BLT,k);if(m){ev.push({k,ci,t:'line',r,m});total+=m}}
+      if(hit[ci].size==15){const m=tier(BBT,k);ev.push({k,ci,t:'bingo',m});total+=m;end=true}
+    });
+    if(end)return{balls:balls.slice(0,k),ev,total,k};
+  }
+  return{balls,ev,total,k:BM};
+}
+let bingoBusy=false,bc=[[],[],[],[]],bon=[true,true,true,true],bFast=false;
+const bcol=n=>`hsl(${Math.floor((n-1)/10)*42+8} 75% 48%)`;
+function bTot(){const n=bon.filter(Boolean).length,u=Math.floor(+$('bet').value)||0;$('btot').textContent=`Apuesta total: ${sym()}${fmt(u*n)} (${n} cartón${n==1?'':'es'} × ${sym()}${fmt(u)})`;slotJp()}
+function bDraw(i){
+  const w=$('bw'+i);
+  $('bc'+i).innerHTML=bc[i].map(n=>`<div class="bx${n?'':' e'}" data-n="${n}">${n||''}</div>`).join('');
+  w.classList.remove('full');w.classList.toggle('off',!bon[i]);
+  $('bt'+i).className='tg'+(bon[i]?' on':'');$('bt'+i).textContent=bon[i]?'ON':'OFF';bTot();
+}
+function bInit(){
+  $('bcards').innerHTML=[0,1,2,3].map(i=>`<div id="bw${i}" class="panel bcard"><div class="row small" style="font-size:.7rem"><b>Cartón ${i+1}</b><button id="bt${i}" class="tg on" onclick="bTog(${i})">ON</button></div><div id="bc${i}" class="bg" style="margin-top:.25rem" onclick="bReroll(${i})"></div></div>`).join('');
+  for(let i=0;i<4;i++){bc[i]=genCard();bDraw(i)}
+  $('bmsg').className='msgb';$('bmsg').textContent='Elige tus cartones y pulsa JUGAR';$('bk').textContent=0;$('bhist').innerHTML='';$('bball').textContent='🎱';$('bball').style.removeProperty('--bc');
+}
 function bTog(i){if(bingoBusy)return;bon[i]=!bon[i];bDraw(i)}
-function bReroll(i){if(bingoBusy)return;bc[i]=bnums();bDraw(i)}
-function bingo(){
+function bReroll(i){if(bingoBusy)return;bc[i]=genCard();bDraw(i)}
+async function bingo(){
   if(bingoBusy)return;const act=[0,1,2,3].filter(i=>bon[i]);
   if(!act.length)return toast('Activa al menos un cartón');
   const u=Math.floor(+$('bet').value);
   if(!(u>0)||u*act.length>S.money)return toast('Apuesta inválida o saldo insuficiente');
-  S.money-=u*act.length;ui();bingoBusy=true;for(let i=0;i<4;i++)bDraw(i);
-  const balls=sh([...Array(60).keys()].map(x=>x+1)).slice(0,25),drawn=new Set();
-  const L=[[0,6,12,18,24],[4,8,12,16,20]];for(let r=0;r<5;r++){L.push([0,1,2,3,4].map(c=>r*5+c),[0,1,2,3,4].map(c=>c*5+r))}
-  let k=0;const t=setInterval(()=>{
-    const n=balls[k++];drawn.add(n);$('ball').textContent='🎱 Bola '+n+' ('+k+'/25)';
-    document.querySelectorAll('#g-bingo [data-n="'+n+'"]').forEach(e=>e.classList.add('hit'));
-    if(k<25)return;clearInterval(t);
-    let lines=0,full=0;
-    act.forEach(i=>{const h=bc[i].map(n=>drawn.has(n));lines+=L.filter(x=>x.every(j=>h[j])).length;if(h.every(Boolean))full++});
-    const w=u*(lines*6+full*200);
-    $('ball').textContent=w?`🎉 ${lines} líneas · +${sym()}${fmt(w)}`:'💥 Sin premio';
-    if(w)pay(w,u*act.length);bingoBusy=false;
-  },180);
+  S.money-=u*act.length;ui();bingoBusy=true;bFast=false;
+  for(let i=0;i<4;i++)bDraw(i);
+  $('bplay').classList.add('hide');$('bskip').classList.remove('hide');
+  const R=bingoRun(act.map(i=>bc[i])),m=$('bmsg'),hist=[];let won=0;
+  const say=(t,c)=>{m.className='msgb';void m.offsetWidth;m.className='msgb '+(c||'');m.textContent=t};
+  say('🎱 ¡Empiezan a salir las bolas!');
+  for(let k=1;k<=R.balls.length;k++){
+    const n=R.balls[k-1];hist.push(n);
+    const b=$('bball');b.textContent=n;b.style.setProperty('--bc',bcol(n));b.classList.remove('drop');void b.offsetWidth;b.classList.add('drop');
+    $('bk').textContent=k;
+    $('bhist').innerHTML=hist.slice(-10).map(x=>`<i class="ch" style="background:${bcol(x)}">${x}</i>`).join('');
+    act.forEach(i=>$('bc'+i).querySelectorAll('[data-n="'+n+'"]').forEach(e=>e.classList.add('hit')));
+    const es=R.ev.filter(x=>x.k==k);
+    if(k==46)say('⚠️ Se acabaron las líneas: solo el BINGO hasta la bola '+BM);
+    for(const e of es){
+      const ci=act[e.ci],w=Math.floor(e.m*u);won+=w;
+      if(e.t=='line'){
+        [...$('bc'+ci).children].slice(e.r*9,e.r*9+9).forEach(c=>{if(!c.classList.contains('e'))c.classList.add('line')});
+        say(`✅ ¡LÍNEA en el cartón ${ci+1}! (bola ${k}) +${sym()}${fmt(w)}`,'win');
+      }else{
+        $('bw'+ci).classList.add('full');burst($('bw'+ci),['🪙','✨','🎱','💎']);
+        say(`🏆 ¡¡BINGO en el cartón ${ci+1}!! (bola ${k}) +${sym()}${fmt(w)}`,'win');
+      }
+    }
+    if(!bFast)await sl(es.length?1200:230);
+  }
+  if(won>0){pay(won,u*act.length);say(`🎉 Total +${sym()}${fmt(won)}`,'win')}else say('💥 Sin premio esta vez');
+  $('bplay').classList.remove('hide');$('bskip').classList.add('hide');bingoBusy=false;
+}
+function bingoInfo(){
+  $('binfo').innerHTML=`<b style="color:#ffd54a">Cómo funciona</b><br>Bingo de 90 bolas: cada cartón tiene 15 números repartidos en 3 filas de 5. Se sacan hasta ${BM} bolas. <b>Línea</b> = completar una fila (solo cuenta hasta la bola ${BLT[BLT.length-1][0]}). <b>Bingo</b> = cartón completo (la partida termina). <b>Cuanto antes ocurra, más paga.</b> Premios por cartón (x tu apuesta):<br><b>Línea:</b> ${BLT.map(([m,v])=>`≤${m}: x${v}`).join(' · ')}<br><b>Bingo:</b> ${BBT.map(([m,v])=>`≤${m}: x${v}`).join(' · ')}<br><span style="color:#a99cc9">Devolución teórica aproximada: 88%.</span>`;
 }
 
 /* ---------- Blackjack ---------- */
@@ -405,20 +505,67 @@ async function bjEnd(){
   $('bj-deal').classList.remove('hide');$('bj-deal').textContent='NUEVA MANO 🃏';bj.busy=false;
 }
 
-/* ---------- Tragaperras ---------- */
-const SY=['🍒','🍒','🍒','🍋','🍋','🍋','🔔','🔔','🔮','👑','💎'],VAL={'🍒':1,'🍋':1,'🔔':2,'🔮':3,'👑':5,'💎':8},RH=58;
-let reels=Array(15).fill('🍒'),spinning=false;
-function setReels(g){
-  $('reels').innerHTML=[0,1,2,3,4].map(c=>`<div class="reel"><div class="strip" style="filter:none">${[0,1,2].map(r=>`<div class="rc">${g[r*5+c]}</div>`).join('')}</div></div>`).join('');
+/* ---------- Tragaperras: Lady Royal ---------- */
+const SG={W:'👸',S:'🔮',B:'🐞',P:'🧿',H:'🧲',C:'🪙',L:'🍀',A:'A',K:'K',Q:'Q',J:'J',T:'10',N:'9'};
+const WT={W:6.6,S:16,B:6,P:6,H:6,C:8,L:8,A:12,K:12,Q:14,J:14,T:15,N:15};
+const PAY={W:{2:10,3:250,4:1500,5:2500},B:{2:2,3:25,4:125,5:750},P:{2:2,3:25,4:125,5:750},H:{3:20,4:100,5:400},C:{3:15,4:75,5:250},L:{3:15,4:75,5:250},A:{3:10,4:50,5:125},K:{3:10,4:50,5:125},N:{2:2,3:5,4:25,5:100},Q:{3:5,4:25,5:100},J:{3:5,4:25,5:100},T:{3:5,4:25,5:100}};
+const LINES=[[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[1,0,0,0,1],[1,2,2,2,1],[0,0,1,2,2],[2,2,1,0,0],[1,2,1,0,1]];
+const JP={GRAND:500,MAJOR:100,MINOR:25,MINI:10};
+const PL=0.10,OV=[[0.2,30],[0.4,28],[0.6,14],[0.8,12],[1.2,8],[2,5],[4,2]],OVS=OV.reduce((a,x)=>a+x[1],0);
+const WK=Object.keys(WT),WS=WK.reduce((a,k)=>a+WT[k],0);
+const rs=()=>{let r=Math.random()*WS;for(const k of WK){r-=WT[k];if(r<0)return k}return 'T'};
+function evalGrid(g){
+  const wins=[];let tot=0;
+  LINES.forEach((ln,li)=>{
+    const s=ln.map((r,c)=>g[r*5+c]);
+    let nW=0;while(nW<5&&s[nW]=='W')nW++;
+    let best=0,bn=0,bs='W';
+    if(nW>=2){best=PAY.W[nW];bn=nW}
+    const base=s.find(x=>x!='W');
+    if(base&&base!='S'){
+      let n=0,hasW=false;while(n<5&&(s[n]==base||s[n]=='W')){if(s[n]=='W')hasW=true;n++}
+      const p=PAY[base][n];
+      if(p){const v=p*(hasW?2:1);if(v>best){best=v;bn=n;bs=base}}
+    }
+    if(best){wins.push({li,n:bn,sym:bs,mult:best,cells:ln.slice(0,bn).map((r,c)=>r*5+c)});tot+=best}
+  });
+  return{wins,tot,sc:g.filter(x=>x=='S').length};
 }
-function spin(){
-  if(spinning)return;const b=bet();if(!b)return;spinning=true;
-  const fin=Array.from({length:15},()=>SY[rnd(SY.length)]);
+function orbVal(){
+  const j=Math.random();
+  if(j<.004)return{jp:'MAJOR',m:JP.MAJOR};
+  if(j<.016)return{jp:'MINOR',m:JP.MINOR};
+  if(j<.04)return{jp:'MINI',m:JP.MINI};
+  let r=Math.random()*OVS;for(const [v,w] of OV){r-=w;if(r<0)return{m:v}}return{m:1};
+}
+function fNew(g){const o={};g.forEach((x,i)=>{if(x=='S')o[i]=orbVal()});return{o,r:3,done:false}}
+function fStep(F){
+  F.r--;const nw=[];
+  for(let i=0;i<15;i++)if(!F.o[i]&&Math.random()<PL){F.o[i]=orbVal();nw.push(i)}
+  if(nw.length)F.r=3;
+  if(F.r<=0||Object.keys(F.o).length>=15)F.done=true;
+  return nw;
+}
+const fTot=F=>Object.values(F.o).reduce((a,x)=>a+x.m,0)+(Object.keys(F.o).length>=15?JP.GRAND:0);
+
+const SLET={A:1,K:1,Q:1,J:1,T:1,N:1},RH=58;
+const sg=k=>SLET[k]?`<span class="lt l${k}">${SG[k]}</span>`:`<span class="${k=='W'?'wild':k=='S'?'orbc':''}">${SG[k]}</span>`;
+let reels=Array.from({length:15},rs),spinning=false,slTok=0;
+const cellEl=i=>$('reels').children[i%5].querySelector('.strip').children[Math.floor(i/5)];
+function setReels(g,win){
+  $('reels').innerHTML=[0,1,2,3,4].map(c=>`<div class="reel"><div class="strip" style="filter:none">${[0,1,2].map(r=>{const i=r*5+c;return `<div class="rc${win&&win.has(i)?' winc':''}">${sg(g[i])}</div>`}).join('')}</div></div>`).join('');
+}
+function slotJp(){const b=Math.floor(+$('bet').value)||0;$('jps').innerHTML=Object.entries(JP).map(([k,v])=>`<div class="jp j${k}"><b>${k}</b><span>${sym()}${fmt(b*v)}</span></div>`).join('')}
+function slDone(){spinning=false;$('spin').disabled=false}
+async function spin(){
+  if(spinning)return;const b=bet();if(!b)return;spinning=true;$('spin').disabled=true;const tok=++slTok;
+  const m=$('slots-msg');m.className='';m.textContent='';
+  const fin=Array.from({length:15},rs);
   $('reels').innerHTML=[0,1,2,3,4].map(c=>{
     const arr=[fin[c],fin[5+c],fin[10+c]];
-    for(let i=0;i<16+c*8;i++)arr.push(SY[rnd(SY.length)]);
+    for(let i=0;i<16+c*8;i++)arr.push(rs());
     arr.push(reels[c],reels[5+c],reels[10+c]);
-    return `<div class="reel"><div class="strip" style="transform:translateY(${-(arr.length-3)*RH}px)">${arr.map(x=>`<div class="rc">${x}</div>`).join('')}</div></div>`;
+    return `<div class="reel"><div class="strip" style="transform:translateY(${-(arr.length-3)*RH}px)">${arr.map(x=>`<div class="rc">${sg(x)}</div>`).join('')}</div></div>`;
   }).join('');
   void $('reels').offsetHeight;
   const T=c=>1+c*.3;
@@ -426,11 +573,42 @@ function spin(){
     el.style.transition=`transform ${T(c)}s cubic-bezier(.2,.75,.25,1)`;el.style.transform='translateY(0)';
     el.addEventListener('transitionend',()=>el.style.filter='none',{once:true});
   });
-  setTimeout(()=>{
-    reels=fin;setReels(fin);spinning=false;
-    let w=0;for(let r=0;r<3;r++){let n=1;while(n<5&&fin[r*5+n]==fin[r*5])n++;if(n>=3)w+=b*VAL[fin[r*5]]*(n-2)*4}
-    $('slots-msg').textContent=w?`🎉 Premio: +${sym()}${fmt(w)}`:'💥 Sin premio';if(w)pay(w,b);
-  },T(4)*1000+150);
+  await sl(T(4)*1000+150);
+  reels=fin;const ev=evalGrid(fin),unit=b/10,win=Math.floor(ev.tot*unit),wc=new Set();
+  ev.wins.forEach(w=>w.cells.forEach(i=>wc.add(i)));
+  setReels(fin,wc);
+  if(win){pay(win,b);m.className='win';m.textContent=`🎉 +${sym()}${fmt(win)}`}
+  else m.textContent=ev.sc>=3&&ev.sc<6?`🔮 ${ev.sc} orbes · ¡faltaban ${6-ev.sc}!`:'💥 Sin premio';
+  if(ev.sc>=6){m.textContent=`🔮 ¡${ev.sc} ORBES! LOCK & SPIN`+(win?` · +${sym()}${fmt(win)}`:'');await sl(1600);await lockSpin(fin,b);slDone();return}
+  slDone();
+  if(!ev.wins.length)return;
+  await sl(600);
+  for(const w of ev.wins.slice(0,6)){
+    if(tok!==slTok)return;
+    document.querySelectorAll('#reels .rc').forEach(e=>e.classList.remove('winc'));
+    w.cells.forEach(i=>cellEl(i).classList.add('winc'));
+    m.className='';m.textContent=`Línea ${w.li+1}: ${w.n}× ${SG[w.sym]} → +${sym()}${fmt(w.mult*unit)}`;await sl(1000);
+  }
+  if(tok!==slTok)return;
+  wc.forEach(i=>cellEl(i).classList.add('winc'));m.className='win';m.textContent=`🎉 Total +${sym()}${fmt(win)}`;
+}
+async function lockSpin(fin,b){
+  $('reels').classList.add('hide');$('ls').classList.remove('hide');
+  const F=fNew(fin),m=$('slots-msg'),B=$('lsboard');
+  const draw=nw=>{
+    B.innerHTML=Array.from({length:15},(_,i)=>{const o=F.o[i];return o?`<div class="oc on${nw&&nw.includes(i)?' nw':''}${o.jp?' j'+o.jp:''}">${o.jp||sym()+fmt(o.m*b)}</div>`:'<div class="oc"></div>'}).join('');
+    $('ls-r').textContent=F.r;$('ls-t').textContent=sym()+fmt(fTot(F)*b);
+  };
+  m.className='';m.textContent='🔮 ¡LOCK & SPIN! Las orbes se bloquean';draw();await sl(1600);
+  while(!F.done){
+    B.classList.add('sp');await sl(750);B.classList.remove('sp');
+    const nw=fStep(F);draw(nw);
+    m.textContent=nw.length?`✨ ¡${nw.length} orbe${nw.length>1?'s':''} nueva${nw.length>1?'s':''}! Respins reiniciados`:'Girando...';
+  }
+  await sl(900);
+  const tot=Math.floor(fTot(F)*b),grand=Object.keys(F.o).length>=15;
+  pay(tot);m.className='win';m.textContent=`${grand?'👑 ¡¡GRAND!! ':'🏆 '}Lock & Spin: +${sym()}${fmt(tot)}`;
+  await sl(2600);$('ls').classList.add('hide');$('reels').classList.remove('hide');setReels(reels);
 }
 
 /* ---------- Minas ---------- */
@@ -503,8 +681,10 @@ function cAct(){
   },80);
 }
 function slotsInfo(){
-  const rows=Object.entries(VAL).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="row"><span style="font-size:1.2rem">${k}</span><span>3 → x${v*4}</span><span>4 → x${v*8}</span><span>5 → x${v*12}</span></div>`).join('');
-  $('slots-info').innerHTML='<b style="color:#ffd54a">Cómo funciona</b><br>Hay 5 rodillos y 3 filas. Ganas si en una fila salen 3, 4 o 5 símbolos iguales seguidos <b>empezando por la izquierda</b>. Las 3 filas se pagan a la vez. Premio = apuesta × la cifra de la tabla.<div class="col" style="margin-top:.5rem;gap:.2rem">'+rows+'</div>';
+  const xf=v=>String(+(v/10).toFixed(2)).replace('.',',');
+  const grp=[['W'],['B','P'],['H'],['C','L'],['A','K'],['N'],['Q','J','T']];
+  const rows=grp.map(g=>{const p=PAY[g[0]];return `<div class="row" style="gap:.2rem"><span style="min-width:4.6rem">${g.map(sg).join(' ')}</span>${[2,3,4,5].map(n=>`<span style="width:3.4rem;text-align:right">${p[n]?'x'+xf(p[n]):'-'}</span>`).join('')}</div>`}).join('');
+  $('slots-info').innerHTML=`<b style="color:#ffd54a">Cómo funciona</b><br>Hay <b>10 líneas</b> fijas que pagan de izquierda a derecha. Los premios son múltiplos de tu apuesta total.<br>👸 <b>Dama (comodín)</b>: sustituye a todos menos a 🔮 y <b>duplica</b> el premio cuando sustituye.<br>🔮 <b>6 o más orbes</b> activan <b>LOCK & SPIN</b>: las orbes se bloquean, tienes 3 respins y cada orbe nueva los reinicia. Cada orbe da un premio o un bote: MINI x${JP.MINI}, MINOR x${JP.MINOR}, MAJOR x${JP.MAJOR}. Si llenas las 15 casillas, ¡GRAND x${JP.GRAND}!<div class="col" style="margin-top:.5rem;gap:.25rem"><div class="row" style="gap:.2rem;color:#a99cc9"><span style="min-width:4.6rem">Símbolo</span><span style="width:3.4rem;text-align:right">2</span><span style="width:3.4rem;text-align:right">3</span><span style="width:3.4rem;text-align:right">4</span><span style="width:3.4rem;text-align:right">5</span></div>${rows}</div><div style="margin-top:.4rem;color:#a99cc9">Devolución teórica aproximada: 92%.</div>`;
 }
 function openInfo(){
   const cs=CURS.map((c,i)=>`${c.s} ${c.n} (${['prestigio 0-1','prestigio 2-3','prestigio 4-5','prestigio 6 o más'][i]})`).join('<br>');
@@ -512,15 +692,15 @@ function openInfo(){
   <div><b style="color:#ffd54a">Cómo se juega</b><br>Toca 😠 para ganar dinero. Compra <b>Fuerza de Clic</b> (más dinero por toque) y <b>Auto-BURX</b> (cada uno te da +1,5 por segundo). Cada ${MI} niveles de una mejora, su producción se multiplica x${MS} (acumulable). Si haces clics rápidos sin parar: ${COMBO.map(([x,v])=>`${x}s → x${v}`).join(' · ')} (solo en clics; se pierde si paras).</div>
   <div><b style="color:#ffd54a">Prestigio</b><br>La barra se llena con todo lo que ganas: clics, Auto-BURX y ganancias netas del casino (premio menos apuesta). La primera meta es ${fmt(PB)} y cada prestigio pide x${PF} más. Al subir se reinician tu dinero y tus mejoras, pero ganas +x${PBONUS} por prestigio en clics y Auto-BURX. Tu bonus ahora: x${f1(pm())}.</div>
   <div><b style="color:#ffd54a">Divisas</b><br>${cs}<br>Solo cambia el símbolo del dinero.</div>
-  <div><b style="color:#ffd54a">🎱 Bingo</b><br>4 cartones de 25 números (1-60) que puedes activar o desactivar y cambiar tocándolos. Se sacan 25 bolas. La apuesta es por cartón activo. Cada línea (fila, columna o diagonal) paga x6 y un cartón lleno x200.</div>
+  <div><b style="color:#ffd54a">🎱 Bingo</b><br>Bingo de 90 bolas con cartones de 15 números. Activa los cartones que quieras (la apuesta es por cartón). Completar una fila es Línea (hasta la bola 45) y el cartón entero es Bingo (hasta la 60). Cuanto antes ocurra, más paga.</div>
   <div><b style="color:#ffd54a">🃏 Blackjack</b><br>Acércate a 21 sin pasarte. El crupier pide hasta llegar a 17. Ganar paga x2, Blackjack natural x2,5 y el empate devuelve tu apuesta.</div>
-  <div><b style="color:#ffd54a">🎰 Tragaperras</b><br>Combos de 3 o más iguales desde la izquierda. La tabla de premios está debajo de la tragaperras.</div>
+  <div><b style="color:#ffd54a">🎰 Tragaperras</b><br>Lady Royal: 10 líneas, 👸 comodín que duplica y 🔮 Lock & Spin con botes MINI, MINOR, MAJOR y GRAND. La tabla de premios está debajo de la tragaperras.</div>
   <div><b style="color:#ffd54a">💣 Minas</b><br>Tablero de 25 casillas con 3, 5 o 10 minas. Cada 💎 sube el multiplicador y puedes cobrar cuando quieras. Si pisas una mina, pierdes la apuesta.</div>
   <div><b style="color:#ffd54a">🚀 Cohete</b><br>El multiplicador sube y puede explotar en cualquier momento. Cobra antes de que explote.</div>
   <div><b style="color:#ffd54a">Guardado</b><br>Con cuenta, tu progreso se guarda en la nube cada pocos segundos y el ranking ordena por el dinero total que has obtenido en toda la partida. Como invitado, solo en este dispositivo. El dinero es ficticio.</div>`;
   $('info').classList.add('open');
 }
-slotsInfo();ui();
+slotsInfo();bingoInfo();ui();
 </script>
 </body>
 </html>
