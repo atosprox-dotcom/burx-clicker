@@ -156,6 +156,17 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 #aura.s3{background:radial-gradient(circle,transparent 50%,rgba(255,170,0,.5) 62%,rgba(255,60,0,.3) 72%,rgba(255,0,0,0) 82%);animation:ap .35s ease-in-out infinite alternate,ff .8s ease-in-out infinite}
 #aura.s3::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(255,120,0,.55),transparent 20%,rgba(255,210,0,.5) 45%,transparent 65%,rgba(255,80,0,.55) 85%,rgba(255,120,0,.55));-webkit-mask:radial-gradient(circle,transparent 54%,#000 63%,transparent 80%);mask:radial-gradient(circle,transparent 54%,#000 63%,transparent 80%);animation:sp 1.1s linear infinite}
 @keyframes ff{50%{filter:brightness(1.4) saturate(1.3)}}@keyframes sp{to{transform:rotate(360deg)}}
+#ch-view{position:relative;height:260px;overflow:hidden;border-radius:1rem;border:2px solid #3b2566;background:#23233a}
+#ch-strip{position:absolute;left:0;right:0;top:0;transition:transform .25s ease-out}
+.ln{height:52px;position:relative;overflow:hidden;border-top:2px dashed rgba(255,255,255,.18);display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem;background:#2b2b44}
+.ln.walk,.ln.goal{background:linear-gradient(#1f6f3a,#14532d);justify-content:center;font-weight:800;letter-spacing:.05em;border-top:0}
+.ln.done{opacity:.5}.lm{font-weight:800;font-size:.78rem;color:#a99cc9}.ln.cur .lm{color:#ffd54a}
+#ch-hen{position:absolute;left:50%;top:156px;width:52px;height:52px;margin-left:-26px;display:flex;align-items:center;justify-content:center;font-size:2rem;z-index:3}
+#ch-hen.hop{animation:hop .25s}@keyframes hop{50%{transform:translateY(-14px) scale(1.15)}}
+#ch-hen.dead{animation:bm .5s ease-out forwards}
+.car{position:absolute;top:6px;left:-50px;font-style:normal;font-size:2rem;animation:drive .8s linear forwards;z-index:2}
+@keyframes drive{from{transform:translateX(0) scaleX(-1)}to{transform:translateX(var(--cw)) scaleX(-1)}}
+.cdf{flex:1;padding:.5rem}.cdf.on{background:linear-gradient(#34d399,#059669)}
 </style>
 </head>
 <body>
@@ -219,6 +230,8 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
     <button class="menu" onclick="show('slots','🎰 Lady Royal')">🎰 Lady Royal<div class="small">10 líneas · comodín · Lock &amp; Spin con botes</div></button>
     <button class="menu" onclick="show('mines','💣 Minas')">💣 Minas<div class="small">Cobra antes de pisar una mina</div></button>
     <button class="menu" onclick="show('crash','🚀 Cohete')">🚀 Cohete<div class="small">Cobra antes de que explote</div></button>
+    <button class="menu" onclick="show('drift','🏎️ Drift Rush')">🏎️ Drift Rush<div class="small">Derrapa, sube el multiplicador y cobra a tiempo</div></button>
+    <button class="menu" onclick="show('chicken','🐔 Chicken Cross')">🐔 Chicken Cross<div class="small">Cruza carreteras, sube el multiplicador y cobra</div></button>
   </div>
 
   <div id="g-bingo" class="game hide col">
@@ -264,6 +277,18 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
   <div id="g-crash" class="game hide col">
     <div id="sky"><div id="stars"></div><div id="ci"><span id="rk">🚀</span><div id="fl">🔥</div></div><div id="cm">1.00x</div><div id="cw" style="position:absolute;top:3.7rem;left:0;right:0;text-align:center;z-index:3;font-weight:800;color:#34d399"></div><div id="cs" class="small">Haz tu apuesta para despegar</div></div>
     <button id="c-btn" class="gold big" onclick="cAct()">LANZAR 🚀</button>
+  </div>
+  <div id="g-drift" class="game hide col">
+    <canvas id="dcv" width="360" height="450" style="width:100%;aspect-ratio:360/450;border-radius:1rem;border:2px solid #3b2566;touch-action:none;background:#0f0a1e"></canvas>
+    <button id="dbtn" class="gold big" onclick="driftBtn()">ENTRAR AL CIRCUITO 🏎️</button>
+  </div>
+  <div id="g-chicken" class="game hide col">
+    <div class="row" style="gap:.3rem"><button class="cdf" onclick="chDiff(0)">Fácil</button><button class="cdf on" onclick="chDiff(1)">Medio</button><button class="cdf" onclick="chDiff(2)">Difícil</button></div>
+    <div id="ch-view"><div id="ch-strip"></div><div id="ch-hen">🐔</div></div>
+    <div class="row panel small"><span>Mult: <b id="ch-mx" style="color:#ffd54a">x1.00</b></span><span>Cobro: <b id="ch-win" style="color:#34d399">0</b></span><span>Seguro: <b id="ch-p"></b></span></div>
+    <div id="ch-msg" class="msgb">Elige dificultad y empieza</div>
+    <button id="ch-start" class="gold big" onclick="chStart()">EMPEZAR 🐔</button>
+    <div id="ch-act" class="row hide"><button id="ch-go" class="green big" onclick="chStep()">AVANZAR ➡️</button><button id="ch-cash" class="gold big" onclick="chCash()">COBRAR</button></div>
   </div>
 </div></div></div>
 
@@ -400,8 +425,8 @@ setInterval(()=>{
 /* ---------- Navegación minijuegos ---------- */
 function openArcade(){$('arcade').classList.add('open');menu()}
 function closeArcade(){menu();$('arcade').classList.remove('open')}
-function menu(){stopCrash();if(M&&M.on){M.on=false;$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('gi').classList.add('hide');curG=null;$('ginfo').classList.remove('open');$('atitle').textContent='🕹️ Minijuegos'}
-function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('gi').classList.remove('hide');curG=g;$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit()}
+function menu(){stopCrash();driftStop();chStop();if(M&&M.on){M.on=false;$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('gi').classList.add('hide');curG=null;$('ginfo').classList.remove('open');$('atitle').textContent='🕹️ Minijuegos'}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('gi').classList.remove('hide');curG=g;$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit();if(g=='drift')driftOpen();if(g=='chicken')chOpen()}
 
 /* ---------- Bingo 90 ---------- */
 const BM=60;
@@ -740,13 +765,13 @@ function slotsInfo(){
   return `<b style="color:#ffd54a">Cómo funciona</b><br>Hay <b>10 líneas</b> fijas que pagan de izquierda a derecha. Los premios son múltiplos de tu apuesta total.<br>👸 <b>Dama (comodín)</b>: sustituye a todos menos a 🔮 y <b>duplica</b> el premio cuando sustituye.<br>🔮 <b>6 o más orbes</b> activan <b>LOCK & SPIN</b>: las orbes se bloquean, tienes 3 respins y cada orbe nueva los reinicia. Cada orbe da un premio o un bote: MINI x${JP.MINI}, MINOR x${JP.MINOR}, MAJOR x${JP.MAJOR}. Si llenas las 15 casillas, ¡GRAND x${JP.GRAND}!<div class="col" style="margin-top:.5rem;gap:.25rem"><div class="row" style="gap:.2rem;color:#a99cc9"><span style="min-width:4.6rem">Símbolo</span><span style="width:3.4rem;text-align:right">2</span><span style="width:3.4rem;text-align:right">3</span><span style="width:3.4rem;text-align:right">4</span><span style="width:3.4rem;text-align:right">5</span></div>${rows}</div><div style="margin-top:.4rem;color:#a99cc9">Devolución teórica aproximada: 92%.</div>`;
 }
 let curG=null;
-const GN={bingo:'🎱 Bingo',bj:'🃏 Blackjack',slots:'🎰 Lady Royal',mines:'💣 Minas',crash:'🚀 Cohete'};
+const GN={bingo:'🎱 Bingo',bj:'🃏 Blackjack',slots:'🎰 Lady Royal',mines:'💣 Minas',crash:'🚀 Cohete',drift:'🏎️ Drift Rush',chicken:'🐔 Chicken Cross'};
 function bjInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>Acércate a 21 sin pasarte. Del 2 al 10 valen su número, J, Q y K valen 10 y el As vale 11 o 1.<br><b>Pedir</b>: una carta más. <b>Plantarse</b>: te quedas con lo que tienes. <b>Doblar ×2</b>: solo con tus 2 primeras cartas; doblas la apuesta, recibes una carta y te plantas.<br>El crupier pide hasta llegar a 17.<br><b>Pagos</b>: ganar x2 · Blackjack natural (As + figura con 2 cartas) x2,5 · empate devuelve tu apuesta. Si el crupier hace Blackjack natural, gana a un 21 normal.`}
 function minesInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>El tablero tiene 25 casillas con 3, 5 o 10 minas escondidas (eliges cuántas antes de empezar).<br>Cada 💎 que descubres sube el multiplicador y puedes <b>cobrar</b> cuando quieras. Si pisas una 💣 pierdes la apuesta.<br>Con más minas el multiplicador sube más rápido, pero el riesgo es mayor. Bajo el tablero ves el siguiente multiplicador y el riesgo de la próxima casilla. Si descubres todas las seguras, cobras automáticamente.`}
 function crashInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>El cohete despega y el multiplicador sube. Pulsa <b>COBRAR</b> antes de que explote: ganas tu apuesta × el multiplicador.<br>Puede explotar en cualquier momento, incluso nada más despegar. En el panel y en el botón ves en tiempo real cuánto ganarías. Si explota antes de cobrar, pierdes la apuesta.<br><span style="color:#a99cc9">Devolución teórica aproximada: 97%.</span>`}
 function gInfo(){
   if(!curG)return;
-  const I={bingo:bingoInfo,slots:slotsInfo,bj:bjInfo,mines:minesInfo,crash:crashInfo};
+  const I={bingo:bingoInfo,slots:slotsInfo,bj:bjInfo,mines:minesInfo,crash:crashInfo,drift:()=>DR.info(),chicken:()=>CH.info()};
   $('ginfo-title').textContent='ℹ️ '+GN[curG];$('ginfo-body').innerHTML=I[curG]();$('ginfo').classList.add('open');
 }
 function openInfo(){
@@ -759,6 +784,216 @@ function openInfo(){
   <div><b style="color:#ffd54a">Guardado</b><br>Con cuenta, tu progreso se guarda en la nube cada pocos segundos y el ranking ordena por el dinero total que has obtenido en el clicker. Como invitado, solo en este dispositivo. El dinero es ficticio.</div>`;
   $('info').classList.add('open');
 }
+/* ---------- Drift Rush ---------- */
+const DR=(()=>{
+  const cv=$('dcv'),c=cv.getContext('2d'),W=360,H=450,CX=180,CY=225,TW=26,PI2=Math.PI*2;
+  /* AJUSTES: sensación y economía */
+  const TR=3.1,GRIP=3.2,CRASH_KEEP=.3,MAXMULT=8,PAYK=1.3,RAMP=1.5,RAMPMAX=220;
+  const RATE=[0,.01,.03,.05,.08,0],HEAT=[-14,-14,-8,6,30,40];
+  const QN=['RECTO','FLOJO','BUENO','PERFECTO','EXTREMO','¡SIN CONTROL!'],QC=['#94a3b8','#7dd3fc','#34d399','#ffd54a','#ff5c9f','#ef4444'];
+  const AMP=[14,7,3.5],rn=(a,b)=>a+Math.random()*(b-a);
+  const angd=(a,b)=>{let d=a-b;while(d>Math.PI)d-=PI2;while(d<-Math.PI)d+=PI2;return d};
+  const R=f=>112+T.a[0]*Math.sin(2*f+T.p[0])+T.a[1]*Math.sin(3*f+T.p[1])+T.a[2]*Math.sin(f+T.p[2]);
+  const sec=f=>Math.floor(((f%PI2+PI2)%PI2)/PI2*6);
+  const rollG=()=>{const r=Math.random();return r<.55?1:r<.82?.8:.6};
+  const rr=(x,y,w,h,r)=>c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h);
+  const STEER=['ArrowLeft','ArrowRight','KeyA','KeyD','ShiftLeft','ArrowUp'];
+  let st='idle',stake=50,pm={},kk={},msg=[],cd=0,goT=0,raf=0,last=0,lastBtn='';
+  let T,G,car,mult,t,heat,streak,idle,slipOut,mt,marks,parts,k=0,gm=1,lastW=null;
+  const pay$=m=>Math.floor(stake*Math.max(0,(m-1)*PAYK));
+  const newTarget=()=>{T.ta=AMP.map(a=>rn(.3,1)*a);T.tp=[rn(0,6.28),rn(0,6.28),rn(0,6.28)]};
+  function reset(){
+    T={a:AMP.map(a=>rn(.3,1)*a),p:[rn(0,6.28),rn(0,6.28),rn(0,6.28)]};newTarget();G=[1,1,1,1,1,1];
+    car={x:CX+R(0),y:CY,h:-Math.PI/2,vd:-Math.PI/2,sp:150};
+    mult=1;t=0;heat=0;streak=0;idle=0;slipOut=0;mt=7;marks=[];parts=[];k=0;gm=1;lastW=null;
+  }
+  function setBtn(txt,cls){const key=txt+cls;if(lastBtn!==key){const b=$('dbtn');b.textContent=txt;b.className=cls+' big';lastBtn=key}}
+  function start(){
+    const b=bet();if(!b)return;stake=b;reset();st='count';cd=3;
+  }
+  function finish(title,col,payout,extra){
+    if(payout>0)pay(payout,stake);st='over';
+    const net=payout-stake;
+    msg=[[title,26,col],['Multiplicador x'+mult.toFixed(2),18],['Tiempo '+t.toFixed(1)+' s',16,'#a99cc9'],[(net>=0?'+':'-')+sym()+fmt(Math.abs(net))+' netos',22,net>=0?'#34d399':'#ef4444']];
+    if(extra)msg.splice(1,0,[extra,13,'#a99cc9']);
+  }
+  const cash=()=>finish('¡COBRADO!','#ffd54a',pay$(mult));
+  const crash=why=>finish('¡ACCIDENTE!','#ef4444',Math.floor(pay$(mult)*CRASH_KEEP),why+' · cobro de emergencia '+Math.round(CRASH_KEEP*100)+'%');
+  function update(dt){
+    t+=dt;
+    for(let i=0;i<3;i++){T.a[i]+=(T.ta[i]-T.a[i])*.25*dt;T.p[i]+=(T.tp[i]-T.p[i])*.25*dt}
+    const phi=Math.atan2(car.y-CY,car.x-CX);
+    mt-=dt;if(mt<=0){newTarget();mt=7;G[(sec(phi)+3)%6]=rollG()}
+    if(Object.keys(pm).length||Object.keys(kk).length)car.h-=TR*dt; // pulsado = izquierda, suelto = recto
+    gm=G[sec(phi)];
+    car.vd+=angd(car.h,car.vd)*GRIP*gm*dt;
+    const slip=Math.abs(angd(car.h,car.vd))*180/Math.PI;
+    const base=Math.min(RAMPMAX,150+RAMP*t);
+    car.sp+=(base*(1-.22*Math.min(1,slip/70))-car.sp)*2*dt;
+    car.x+=Math.cos(car.vd)*car.sp*dt;car.y+=Math.sin(car.vd)*car.sp*dt;
+    k=slip<10?0:slip<22?1:slip<38?2:slip<55?3:slip<72?4:5;
+    if(k>=1&&k<=4){streak+=dt;idle=0}else{idle+=dt;if(idle>.8)streak=0}
+    const style=Math.min(.5,Math.floor(streak/2)*.05),reward=1+(1-gm)*.5;
+    mult=Math.min(MAXMULT,mult+RATE[k]*(1+style)*reward*dt);
+    heat=Math.max(0,heat+HEAT[k]*dt);
+    slipOut=k==5?slipOut+dt:Math.max(0,slipOut-dt*2);
+    const rx=car.x-Math.cos(car.h)*7,ry=car.y-Math.sin(car.h)*7,px=-Math.sin(car.h)*4,py=Math.cos(car.h)*4,w=[rx+px,ry+py,rx-px,ry-py];
+    if(k>=1&&lastW)marks.push([lastW[0],lastW[1],w[0],w[1],0],[lastW[2],lastW[3],w[2],w[3],0]);
+    lastW=k>=1?w:null;
+    marks.forEach(m=>m[4]+=dt);marks=marks.filter(m=>m[4]<5);
+    if(slip>18)for(let i=0;i<2;i++)parts.push({x:rx,y:ry,vx:rn(-18,18),vy:rn(-18,18),l:0});
+    parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.l+=dt*1.3});parts=parts.filter(p=>p.l<1);
+    if(slipOut>.4)return crash('Trompo');
+    if(heat>=100)return crash('Neumáticos sobrecalentados');
+    if(Math.abs(Math.hypot(car.x-CX,car.y-CY)-R(phi))>TW+4)return crash('Choque con el muro');
+  }
+  function path(f0,f1,n){c.beginPath();for(let i=0;i<=n;i++){const f=f0+(f1-f0)*i/n,r=R(f),x=CX+r*Math.cos(f),y=CY+r*Math.sin(f);i?c.lineTo(x,y):c.moveTo(x,y)}}
+  function drawTrack(){
+    c.lineJoin='round';c.setLineDash([]);
+    path(0,PI2,120);c.closePath();c.strokeStyle='#4a3a7a';c.lineWidth=2*TW+8;c.stroke();
+    c.strokeStyle='#1d1a33';c.lineWidth=2*TW;c.stroke();
+    for(let s=0;s<6;s++)if(G[s]<1){path(s*PI2/6,(s+1)*PI2/6,24);c.strokeStyle=G[s]<.7?'rgba(56,189,248,.3)':'rgba(56,189,248,.13)';c.lineWidth=2*TW;c.stroke()}
+    path(0,PI2,120);c.closePath();c.setLineDash([10,12]);c.strokeStyle='rgba(255,255,255,.2)';c.lineWidth=2;c.stroke();c.setLineDash([]);
+    const r=R(0);c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(CX+r-TW,CY);c.lineTo(CX+r+TW,CY);c.stroke();
+  }
+  function drawCar(){
+    c.save();c.translate(car.x,car.y);c.rotate(car.h);
+    c.fillStyle='#ff3d8b';c.beginPath();rr(-9,-5,18,10,3);c.fill();
+    c.fillStyle='#1b1030';c.fillRect(1,-4,5,8);c.fillStyle='#fff';c.fillRect(8,-4,2,2);c.fillRect(8,2,2,2);
+    c.restore();
+  }
+  function hud(){
+    c.textAlign='center';
+    c.font='800 38px system-ui';c.fillStyle=QC[k];c.shadowColor=QC[k];c.shadowBlur=12;c.fillText('x'+mult.toFixed(2),CX,48);c.shadowBlur=0;
+    c.font='800 14px system-ui';c.fillText(QN[k],CX,70);
+    c.textAlign='left';c.font='700 13px system-ui';
+    c.fillStyle=mult>=1+1/PAYK?'#34d399':'#ffd54a';c.fillText('💰 Cobro: '+sym()+fmt(pay$(mult)),10,22);
+    c.fillStyle='#a99cc9';c.fillText(t.toFixed(0)+' s · rentable desde x'+(1+1/PAYK).toFixed(2),10,40);
+    const sa=gm>=1?'SECO':gm>=.8?'HÚMEDO':'MOJADO';c.fillStyle=gm>=1?'#a99cc9':'#38bdf8';c.fillText('Asfalto: '+sa,10,H-34);
+    c.fillStyle='#a99cc9';c.fillText('Calor',10,H-14);
+    c.fillStyle='#000';c.fillRect(48,H-24,120,10);c.fillStyle=heat>70?'#ef4444':heat>40?'#fbbf24':'#34d399';c.fillRect(48,H-24,120*Math.min(1,heat/100),10);
+    c.textAlign='right';c.fillStyle='#a99cc9';c.fillText('Estilo +'+Math.round(Math.min(.5,Math.floor(streak/2)*.05)*100)+'%',W-10,22);
+    c.fillText(Math.round(car.sp*.8)+' km/h',W-10,H-14);
+  }
+  function overlay(lines){
+    c.fillStyle='rgba(8,4,20,.8)';c.fillRect(0,0,W,H);c.textAlign='center';
+    lines.forEach(([tx,s,col],i)=>{c.font=`800 ${s}px system-ui`;c.fillStyle=col||'#fff';c.fillText(tx,CX,150+i*36)});
+  }
+  function draw(){
+    c.clearRect(0,0,W,H);drawTrack();
+    marks.forEach(m=>{c.strokeStyle=`rgba(0,0,0,${.55*(1-m[4]/5)})`;c.lineWidth=2;c.beginPath();c.moveTo(m[0],m[1]);c.lineTo(m[2],m[3]);c.stroke()});
+    parts.forEach(p=>{c.fillStyle=`rgba(200,200,220,${.45*(1-p.l)})`;c.beginPath();c.arc(p.x,p.y,4+p.l*10,0,PI2);c.fill()});
+    drawCar();
+    if(st=='count'){
+      hud();c.fillStyle='rgba(8,4,20,.4)';c.fillRect(0,0,W,H);c.textAlign='center';
+      const f=cd%1;c.globalAlpha=.45+.55*f;c.font=`900 ${90+f*40}px system-ui`;c.fillStyle='#ffd54a';c.fillText(Math.ceil(cd),CX,CY+30);c.globalAlpha=1;
+      c.font='700 15px system-ui';c.fillStyle='#fff';c.fillText('Mantén pulsado para girar a la izquierda',CX,CY+90);c.fillText('Suelta para ir recto',CX,CY+112);
+      setBtn('¡PREPÁRATE!','gold');
+    }else if(st=='run'){
+      hud();if(goT>0){c.textAlign='center';c.font='900 64px system-ui';c.fillStyle='#34d399';c.fillText('¡YA!',CX,CY+20)}
+      setBtn('COBRAR '+sym()+fmt(pay$(mult))+' 💰','green');
+    }else if(st=='idle'){
+      overlay([['DRIFT RUSH',34,'#ffd54a'],['Mantén pulsado para girar a la izquierda',15],['Derrapa para subir el multiplicador',16],['Vigila el calor de los neumáticos',15,'#a99cc9'],['y cobra antes de estrellarte',16]]);setBtn('ENTRAR AL CIRCUITO 🏎️','gold');
+    }else{hud();overlay(msg);setBtn('JUGAR OTRA VEZ 🏎️','gold')}
+  }
+  function loop(ts){
+    const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
+    if(st=='count'){cd-=dt;if(cd<=0){st='run';goT=.7}}else if(st=='run')update(dt);
+    if(goT>0)goT-=dt;draw();raf=requestAnimationFrame(loop);
+  }
+  const btn=()=>{if(st=='run')cash();else if(st!='count')start()};
+  cv.addEventListener('pointerdown',e=>{pm[e.pointerId]=1;try{cv.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
+  ['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,e=>{delete pm[e.pointerId]}));
+  addEventListener('keydown',e=>{
+    if(curG!='drift')return;
+    if(STEER.includes(e.code)){kk[e.code]=1;e.preventDefault()}
+    if(e.code=='Space'&&!e.repeat&&e.target.tagName!='INPUT'){e.preventDefault();btn()}
+  });
+  addEventListener('keyup',e=>{delete kk[e.code]});
+  reset();
+  return{
+    btn,
+    open(){st='idle';pm={};kk={};reset();if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}},
+    stop(){if(raf)cancelAnimationFrame(raf);raf=0;st='idle';pm={};kk={}},
+    info(){
+      return `<b style="color:#ffd54a">Cómo funciona</b><br>Un coche visto desde arriba da vueltas a un circuito. <b>Mantén la pantalla pulsada</b> para girar a la izquierda y suelta para ir recto. Al pulsar entrar hay una cuenta atrás de 3 segundos para que veas el circuito.<br><b>Derrapa</b> para subir el multiplicador (empieza en x1,00). Cuanto más ángulo, más sube por segundo: FLOJO +0,01 · BUENO +0,03 · PERFECTO +0,05 · EXTREMO +0,08. Aguantar un derrape seguido da hasta +50% de estilo, y el asfalto mojado da más puntos pero se pierde antes el control.<br><b>Calor de neumáticos</b>: el derrape perfecto y el extremo lo suben; si llega al máximo pierdes el control. Con ángulos menores se enfría.<br><b>Cobrar</b>: pulsa el botón cuando quieras. Cobro = apuesta × (multiplicador − 1) × ${PAYK}, así que empiezas a ganar dinero desde x${(1+1/PAYK).toFixed(2)}. Máximo x${MAXMULT}.<br><b>Accidente</b> (muro, trompo o neumáticos): solo recibes el ${Math.round(CRASH_KEEP*100)}% de lo que habrías cobrado.<br>El coche acelera poco a poco, así que cada vez es más difícil. Es un juego de habilidad: tu devolución depende de lo bien que conduzcas.`;
+    }
+  };
+})();
+const driftOpen=DR.open,driftStop=DR.stop,driftBtn=DR.btn;
+/* ---------- Chicken Cross ---------- */
+const CH=(()=>{
+  const RH=52,SLOT=156,RTP=.96;
+  const DIF=[{n:'Fácil',p:.9,L:20},{n:'Medio',p:.8,L:15},{n:'Difícil',p:.7,L:12}];
+  let d=1,n=0,st='idle',stake=50,busy=false;
+  const D=()=>DIF[d],mul=i=>i?RTP/Math.pow(D().p,i):1,fm=m=>m<100?m.toFixed(2):String(Math.round(m));
+  const strip=()=>$('ch-strip'),hen=()=>$('ch-hen'),view=()=>$('ch-view');
+  function setPos(i){strip().style.transform=`translateY(${SLOT-(D().L+1-i)*RH}px)`}
+  function mark(){document.querySelectorAll('#ch-strip .ln[id]').forEach(e=>{const i=+e.id.slice(2);e.classList.toggle('done',i<n);e.classList.toggle('cur',i==n)})}
+  function ctl(){
+    $('ch-go').disabled=busy;$('ch-cash').disabled=busy||n<1;
+    $('ch-cash').textContent=n?`COBRAR ${sym()}${fmt(stake*mul(n))} 💰`:'COBRAR';
+  }
+  function hud(){
+    $('ch-mx').textContent='x'+fm(mul(n));$('ch-win').textContent=sym()+fmt(st=='run'?stake*mul(n):0);
+    $('ch-p').textContent=Math.round(D().p*100)+'%';ctl();
+  }
+  function build(){
+    const L=D().L;let h='';
+    for(let i=L+1;i>=0;i--)h+=i==L+1?'<div class="ln goal">🏁 META 🏁</div>':i==0?'<div class="ln walk">🌳 INICIO 🌳</div>':`<div class="ln" id="ln${i}"><span class="lm">x${fm(mul(i))}</span></div>`;
+    strip().innerHTML=h;view().style.setProperty('--cw',(view().clientWidth||400)+60+'px');
+    n=0;hen().textContent='🐔';hen().className='';setPos(0);mark();hud();
+    document.querySelectorAll('.cdf').forEach((b,i)=>b.classList.toggle('on',i==d));
+  }
+  const hop=()=>{const h=hen();h.classList.remove('hop');void h.offsetWidth;h.classList.add('hop')};
+  function car(i){
+    const ln=$('ln'+i);if(!ln)return;
+    const e=document.createElement('i');e.className='car';e.textContent=['🚗','🚕','🚙','🚚','🚓','🏎️'][rnd(6)];
+    ln.appendChild(e);setTimeout(()=>e.remove(),900);
+  }
+  function msg(t,c){const m=$('ch-msg');m.className='msgb';void m.offsetWidth;m.className='msgb '+(c||'');m.textContent=t}
+  function end(win,w){
+    st='over';busy=false;
+    if(win){msg(`🎉 ${n>=D().L?'¡Cruzaste todo! ':''}+${sym()}${fmt(w-stake)} (x${fm(mul(n))})`,'win');burst(view(),['🪙','✨','🐔'])}
+    else msg(`💥 ¡Atropellado en la carretera ${n+1}! -${sym()}${fmt(stake)}`,'lose');
+    $('ch-act').classList.add('hide');$('ch-start').classList.remove('hide');$('ch-start').textContent='JUGAR OTRA VEZ 🐔';hud();
+  }
+  function cash(auto){
+    if(st!='run'||(busy&&auto!==true)||n<1)return;
+    const w=Math.floor(stake*mul(n));pay(w,stake);end(true,w);
+  }
+  async function step(){
+    if(st!='run'||busy)return;busy=true;ctl();
+    const L=D().L,lane=n+1,safe=Math.random()<D().p;
+    car(lane);
+    if(safe){
+      await sl(520);if(st!='run')return;
+      hop();n=lane;setPos(n);mark();await sl(300);if(st!='run')return;
+      hud();if(n>=L)return cash(true);
+      busy=false;ctl();
+    }else{
+      await sl(150);if(st!='run')return;
+      hop();setPos(lane);await sl(250);if(st!='run')return;
+      hen().textContent='💥';hen().className='dead';await sl(700);
+      if(st=='run')end(false);
+    }
+  }
+  function start(){
+    if(st=='run')return;const b=bet();if(!b)return;stake=b;build();st='run';busy=false;
+    $('ch-start').classList.add('hide');$('ch-act').classList.remove('hide');msg('¿Te atreves a cruzar? 🐔');hud();
+  }
+  return{
+    start,step,cash:()=>cash(),
+    diff(i){if(st=='run')return;d=i;build()},
+    open(){st='idle';busy=false;$('ch-start').classList.remove('hide');$('ch-start').textContent='EMPEZAR 🐔';$('ch-act').classList.add('hide');msg('Elige dificultad y empieza');build()},
+    stop(){st='idle';busy=false},
+    state:()=>({n,st}),
+    info(){
+      return `<b style="color:#ffd54a">Cómo funciona</b><br>Ayuda a la gallina a cruzar carreteras. Pulsa <b>AVANZAR</b> para pasar a la siguiente: puede cruzar sin problema o ser atropellada.<br>Cada carretera superada sube el multiplicador y puedes <b>COBRAR</b> cuando quieras. Si te atropellan, pierdes la apuesta. Si cruzas todas, cobras automáticamente.<br><b>Dificultad</b> (probabilidad de pasar cada carretera):<br>${DIF.map(x=>`• <b>${x.n}</b>: ${Math.round(x.p*100)}% · ${x.L} carreteras · máx. x${fm(RTP/Math.pow(x.p,x.L))}`).join('<br>')}<br>El multiplicador es ${RTP} ÷ la probabilidad de haber llegado hasta ahí, así que la devolución teórica es del ${Math.round(RTP*100)}% cobres donde cobres. Más difícil significa premios más grandes pero menos veces.`;
+    }
+  };
+})();
+const chOpen=CH.open,chStop=CH.stop,chStart=CH.start,chStep=CH.step,chCash=CH.cash,chDiff=CH.diff;
 ui();
 </script>
 </body>
