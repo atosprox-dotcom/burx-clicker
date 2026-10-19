@@ -426,7 +426,23 @@ async function openRank(){
 }
 
 /* ---------- Clicker ---------- */
+const MAXCPS=12,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
+let ct=[],iv=[],acUntil=0,lastWarn=0;
+function clickOK(e,now=performance.now()){
+  const warn=m=>{if(now-lastWarn>3000){lastWarn=now;toast(m)}};
+  if(!e.isTrusted)return false;                       // clics generados por scripts
+  if(now<acUntil){warn('⛔ Clics en pausa por autoclicker');return false}
+  ct=ct.filter(t=>now-t<1000);if(!ct.length)iv=[];
+  if(ct.length>=MAXCPS){warn('⚠️ Demasiado rápido (máx. '+MAXCPS+' clics por segundo)');return false}
+  if(ct.length){iv.push(now-ct[ct.length-1]);if(iv.length>30)iv.shift()}
+  if(iv.length>=30){
+    const m=iv.reduce((a,b)=>a+b,0)/iv.length,sd=Math.sqrt(iv.reduce((a,b)=>a+(b-m)*(b-m),0)/iv.length);
+    if(m<AC_MEAN&&sd<AC_SD){acUntil=now+15000;iv=[];ct=[];warn('⛔ Autoclicker detectado: clics en pausa 15 s');return false}
+  }
+  ct.push(now);return true;
+}
 $('click').addEventListener('click',e=>{
+  if(!clickOK(e))return;
   const now=Date.now();if(now-cl>GAP)cs=now;cl=now;const g=perClick()*comboMult();earn(g);
   const n=document.createElement('div');n.className='float';n.textContent='+'+f1(g);
   n.style.left=(e.clientX||innerWidth/2)-12+'px';n.style.top=(e.clientY||innerHeight/2)-30+'px';
