@@ -184,6 +184,8 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 #co-ban.on{display:flex;animation:copop .4s}
 .cobar{height:.7rem;background:rgba(0,0,0,.5);border-radius:1rem;overflow:hidden}.cobar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8b5cf6,#ff3d8b,#ffd54a);transition:width .25s}
 .codot{display:inline-block;width:.8rem;height:.8rem;border-radius:50%;vertical-align:middle;margin-right:.2rem}
+html.lock,body.lock{overflow:hidden}
+.modal,.box,#abody{overscroll-behavior:contain}
 </style>
 </head>
 <body>
@@ -1240,6 +1242,14 @@ function open(){
 return{go,open,info,turbo:turboT,stop(){}};
 })();
 const coSpin=CO.go,coOpen=CO.open,coTurbo=CO.turbo;
+/* Con una ventana abierta, el fondo (el clicker) no se desplaza */
+(()=>{
+  const sync=()=>{const on=!!document.querySelector('.modal.open');document.documentElement.classList.toggle('lock',on);document.body.classList.toggle('lock',on)};
+  const mo=new MutationObserver(sync);
+  document.querySelectorAll('.modal').forEach(m=>mo.observe(m,{attributes:true,attributeFilter:['class']}));
+  document.addEventListener('touchmove',e=>{if(document.body.classList.contains('lock')&&!e.target.closest('.box'))e.preventDefault()},{passive:false});
+  sync();
+})();
 ui();
 </script>
 </body>
