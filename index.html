@@ -651,7 +651,7 @@ async function openRank(){
 }
 
 /* ---------- Clicker ---------- */
-const MAXCPS=20,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
+const MAXCPS=12,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
 let ct=[],iv=[],acUntil=0,lastWarn=0;
 function clickOK(e,now=performance.now()){
   const warn=m=>{if(now-lastWarn>3000){lastWarn=now;toast(m)}};
