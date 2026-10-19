@@ -786,10 +786,10 @@ function openInfo(){
 }
 /* ---------- Drift Rush ---------- */
 const DR=(()=>{
-  const cv=$('dcv'),c=cv.getContext('2d'),W=360,H=450,CX=180,CY=225,TW=36,PI2=Math.PI*2;
+  const cv=$('dcv'),c=cv.getContext('2d'),W=360,H=450,CX=180,CY=225,TW=26,PI2=Math.PI*2;
   /* AJUSTES: sensación y economía */
-  const ASSIST=4.5,TR=4.2,GRIP=3.2,CRASH_KEEP=.3,MAXMULT=8,PAYK=1.2,RAMP=1.0,RAMPMAX=175,BASE0=115;
-  const RATE=[0,.01,.03,.05,.08,0],HEAT=[-14,-14,-8,6,22,32];
+  const TR=3.1,GRIP=3.2,CRASH_KEEP=.5,REPAIR=.25,MAXMULT=8,PAYK=1.7,RAMP=1.5,RAMPMAX=220,BASE0=150;
+  const RATE=[0,.014,.042,.07,.112,0],HEAT=[-14,-14,-8,6,30,40];
   const QN=['RECTO','FLOJO','BUENO','PERFECTO','EXTREMO','¡SIN CONTROL!'],QC=['#94a3b8','#7dd3fc','#34d399','#ffd54a','#ff5c9f','#ef4444'];
   const AMP=[14,7,3.5],rn=(a,b)=>a+Math.random()*(b-a);
   const angd=(a,b)=>{let d=a-b;while(d>Math.PI)d-=PI2;while(d<-Math.PI)d+=PI2;return d};
@@ -818,13 +818,12 @@ const DR=(()=>{
     if(extra)msg.splice(1,0,[extra,13,'#a99cc9']);
   }
   const cash=()=>finish('¡COBRADO!','#ffd54a',pay$(mult));
-  const crash=why=>finish('¡ACCIDENTE!','#ef4444',Math.floor(pay$(mult)*CRASH_KEEP),why+' · cobro de emergencia '+Math.round(CRASH_KEEP*100)+'%');
+  const crash=why=>{const back=Math.floor(pay$(mult)*CRASH_KEEP+stake*REPAIR);finish('¡ACCIDENTE!','#ef4444',back,why+' · reparación: recuperas '+sym()+fmt(back))};
   function update(dt){
     t+=dt;
     for(let i=0;i<3;i++){T.a[i]+=(T.ta[i]-T.a[i])*.25*dt;T.p[i]+=(T.tp[i]-T.p[i])*.25*dt}
     const phi=Math.atan2(car.y-CY,car.x-CX);
     mt-=dt;if(mt<=0){newTarget();mt=7;G[(sec(phi)+3)%6]=rollG()}
-    {const f2=phi-.35,r2=R(f2),aim=Math.atan2(CY+r2*Math.sin(f2)-car.y,CX+r2*Math.cos(f2)-car.x);car.h+=angd(aim,car.h)*ASSIST*dt} // ayuda: el coche sigue la pista
     if(Object.keys(pm).length||Object.keys(kk).length)car.h-=TR*dt; // pulsado = derrapar a la izquierda // pulsado = izquierda, suelto = recto
     gm=G[sec(phi)];
     car.vd+=angd(car.h,car.vd)*GRIP*gm*dt;
@@ -844,10 +843,9 @@ const DR=(()=>{
     marks.forEach(m=>m[4]+=dt);marks=marks.filter(m=>m[4]<5);
     if(slip>18)for(let i=0;i<2;i++)parts.push({x:rx,y:ry,vx:rn(-18,18),vy:rn(-18,18),l:0});
     parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.l+=dt*1.3});parts=parts.filter(p=>p.l<1);
-    if(slipOut>.6)return crash('Trompo');
+    if(slipOut>.4)return crash('Trompo');
     if(heat>=100)return crash('Neumáticos sobrecalentados');
-    outT=Math.abs(Math.hypot(car.x-CX,car.y-CY)-R(phi))>TW+6?outT+dt:0;
-    if(outT>.35)return crash('Choque con el muro');
+    if(Math.abs(Math.hypot(car.x-CX,car.y-CY)-R(phi))>TW+4)return crash('Choque con el muro');
   }
   function path(f0,f1,n){c.beginPath();for(let i=0;i<=n;i++){const f=f0+(f1-f0)*i/n,r=R(f),x=CX+r*Math.cos(f),y=CY+r*Math.sin(f);i?c.lineTo(x,y):c.moveTo(x,y)}}
   function drawTrack(){
@@ -868,7 +866,6 @@ const DR=(()=>{
     c.textAlign='center';
     c.font='800 38px system-ui';c.fillStyle=QC[k];c.shadowColor=QC[k];c.shadowBlur=12;c.fillText('x'+mult.toFixed(2),CX,48);c.shadowBlur=0;
     c.font='800 14px system-ui';c.fillText(QN[k],CX,70);
-    if(outT>0){c.fillStyle='#ef4444';c.font='800 15px system-ui';c.fillText('¡VUELVE A LA PISTA!',CX,H-54)}
     c.textAlign='left';c.font='700 13px system-ui';
     c.fillStyle=mult>=1+1/PAYK?'#34d399':'#ffd54a';c.fillText('💰 Cobro: '+sym()+fmt(pay$(mult)),10,22);
     c.fillStyle='#a99cc9';c.fillText(t.toFixed(0)+' s · rentable desde x'+(1+1/PAYK).toFixed(2),10,40);
@@ -890,13 +887,13 @@ const DR=(()=>{
     if(st=='count'){
       hud();c.fillStyle='rgba(8,4,20,.4)';c.fillRect(0,0,W,H);c.textAlign='center';
       const f=cd%1;c.globalAlpha=.45+.55*f;c.font=`900 ${90+f*40}px system-ui`;c.fillStyle='#ffd54a';c.fillText(Math.ceil(cd),CX,CY+30);c.globalAlpha=1;
-      c.font='700 15px system-ui';c.fillStyle='#fff';c.fillText('Mantén pulsado para derrapar',CX,CY+90);c.fillText('Suelta para estabilizar el coche',CX,CY+112);
+      c.font='700 15px system-ui';c.fillStyle='#fff';c.fillText('Mantén pulsado para girar a la izquierda',CX,CY+90);c.fillText('Suelta para ir recto',CX,CY+112);
       setBtn('¡PREPÁRATE!','gold');
     }else if(st=='run'){
       hud();if(goT>0){c.textAlign='center';c.font='900 64px system-ui';c.fillStyle='#34d399';c.fillText('¡YA!',CX,CY+20)}
       setBtn('COBRAR '+sym()+fmt(pay$(mult))+' 💰','green');
     }else if(st=='idle'){
-      overlay([['DRIFT RUSH',34,'#ffd54a'],['El coche sigue la pista casi solo',15],['Pulsa para derrapar, suelta para estabilizar',15],['Derrapa para subir el multiplicador',16],['Vigila el calor de los neumáticos',15,'#a99cc9'],['y cobra antes de estrellarte',16]]);setBtn('ENTRAR AL CIRCUITO 🏎️','gold');
+      overlay([['DRIFT RUSH',34,'#ffd54a'],['Mantén pulsado para girar a la izquierda',15],['Derrapa para subir el multiplicador',16],['Vigila el calor de los neumáticos',15,'#a99cc9'],['y cobra antes de estrellarte',16]]);setBtn('ENTRAR AL CIRCUITO 🏎️','gold');
     }else{hud();overlay(msg);setBtn('JUGAR OTRA VEZ 🏎️','gold')}
   }
   function loop(ts){
@@ -919,7 +916,7 @@ const DR=(()=>{
     open(){st='idle';pm={};kk={};reset();if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}},
     stop(){if(raf)cancelAnimationFrame(raf);raf=0;st='idle';pm={};kk={}},
     info(){
-      return `<b style="color:#ffd54a">Cómo funciona</b><br>Un coche visto desde arriba da vueltas a un circuito. El coche sigue la pista casi solo: tú decides cuánto derrapa. <b>Mantén la pantalla pulsada</b> para derrapar (el coche gira más a la izquierda) y <b>suelta</b> para estabilizarlo. Si lo mantienes demasiado, pierdes el control. Al pulsar entrar hay una cuenta atrás de 3 segundos para que veas el circuito.<br><b>Derrapa</b> para subir el multiplicador (empieza en x1,00). Cuanto más ángulo, más sube por segundo: FLOJO +0,01 · BUENO +0,03 · PERFECTO +0,05 · EXTREMO +0,08. Aguantar un derrape seguido da hasta +50% de estilo, y el asfalto mojado da más puntos pero se pierde antes el control.<br><b>Calor de neumáticos</b>: el derrape perfecto y el extremo lo suben; si llega al máximo pierdes el control. Con ángulos menores se enfría.<br><b>Cobrar</b>: pulsa el botón cuando quieras. Cobro = apuesta × (multiplicador − 1) × ${PAYK}, así que empiezas a ganar dinero desde x${(1+1/PAYK).toFixed(2)}. Máximo x${MAXMULT}.<br><b>Accidente</b> (muro, trompo o neumáticos): solo recibes el ${Math.round(CRASH_KEEP*100)}% de lo que habrías cobrado.<br>El coche acelera poco a poco, así que cada vez es más difícil. Puedes rozar el borde de la pista: solo es accidente si te quedas fuera más de 0,35 segundos. Es un juego de habilidad: tu devolución depende de lo bien que conduzcas.`;
+      return `<b style="color:#ffd54a">Cómo funciona</b><br>Un coche visto desde arriba da vueltas a un circuito. <b>Mantén la pantalla pulsada</b> para girar a la izquierda y suelta para ir recto. Al pulsar entrar hay una cuenta atrás de 3 segundos para que veas el circuito.<br><b>Derrapa</b> para subir el multiplicador (empieza en x1,00). Cuanto más ángulo, más sube por segundo: FLOJO +0,014 · BUENO +0,042 · PERFECTO +0,07 · EXTREMO +0,112. Aguantar un derrape seguido da hasta +50% de estilo, y el asfalto mojado da más puntos pero se pierde antes el control.<br><b>Calor de neumáticos</b>: el derrape perfecto y el extremo lo suben; si llega al máximo pierdes el control. Con ángulos menores se enfría.<br><b>Cobrar</b>: pulsa el botón cuando quieras. Cobro = apuesta × (multiplicador − 1) × ${PAYK}, así que empiezas a ganar dinero desde x${(1+1/PAYK).toFixed(2)}. Máximo x${MAXMULT}.<br><b>Accidente</b> (muro, trompo o neumáticos): la reparación te cuesta menos: recuperas el ${Math.round(REPAIR*100)}% de la apuesta más el ${Math.round(CRASH_KEEP*100)}% de lo que habrías cobrado.<br>El coche acelera poco a poco, así que cada vez es más difícil. Es un juego de habilidad: tu devolución depende de lo bien que conduzcas.`;
     }
   };
 })();
