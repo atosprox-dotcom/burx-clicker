@@ -8,10 +8,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>if(!window.supabase)document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>')</script>
 <script>
-/* Diagnóstico: muestra en pantalla cualquier error de carga */
-window.addEventListener('error',function(e){var m=document.getElementById('login-msg');if(m)m.textContent='Error del juego: '+(e.message||e)+(e.lineno?' (línea '+e.lineno+')':'')});
-window.addEventListener('unhandledrejection',function(e){var m=document.getElementById('login-msg');if(m)m.textContent='Error: '+((e.reason&&e.reason.message)||e.reason)});
-window.addEventListener('load',function(){if(!window.supabase){var m=document.getElementById('login-msg');if(m)m.textContent='No carga la librería de cuentas (Supabase). Revisa tu conexión o bloqueadores. Puedes jugar sin cuenta.'}});
+/* Diagnóstico: muestra en pantalla el PRIMER error de carga */
+window.__errs=[];
+function __show(t){window.__errs.push(t);var m=document.getElementById('login-msg');if(m)m.textContent=window.__errs[0]+(window.__errs.length>1?' | ...':'')}
+window.addEventListener('error',function(e){__show('Error del juego: '+(e.message||e)+(e.lineno?' (línea '+e.lineno+')':''))});
+window.addEventListener('unhandledrejection',function(e){__show('Error: '+((e.reason&&e.reason.message)||e.reason))});
+window.addEventListener('load',function(){
+  if(!window.supabase)__show('No carga la librería de cuentas (Supabase). Revisa tu conexión o bloqueadores. Puedes jugar sin cuenta.');
+  else if(!window.__burxLoaded)__show('El código del juego no se cargó entero (archivo incompleto o con error).');
+});
 </script>
 <style>
 *{box-sizing:border-box}
@@ -1131,5 +1136,4 @@ const DR=(()=>{
   function drawTrack(){
     c.lineJoin='round';c.setLineDash([]);
     path(0,PI2,120);c.closePath();c.strokeStyle='#4a3a7a';c.lineWidth=2*TW+8;c.stroke();
-    c.strokeStyle='#1d1a33';c.lineWidth=2*TW;c.stroke();
-    for(let s=0;s<6;s++)if(G[s]<1){path(s*PI2/6,(s+1)*PI2/6,24);c.strokeStyle=G[s]<.7?'rgb
+    c.strokeSty
