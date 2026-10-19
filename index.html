@@ -186,6 +186,32 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 .codot{display:inline-block;width:.8rem;height:.8rem;border-radius:50%;vertical-align:middle;margin-right:.2rem}
 html.lock,body.lock{overflow:hidden}
 .modal,.box,#abody{overscroll-behavior:contain}
+.chest{display:flex;align-items:center;gap:.6rem;width:100%;padding:.6rem .7rem;border:2px solid;border-radius:1rem;background:rgba(30,18,52,.75);color:#fff}
+.chest.off{opacity:.55}
+.obar{display:flex;height:.35rem;border-radius:.2rem;overflow:hidden;margin-top:.3rem;background:#000}.obar i{display:block;height:100%}
+.ci{position:relative;display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;font-size:1.4rem;border:1px solid;border-radius:.6rem;background:rgba(0,0,0,.35)}
+.ci.off{border-color:rgba(255,255,255,.12);opacity:.5;font-size:1rem}
+.ci i{position:absolute;right:-.2rem;bottom:-.3rem;font-style:normal;font-size:.6rem;background:#ffd54a;color:#000;border-radius:.5rem;padding:0 .25rem;font-weight:800}
+.ci.cs.empty{border:2px dashed rgba(255,255,255,.22);background:transparent}
+.balloon{position:fixed;bottom:-4rem;z-index:46;font-size:3.2rem;line-height:1;cursor:pointer;animation:flt 6s linear forwards,wob 1.4s ease-in-out infinite;filter:drop-shadow(0 0 10px #ff3d8b)}
+@keyframes flt{to{translate:0 -125vh}}
+@keyframes wob{50%{transform:rotate(10deg) scale(1.08)}}
+#cfull{z-index:51}
+.ci.cs{width:2.6rem;height:2.6rem;font-size:1.7rem}
+.sil{text-decoration:none;filter:brightness(0) drop-shadow(0 0 1px rgba(255,255,255,.75))}
+#cdet{display:none;position:fixed;z-index:56;width:15rem;padding:.6rem;border-radius:.9rem;background:#1b1030;border:1px solid rgba(255,213,74,.5);box-shadow:0 8px 30px rgba(0,0,0,.7)}
+#cdet.open{display:block}
+#col-reveal{position:fixed;inset:0;z-index:70;background:rgba(5,2,13,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;text-align:center;overflow:hidden}
+.chestbig{line-height:0;animation:shk .4s infinite}
+@keyframes shk{25%{transform:rotate(-8deg) scale(1.05)}75%{transform:rotate(8deg) scale(1.05)}}
+.rvgrid{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;max-width:22rem}
+.rv{position:relative;width:3.6rem;height:3.6rem;display:flex;align-items:center;justify-content:center;font-size:2rem;border:2px solid;border-radius:.9rem;background:#120a22;animation:pop .35s ease-out}
+.rv.big{width:7rem;height:7rem;font-size:4rem}
+.rv b{position:absolute;top:-.5rem;font-size:.5rem;background:#ef4444;color:#fff;border-radius:.4rem;padding:0 .3rem}
+@keyframes pop{from{transform:scale(.2) rotate(-20deg);opacity:0}}
+.gemev{position:fixed;z-index:45;font-size:2.6rem;cursor:pointer;animation:gv 1.2s ease-in-out infinite;filter:drop-shadow(0 0 12px #38bdf8)}
+.gemev.gd{filter:drop-shadow(0 0 14px #ffd54a) sepia(1) saturate(4) hue-rotate(-15deg)}
+@keyframes gv{50%{transform:scale(1.25) rotate(8deg)}}
 </style>
 </head>
 <body>
@@ -194,8 +220,8 @@ html.lock,body.lock{overflow:hidden}
 <header class="wrap col" style="align-items:center">
   <div class="row" style="width:100%">
     <span class="small">Jugador: <b id="uname" style="color:#ff5c9f">-</b> <button onclick="logout()" style="padding:.15rem .5rem;font-size:.65rem;margin-left:.3rem">🚪 Salir</button></span>
-    <div class="row"><button onclick="openArcade()">🕹️ Minijuegos</button><button onclick="openRank()">🏆 Ranking</button></div>
-  </div>
+    </div>
+  <div class="row" style="width:100%;gap:.4rem"><button onclick="openArcade()" style="flex:1">🕹️ Juegos</button><button onclick="COL.show()" style="flex:1">📖 Colección <b id="gembtn" style="color:#38bdf8">💎 0</b></button><button onclick="openRank()" style="flex:1">🏆 Ranking</button></div>
   <div class="money"><span class="sym">$</span><span id="money">0</span></div>
   <div id="rates" class="small" style="text-align:center"></div>
 </header>
@@ -322,6 +348,24 @@ html.lock,body.lock{overflow:hidden}
   </div>
 </div></div></div>
 
+<!-- DETALLE EMOJI -->
+<div id="cdet"><div id="cdet-body"></div></div>
+<!-- COLECCIÓN -->
+<div id="col" class="modal"><div class="box">
+  <div class="row"><h2>📖 Colección</h2><div class="row" style="gap:.3rem"><button class="gold" onclick="COL.info()" style="padding:.4rem .7rem">ℹ️ Info</button><button onclick="$('col').classList.remove('open')">✕</button></div></div>
+  <div id="col-sum" class="panel small" style="margin:.6rem 0"></div>
+  <div class="row" style="gap:.4rem;margin-bottom:.6rem"><button id="col-exp" onclick="COL.expand()" style="flex:1;font-size:.75rem"></button><button onclick="COL.full()" style="flex:1;font-size:.75rem">🖤 Colección completa</button></div>
+  <div id="col-shop" class="col"></div>
+  <div id="col-album" class="col" style="margin-top:.8rem"></div>
+</div></div>
+<div id="col-reveal" class="hide"></div>
+<div id="cfull" class="modal"><div class="box">
+  <div class="row"><h2>🖤 Colección completa</h2><button onclick="$('cfull').classList.remove('open')">✕</button></div>
+  <div class="small" style="margin:.4rem 0">Las sombras son los emojis que aún no has conseguido. Los que ya abriste se muestran a color y cuentan aunque elimines todas sus copias.</div>
+  <div id="cf-sum" class="panel small" style="margin-bottom:.6rem"></div>
+  <div id="cf-body" class="col"></div>
+</div></div>
+
 <div id="ginfo" class="modal"><div class="box">
   <div class="row"><h2 id="ginfo-title">ℹ️ Info</h2><button onclick="$('ginfo').classList.remove('open')">✕</button></div>
   <div id="ginfo-body" class="small" style="margin-top:.8rem;line-height:1.55"></div>
@@ -336,7 +380,7 @@ const $=i=>document.getElementById(i),fmt=n=>{n=Math.floor(n);if(n<ABR)return n.
 const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 const rnd=n=>Math.random()*n|0;
 const db=supabase.createClient("https://uomqjazepfbdkoguzwvu.supabase.co","sb_publishable_GVsDncI196Usfvit5Zb93g_qQbbJAB2");
-const def=()=>({money:0,clickLvl:1,auto1:0,prestige:0,prog:0,total:0,costs:{click:15,auto1:40}});
+const def=()=>({money:0,clickLvl:1,auto1:0,prestige:0,prog:0,total:0,gems:50,col:{},disc:{},slots:0,rew:{},costs:{click:15,auto1:40}});
 const COMBO=[[5,1.3],[10,1.5],[15,1.8]],GAP=800; // segundos de clics seguidos → multiplicador; GAP = ms máx. entre clics
 let cs=0,cl=0;
 const comboMult=()=>{let m=1;if(cs){const t=(Date.now()-cs)/1000;for(const [x,v] of COMBO)if(t>=x)m=v}return m};
@@ -345,7 +389,7 @@ const PB=2e5,PF=7,PBONUS=0.5; // meta del 1er prestigio, dificultad x por presti
 const CURS=[{n:'Dólar',s:'$'},{n:'Oro',s:'🪙'},{n:'Platino',s:'💠'},{n:'Diamante',s:'💎'}];
 const cur=()=>CURS[S.prestige<2?0:S.prestige<4?1:S.prestige<6?2:3],sym=()=>cur().s;
 const goal=()=>PB*Math.pow(PF,S.prestige),pm=()=>1+PBONUS*S.prestige;
-const mult=l=>Math.pow(MS,Math.floor(l/MI)),perClick=()=>S.clickLvl*mult(S.clickLvl)*pm(),perSec=()=>S.auto1*1.5*mult(S.auto1)*pm();
+const mult=l=>Math.pow(MS,Math.floor(l/MI)),perClick=()=>S.clickLvl*mult(S.clickLvl)*pm()*cm(),perSec=()=>S.auto1*1.5*mult(S.auto1)*pm()*cm();
 const f1=n=>n<1000?n.toLocaleString('es-ES',{maximumFractionDigits:1}):fmt(n);
 let S=def(),user=null,dirty=false;
 
@@ -361,6 +405,7 @@ function ui(){
   document.querySelectorAll('.bal').forEach(e=>e.textContent=fmt(S.money));
   $('lvl-click').textContent=S.clickLvl;$('cost-click').textContent=fmt(S.costs.click);
   $('lvl-auto1').textContent=S.auto1;$('cost-auto1').textContent=fmt(S.costs.auto1);
+  $('gembtn').textContent='💎 '+fmt(S.gems||0);
   dirty=true;
 }
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
@@ -370,9 +415,187 @@ function pay(n,stake){const g=Math.max(0,n-(stake||0));S.money+=n;if(CASINO_COUN
 function doPrestige(){
   if(S.prog<goal())return;
   if(!confirm('¿Subir de prestigio? Se reinicia tu dinero y tus mejoras, pero ganas un bonus permanente.'))return;
-  const old=cur().n;S=Object.assign(def(),{prestige:S.prestige+1,total:S.total});ui();save();
-  toast(cur().n!=old?'🌟 ¡Nueva divisa: '+cur().n+'!':'⭐ Prestigio '+S.prestige);
+  const old=cur().n;S=Object.assign(def(),{prestige:S.prestige+1,total:S.total,gems:(S.gems||0)+PGEMS,col:S.col||{},disc:S.disc||{},slots:S.slots||0,rew:S.rew||{},wel:S.wel});ui();save();
+  toast((cur().n!=old?'🌟 ¡Nueva divisa: '+cur().n+'! ':'⭐ Prestigio '+S.prestige+' · ')+'+'+PGEMS+' 💎');
 }
+/* ---------- Colección de emojis ---------- */
+const PGEMS=150;
+const cm=()=>COL.mult();
+const COL=(()=>{
+  const SOFT=1.5,SLOPE=.5,TB=[0,100,250,500];
+  const RAR=[
+   {n:'Común',col:'#9ca3af',g:8,b:1.2,m:1,t:1,e:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🐺','🐴','🐗','🐑','🐐','🦌','🐘','🦒','🦓','🐢','🐍','🐊','🐙','🐟','🐬','🦆','🦉','🐝','🦋','🐞','🐌']},
+   {n:'Poco común',col:'#34d399',g:6,b:1.5,m:2.5,t:1,e:['🍎','🍌','🍇','🍓','🍒','🍑','🍍','🥝','🍔','🍕','🌮','🍣','🍩','🍪','🍫','🍉','🍊','🍋','🍐','🍅','🥑','🌽','🥐','🍟','🌭','🍿','🍦','🍰','🍭','🥨']},
+   {n:'Raro',col:'#38bdf8',g:5,b:2,m:6,t:2,e:['⚽','🏀','🏈','⚾','🎾','🏐','🎱','🎯','🎮','🎲','🎸','🎹','🏓','🥊','🎳','🏹','🎻','🥁','🎺','🎷','🎨','🧩','🎬','🎧']},
+   {n:'Épico',col:'#a855f7',g:5,b:4,m:15,t:2,e:['🚀','🛸','🌈','🔥','⚡','💎','👑','🏆','🌟','💫','🪐','🎆','🎇','🧿','🔮','🎁']},
+   {n:'Legendario',col:'#f59e0b',g:2,b:3,m:50,t:3,e:['🐉','🦄','🦅','🔱','🌋','🐲','🦖','🦈','🐅','🦚']},
+   {n:'Mítico',col:'#ef4444',g:1,b:3,m:200,t:3,e:['😈','👹','💀','👿','🤡','👻']}];
+  const CHS=[
+   {n:'Madera',ic:'🪵',price:25,pulls:1,odds:[55,25,12,6,1.8,.2],c:'#b4793a'},
+   {n:'Plata',ic:'🥈',price:75,pulls:3,odds:[35,30,20,10,4,1],c:'#c4ccd8'},
+   {n:'Oro',ic:'🥇',price:250,pulls:8,odds:[15,25,25,20,12,3],c:'#f59e0b'},
+   {n:'Cósmico',ic:'🌌',price:600,pulls:16,odds:[5,15,20,25,25,10],c:'#a855f7'}];
+  const shade=(h,f)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.substr(i,2),16)*f).toString(16).padStart(2,'0')).join('');
+  const chestSvg=(h,px)=>{const c=h.c,d=shade(c,.55),l=shade(c,1.25>1?1:1);return `<svg width="${px}" height="${px}" viewBox="0 0 64 64" style="flex:none"><defs><radialGradient id="cg${h.n}" cx="35%" cy="30%"><stop offset="0" stop-color="${c}" stop-opacity=".55"/><stop offset="1" stop-color="${d}" stop-opacity=".9"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#cg${h.n})" stroke="${c}" stroke-width="3"/><path d="M14 30a18 14 0 0 1 36 0z" fill="${c}" stroke="${d}" stroke-width="2"/><rect x="14" y="30" width="36" height="17" rx="2" fill="${shade(c,.8)}" stroke="${d}" stroke-width="2"/><rect x="14" y="28" width="36" height="4" fill="${d}"/><rect x="27" y="27" width="10" height="11" rx="2" fill="#ffe27a" stroke="${d}" stroke-width="1.5"/><circle cx="32" cy="32" r="1.8" fill="${d}"/></svg>`};
+  const REW=[60,80,100,150,200,300],REWALL=500;
+  const CAP0=15,CAPSTEP=10,EXC0=40,EXG=1.2;
+  const used=()=>Object.values(cl()).reduce((a,b)=>a+b,0),cap=()=>CAP0+CAPSTEP*(S.slots||0),expCost=()=>Math.round(EXC0*Math.pow(EXG,S.slots||0)/5)*5;
+  const TOT=RAR.reduce((a,r)=>a+r.e.length,0),pc=n=>String(n).replace('.',',');
+  let busy=false;
+  const cl=()=>S.col||(S.col={}),dc=()=>{const d=S.disc||(S.disc={});for(const k in cl())if(cl()[k]>0)d[k]=1;return d};
+  const copies=(c,ri)=>RAR[ri].e.reduce((a,e)=>a+(c[e]||0),0);
+  const rawB=c=>{let b=0;RAR.forEach((r,ri)=>{const n=copies(c,ri);b+=(r.g==1?n:Math.floor(n/r.g))*r.b});return b/100};
+  const effB=B=>B<=SOFT?B:SOFT+(B-SOFT)*SLOPE;
+  const mult=()=>1+effB(rawB(cl()));
+  const score=c=>{let s=0;RAR.forEach((r,ri)=>{s+=copies(c,ri)*TB[r.t]*r.m});return s};
+  const roll=o=>{let r=Math.random()*100;for(let i=0;i<6;i++){r-=o[i];if(r<0)return i}return 0};
+
+  function render(){
+    const c=cl(),B=rawB(c),E=effB(B),g=S.gems||0;
+    $('col-sum').innerHTML=`<div class="row"><span>💎 Gemas <b style="color:#38bdf8">${fmt(g)}</b></span><span>Bonus <b style="color:#ffd54a">x${(1+E).toFixed(2)}</b></span></div><div class="row" style="margin-top:.2rem"><span>📖 Valor <b style="color:#e879f9">${fmt(score(c))}</b></span><span>${Object.keys(dc()).length}/${TOT} descubiertos</span></div><div class="row" style="margin-top:.2rem"><span>🎒 Inventario <b style="color:${used()>=cap()?'#ef4444':'#fff'}">${used()}/${cap()}</b></span><span class="small">${used()>=cap()?'Lleno: amplía o elimina':'libres: '+(cap()-used())}</span></div><div class="small" style="margin-top:.3rem">💎 Eventos: unas ${Math.round(3600/180*10)} 💎/hora si recoges todos (aparecen en la pantalla principal)</div>`+(B>SOFT?`<div style="margin-top:.2rem;color:#a99cc9">Bonus bruto +${Math.round(B*100)}%: por encima de +${SOFT*100}% cuenta la mitad.</div>`:'');
+    $('col-shop').innerHTML=CHS.map((h,i)=>`<button class="chest${g<h.price||cap()-used()<h.pulls?' off':''}" onclick="COL.open(${i})" style="border-color:${h.c}">${chestSvg(h,46)}<div style="flex:1;text-align:left"><b>Cofre de ${h.n}</b><div class="small">${h.pulls} emoji${h.pulls>1?'s':''} · Legendario ${pc(h.odds[4])}% · Mítico ${pc(h.odds[5])}%</div>${cap()-used()<h.pulls?`<div class="small" style="color:#ef4444">🎒 Faltan ${h.pulls-(cap()-used())} huecos: elimina o amplía</div>`:g<h.price?`<div class="small" style="color:#f59e0b">Te faltan ${h.price-g} 💎</div>`:''}<div class="obar">${h.odds.map((o,ri)=>`<i style="width:${o}%;background:${RAR[ri].col}"></i>`).join('')}</div></div><b style="color:#38bdf8">💎${h.price}</b></button>`).join('');
+    const eb=$('col-exp');eb.textContent='🎒 +'+CAPSTEP+' huecos · 💎'+fmt(expCost());eb.style.opacity=g<expCost()?.5:1;
+    renderFull();
+    const items=[];RAR.forEach((r,ri)=>r.e.forEach(e=>{if(c[e]>0)items.push({e,ri,n:c[e]})}));
+    items.sort((a,b)=>b.ri-a.ri||b.n-a.n);const tiles=[];items.forEach(x=>{for(let k=0;k<x.n;k++)tiles.push(x)});const free=Math.max(0,cap()-tiles.length);
+    $('col-album').innerHTML=`<div class="panel"><div class="row small"><b>🎒 Inventario</b><span>${used()}/${cap()} · de más raro a más común</span></div><div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem">${tiles.map(x=>`<span class="ci cs" onclick="COL.det('${x.e}',this)" style="border:2px solid ${RAR[x.ri].col};box-shadow:0 0 6px ${RAR[x.ri].col}88;cursor:pointer">${x.e}</span>`).join('')}${'<span class="ci cs empty"></span>'.repeat(free)}</div></div>`;
+  }
+  function claim(){
+    const d=dc(),R=S.rew||(S.rew={});let g=0;const msg=[];
+    RAR.forEach((r,ri)=>{if(!R[ri]&&r.e.every(e=>d[e])){R[ri]=1;g+=REW[ri];msg.push(r.n+' completo +'+REW[ri]+' 💎')}});
+    if(!R.all&&RAR.every((r,ri)=>R[ri])){R.all=1;g+=REWALL;msg.push('¡COLECCIÓN COMPLETA! +'+REWALL+' 💎')}
+    if(g){S.gems=(S.gems||0)+g;toast('🎁 '+msg.join(' · '))}
+    return msg;
+  }
+  async function open(i){
+    if(busy)return;const h=CHS[i];
+    if((S.gems||0)<h.price)return toast('Te faltan gemas 💎');
+    if(cap()-used()<h.pulls)return toast('🎒 Inventario lleno: te faltan '+(h.pulls-(cap()-used()))+' huecos. Elimina emojis o amplía.');
+    busy=true;S.gems-=h.price;
+    const c=cl(),before=effB(rawB(c)),res=[];
+    for(let k=0;k<h.pulls;k++){const ri=roll(h.odds),r=RAR[ri],e=r.e[Math.random()*r.e.length|0];res.push({e,ri,nw:!dc()[e]});c[e]=(c[e]||0)+1;S.disc[e]=1}
+    const rewards=claim();ui();render();
+    const R=$('col-reveal');R.classList.remove('hide');
+    R.innerHTML=`<div class="chestbig">${chestSvg(h,110)}</div><div class="small">Abriendo cofre de ${h.n}...</div>`;
+    await sl(900);
+    R.innerHTML='<div class="rvgrid"></div><div id="col-rs" class="small" style="margin-top:.6rem"></div>';
+    const G=R.querySelector('.rvgrid');let best=0;
+    for(const x of res){
+      const r=RAR[x.ri],d=document.createElement('div');
+      d.className='rv'+(res.length==1?' big':'');d.style.borderColor=r.col;d.style.boxShadow='0 0 '+(8+x.ri*5)+'px '+r.col;
+      d.innerHTML=x.e+(x.nw?'<b>NUEVO</b>':'');G.appendChild(d);
+      if(x.ri>best)best=x.ri;
+      if(x.ri>=4)burst(R,[x.e,'✨','⭐']);
+      await sl(res.length>3?140:450);
+    }
+    const gain=(effB(rawB(c))-before)*100;
+    $('col-rs').innerHTML=`Mejor: <b style="color:${RAR[best].col}">${RAR[best].n}</b> · bonus total <b style="color:#ffd54a">${gain>=.005?'+'+gain.toFixed(2)+'%':'sin cambios (los grupos se completan con más copias)'}</b> <button onclick="$('col-reveal').classList.add('hide')" style="padding:.2rem .7rem;margin-left:.3rem">OK</button>`+(rewards.length?`<div style="margin-top:.5rem;color:#ffd54a"><b>🎁 ${rewards.join('<br>')}</b></div>`:'');
+    busy=false;ui();render();
+  }
+  function expand(){
+    const k=expCost();if((S.gems||0)<k)return toast('Te faltan gemas 💎');
+    S.gems-=k;S.slots=(S.slots||0)+1;ui();render();toast('🎒 Inventario ampliado a '+cap());
+  }
+  function renderFull(){
+    const d=dc();let nd=0;
+    $('cf-body').innerHTML=RAR.map((r,ri)=>{const k=r.e.filter(e=>d[e]).length;nd+=k;
+      return `<div class="panel" style="border-color:${r.col}66"><div class="row small"><b style="color:${r.col}">${r.n}</b><span>${k}/${r.e.length} · ${S.rew&&S.rew[ri]?'✔ cobrado':'🎁 +'+REW[ri]+' 💎'}</span></div><div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem">${r.e.map(e=>d[e]?`<span class="ci cs" onclick="COL.det('${e}',this)" style="border-color:${r.col};cursor:pointer">${e}</span>`:`<span class="ci cs" style="border-color:rgba(255,255,255,.15)"><u class="sil">${e}</u></span>`).join('')}</div></div>`}).join('');
+    $('cf-sum').innerHTML=`<div class="row"><b>Descubiertos</b><b style="color:#ffd54a">${nd}/${TOT} (${Math.round(nd/TOT*100)}%)</b></div><div class="small" style="margin-top:.2rem">🎁 Completar una rareza da gemas una sola vez. Completar todo: +${REWALL} 💎 ${S.rew&&S.rew.all?'(✔ cobrado)':''}</div><div class="bar" style="margin-top:.3rem"><div class="bf" style="width:${nd/TOT*100}%"></div></div>`;
+  }
+  const full=()=>{renderFull();$('cfull').classList.add('open')};
+  const TN=['','Estándar','Especial','Leyenda'];
+  let ask=0;
+  function det(e,el){
+    const c=cl(),ri=RAR.findIndex(r=>r.e.includes(e));if(ri<0)return;
+    const P=$('cdet');
+    if(P.classList.contains('open')&&P.dataset.e===e){P.classList.remove('open');return}
+    const r=RAR[ri],n=c[e]||0,N=copies(c,ri),per=TB[r.t]*r.m,pcs=(r.g==1?N:Math.floor(N/r.g))*r.b;
+    const before=effB(rawB(c));c[e]=Math.max(0,n-1);const after=effB(rawB(c));c[e]=n;
+    const loss=(before-after)*100;pend=null;P.dataset.e=e;
+    $('cdet-body').innerHTML=`<div class="row" style="justify-content:flex-start;gap:.5rem"><span style="font-size:2rem;line-height:1">${e}</span><div style="flex:1"><div class="small" style="line-height:1">Rareza</div><b style="color:${r.col}">${r.n}</b><div class="small">${TN[r.t]} · base ${TB[r.t]} × ${r.m}</div></div><button onclick="$('cdet').classList.remove('open')" style="padding:.1rem .45rem">✕</button></div>
+    <div class="small" style="margin-top:.4rem;line-height:1.5">Copias: <b style="color:#fff">${n}</b> · Valor: <b style="color:#e879f9">${fmt(n*per)}</b> (${fmt(per)} c/u)<br>${r.n}: ${N} copias · ${r.g==1?'cada una':'grupo '+(N%r.g)+'/'+r.g} +${pc(r.b)}% · total <b style="color:#ffd54a">+${pc(Math.round(pcs*100)/100)}%</b></div>
+    ${n>0?`<div class="row" style="margin-top:.5rem;gap:.3rem"><button id="cdel1" onclick="COL.del('${e}',1)" style="flex:1;padding:.35rem;font-size:.72rem">🗑️ Quitar 1${loss>=.005?' (-'+loss.toFixed(2)+'%)':''}</button>${n>1?`<button id="cdelA" onclick="COL.del('${e}',${n})" style="flex:1;padding:.35rem;font-size:.72rem">🗑️ Todas</button>`:''}</div>`:'<div class="small" style="margin-top:.4rem">Sin copias (descubierto).</div>'}`;
+    P.style.borderColor=r.col;P.style.boxShadow='0 0 14px '+r.col+'88,0 8px 30px rgba(0,0,0,.7)';P.classList.add('open');
+    const b=el.getBoundingClientRect(),w=P.offsetWidth,h=P.offsetHeight;
+    let x=Math.min(Math.max(8,b.left+b.width/2-w/2),innerWidth-w-8),y=b.bottom+6;
+    if(y+h>innerHeight-8)y=Math.max(8,b.top-h-6);
+    P.style.left=x+'px';P.style.top=y+'px';
+  }
+  document.addEventListener('scroll',()=>$('cdet').classList.remove('open'),true);
+  document.addEventListener('click',ev=>{const P=$('cdet');if(P.classList.contains('open')&&!P.contains(ev.target)&&!ev.target.closest('.ci'))P.classList.remove('open')});
+  let pend=null;
+  function del(e,k){
+    const key=e+k;
+    if(pend!==key){pend=key;const b=$(k==1?'cdel1':'cdelA');if(b)b.textContent='¿Seguro? Toca otra vez';setTimeout(()=>{if(pend===key){pend=null;const b=$(k==1?'cdel1':'cdelA');if(b)b.textContent=k==1?'🗑️ Eliminar 1':'🗑️ Eliminar todas'}},3000);return}
+    pend=null;const c=cl();c[e]=Math.max(0,(c[e]||0)-k);if(!c[e])delete c[e];
+    S.disc=dc();S.disc[e]=1;ui();render();toast('🗑️ '+e+' eliminado x'+k);
+    $('cdet').classList.remove('open');
+  }
+  function show(){render();$('col').classList.add('open')}
+  function info(){
+    const rows=RAR.map(r=>`<div class="row"><span style="color:${r.col}"><b>${r.n}</b> (${r.e.length})</span><span>${r.g==1?'cada copia':r.g+' copias'} → +${pc(r.b)}% · x${r.m} · base ${TB[r.t]}</span></div>`).join('');
+    const ch=CHS.map(h=>`<div class="row"><span><b>${h.n}</b> 💎${h.price} · ${h.pulls} emoji${h.pulls>1?'s':''}</span><span>${h.odds.map(pc).join(' / ')}%</span></div>`).join('');
+    $('ginfo-title').textContent='📖 Colección';
+    $('ginfo-body').innerHTML=`<b style="color:#ffd54a">Gemas 💎</b><br>Cada 2 a 4 minutos aparece un 💎 o un 😠 dorado flotante durante 4 a 6 segundos. Tócalo a tiempo para recibir entre 5 y 15 gemas. Al subir de prestigio recibes ${PGEMS} gemas. Se empieza con 50.<br><br>
+    <b style="color:#ffd54a">Bonus de bienvenida</b><br>Durante los primeros ${WEL.win/60000} minutos de juego de cada día, cada clic tiene un ${(WEL.p*100).toFixed(1).replace('.',',')}% de soltar un 🎈 globo que sube flotando por la pantalla. Tócalo antes de que se escape para llevarte ${WEL.lo} a ${WEL.hi} 💎. Si no lo tocas, lo pierdes. Máximo ${WEL.max} globos al día, y si llegas a ${WEL.pity} clics sin ninguno, sale uno seguro. Pasado ese rato ya no hay extra hasta el día siguiente.<br><br><b style="color:#ffd54a">Cofres</b> (precio fijo, probabilidades Común / Poco común / Raro / Épico / Legendario / Mítico)<div class="col" style="gap:.2rem;margin-top:.3rem">${ch}</div><br>
+    <b style="color:#ffd54a">Bonus de colección</b><br>Cada emoji que consigues cuenta como una copia de su rareza. Las copias se agrupan y cada grupo completo da un bonus fijo a los clics y al Auto-BURX. El bonus es la suma de todos más 1. Por encima de +${SOFT*100}% el bonus cuenta la mitad, para que no se descontrole.<div class="col" style="gap:.2rem;margin-top:.3rem">${rows}</div><br>
+    <b style="color:#ffd54a">Valor de colección</b><br>Puntuación = copias × base × multiplicador de rareza. No se gasta ni se convierte en dinero y aparece en el ranking.<br><br>
+    <b style="color:#ffd54a">Prestigio</b><br>Al subir de prestigio conservas gemas, emojis, bonus, álbum y valor. No se pueden vender emojis.<br><br><b style="color:#ffd54a">Inventario</b><br>Empiezas con ${CAP0} huecos y cada copia ocupa uno. Un cofre solo se abre si caben todos sus emojis. Puedes ampliar +${CAPSTEP} huecos con gemas (${EXC0} 💎 la primera vez y un ${Math.round((EXG-1)*100)}% más cada vez) o eliminar emojis que no quieras. Se conserva al subir de prestigio.<br><br><b style="color:#ffd54a">Colección completa</b><br>Completar todos los emojis de una rareza da gemas una sola vez (${REW.join(' / ')} 💎 de Común a Mítico) y completar todo da +${REWALL} 💎. Muestra todos los emojis del juego: a color los que ya abriste y en sombra los que te faltan.<br><br><b style="color:#ffd54a">Eliminar emojis</b><br>Toca un emoji del álbum para ver un resumen en pequeño. Desde ahí puedes eliminar una copia o todas. No devuelve gemas y baja tu bonus y tu valor de colección, pero el emoji sigue contando como descubierto.`;
+    $('ginfo').classList.add('open');
+  }
+  /* Bonus de bienvenida: al empezar el día, clics rápidos pueden soltar gemas */
+  const WEL={win:180000,p:.003,max:3,pity:120,lo:5,hi:10}; // ventana 3 min desde el 1er clic del día, 0,3% por clic, máx. 3 al día, 1 asegurado a los 120 clics
+  function welcome(ev){
+    const day=new Date().toDateString(),now=Date.now();let w=S.wel;
+    if(!w||w.d!==day)w=S.wel={d:day,t0:0,n:0,c:0};
+    if(w.n>=WEL.max)return;
+    if(!w.t0)w.t0=now;
+    if(now-w.t0>WEL.win)return;
+    w.c++;
+    if(Math.random()<WEL.p||(w.n==0&&w.c>=WEL.pity)){
+      w.n++;balloon();
+    }
+  }
+  function balloon(){
+    const b=document.createElement('div');let done=false;b.className='balloon';b.textContent='🎈';
+    const bt=$('click').getBoundingClientRect(),W=innerWidth,sz=56,L=bt.left-12-sz,R=W-(bt.right+12)-sz-8;
+    let x;if(L<8&&R<8)x=Math.random()<.5?4:W-sz-4;                       // sin hueco: junto al borde
+    else if(R>L)x=bt.right+12+Math.random()*Math.max(0,R-4);else x=8+Math.random()*Math.max(0,L-8);
+    b.style.left=Math.max(4,Math.min(W-sz-4,x))+'px';
+    b.addEventListener('click',ev=>{
+      if(done||!ev.isTrusted)return;done=true;
+      const n=WEL.lo+Math.floor(Math.random()*(WEL.hi-WEL.lo+1));S.gems=(S.gems||0)+n;ui();
+      const f=document.createElement('div');f.className='float';f.textContent='+'+n+' 💎';f.style.left=ev.clientX-20+'px';f.style.top=ev.clientY-30+'px';
+      document.body.appendChild(f);setTimeout(()=>f.remove(),800);toast('🎈 ¡Globo de bienvenida! +'+n+' 💎');b.remove();
+    });
+    b.addEventListener('animationend',e=>{if(e.animationName=='flt'){done=true;b.remove()}});
+    document.body.appendChild(b);toast('🎈 ¡Un globo! Tócalo antes de que se escape');
+  }
+  /* Evento flotante de gemas */
+  function spawn(){
+    if(document.querySelector('.modal.open')){setTimeout(spawn,10000);return}
+    const e=document.createElement('div'),gold=Math.random()<.5;let done=false;
+    e.className='gemev'+(gold?' gd':'');e.textContent=gold?'😠':'💎';
+    document.body.appendChild(e);
+    const bt=$('click').getBoundingClientRect(),W=innerWidth,H=innerHeight,sz=56;let x=0,y=0,ok=false;
+    for(let t=0;t<40&&!ok;t++){x=8+Math.random()*(W-sz-16);y=70+Math.random()*(H-sz-90);
+      ok=x+sz<bt.left-12||x>bt.right+12||y+sz<bt.top-12||y>bt.bottom+12}
+    if(!ok){x=Math.random()<.5?8:W-sz-8;y=H-sz-20}
+    e.style.left=x+'px';e.style.top=y+'px';
+    e.addEventListener('click',ev=>{
+      if(done||!ev.isTrusted)return;done=true;
+      const n=5+Math.floor(Math.random()*11);S.gems=(S.gems||0)+n;ui();
+      const f=document.createElement('div');f.className='float';f.textContent='+'+n+' 💎';f.style.left=ev.clientX-20+'px';f.style.top=ev.clientY-30+'px';
+      document.body.appendChild(f);setTimeout(()=>f.remove(),800);toast('💎 +'+n+' gemas');e.remove();
+    });
+    setTimeout(()=>{done=true;e.remove()},4000+Math.random()*2000);
+    sched();
+  }
+  const sched=()=>setTimeout(spawn,120000+Math.random()*120000);
+  sched();
+  return{mult,score,show,open,info,render,det,del,expand,full,welcome};
+})();
+
 function bet(){const b=Math.floor(+$('bet').value);if(!(b>0)||b>S.money){toast('Apuesta inválida o saldo insuficiente');return 0}S.money-=b;ui();return b}
 function bm(f){$('bet').value=f?Math.max(1,Math.floor($('bet').value*f)):Math.floor(S.money);bTot()}
 
@@ -424,11 +647,11 @@ async function openRank(){
   const C=p=>CURS[p<2?0:p<4?1:p<6?2:3].s;
   const G=p=>PB*Math.pow(PF,p);
   l.innerHTML=data.map((r,i)=>{const p=P(r),pr=(r.data&&r.data.prog)||0,pc=Math.min(100,pr/G(p)*100);
-    return `<div class="panel"><div class="row"><span>${['🥇','🥈','🥉'][i]||i+1+'.'} <b>${r.username}</b> <span class="small">⭐${p}</span></span><b style="color:#34d399">${C(p)}${fmt(r.money)}</b></div><div class="bar" style="margin:.4rem 0 .2rem"><div class="bf" style="width:${pc}%"></div></div><div class="small" style="text-align:right">Prestigio ${p+1}: ${fmt(pr)} / ${fmt(G(p))} (${pc.toFixed(0)}%)</div></div>`}).join('')||'<div class="small">Aún no hay nadie.</div>';
+    return `<div class="panel"><div class="row"><span>${['🥇','🥈','🥉'][i]||i+1+'.'} <b>${r.username}</b> <span class="small">⭐${p}</span></span><b style="color:#34d399">${C(p)}${fmt(r.money)}</b></div><div class="small">📖 Valor de colección: <b style="color:#e879f9">${fmt(COL.score((r.data&&r.data.col)||{}))}</b></div><div class="bar" style="margin:.4rem 0 .2rem"><div class="bf" style="width:${pc}%"></div></div><div class="small" style="text-align:right">Prestigio ${p+1}: ${fmt(pr)} / ${fmt(G(p))} (${pc.toFixed(0)}%)</div></div>`}).join('')||'<div class="small">Aún no hay nadie.</div>';
 }
 
 /* ---------- Clicker ---------- */
-const MAXCPS=12,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
+const MAXCPS=20,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
 let ct=[],iv=[],acUntil=0,lastWarn=0;
 function clickOK(e,now=performance.now()){
   const warn=m=>{if(now-lastWarn>3000){lastWarn=now;toast(m)}};
@@ -445,7 +668,7 @@ function clickOK(e,now=performance.now()){
 }
 $('click').addEventListener('click',e=>{
   if(!clickOK(e))return;
-  const now=Date.now();if(now-cl>GAP)cs=now;cl=now;const g=perClick()*comboMult();earn(g);
+  const now=Date.now();if(now-cl>GAP)cs=now;cl=now;const g=perClick()*comboMult();earn(g);COL.welcome(e);
   const n=document.createElement('div');n.className='float';n.textContent='+'+f1(g);
   n.style.left=(e.clientX||innerWidth/2)-12+'px';n.style.top=(e.clientY||innerHeight/2)-30+'px';
   document.body.appendChild(n);setTimeout(()=>n.remove(),800);
@@ -826,6 +1049,7 @@ function openInfo(){
   <div><b style="color:#ffd54a">Cómo se juega</b><br>Toca 😠 para ganar dinero. Compra <b>Fuerza de Clic</b> (más dinero por toque) y <b>Auto-BURX</b> (cada uno te da +1,5 por segundo). Cada ${MI} niveles de una mejora, su producción se multiplica x${MS} (acumulable). Si haces clics rápidos sin parar: ${COMBO.map(([x,v])=>`${x}s → x${v}`).join(' · ')} (solo en clics; se pierde si paras).</div>
   <div><b style="color:#ffd54a">Prestigio</b><br>La barra se llena solo con el dinero que ganas en el clicker (clics y Auto-BURX). Los minijuegos no suman a la barra ni al ranking, pero te ayudan a pagar mejoras. La primera meta es ${fmt(PB)} y cada prestigio pide x${PF} más. Al subir se reinician tu dinero y tus mejoras, pero ganas +x${PBONUS} por prestigio en clics y Auto-BURX. Tu bonus ahora: x${f1(pm())}.</div>
   <div><b style="color:#ffd54a">Divisas</b><br>${cs}<br>Solo cambia el símbolo del dinero.</div>
+  <div><b style="color:#ffd54a">Colección</b><br>Gana 💎 gemas (eventos flotantes y prestigios), abre cofres y colecciona emojis. Dan un bonus permanente a clics y Auto-BURX (x${COL.mult().toFixed(2)} ahora) que se mantiene al subir de prestigio. Más detalles en el botón 📖 Colección → ℹ️ Info.</div>
   <div><b style="color:#ffd54a">Minijuegos</b><br>Cada minijuego tiene su propia explicación: abre el juego y pulsa el botón <b>ℹ️ Info</b> de arriba.</div>
   <div><b style="color:#ffd54a">Guardado</b><br>Con cuenta, tu progreso se guarda en la nube cada pocos segundos y el ranking ordena por el dinero total que has obtenido en el clicker. Como invitado, solo en este dispositivo. El dinero es ficticio.</div>`;
   $('info').classList.add('open');
@@ -915,342 +1139,4 @@ const DR=(()=>{
     c.textAlign='left';c.font='700 13px system-ui';
     c.fillStyle=mult>=1+1/PAYK?'#34d399':'#ffd54a';c.fillText('💰 Cobro: '+sym()+fmt(pay$(mult)),10,22);
     c.fillStyle='#a99cc9';c.fillText(t.toFixed(0)+' s · rentable desde x'+(1+1/PAYK).toFixed(2),10,40);
-    const sa=gm>=1?'SECO':gm>=.8?'HÚMEDO':'MOJADO';c.fillStyle=gm>=1?'#a99cc9':'#38bdf8';c.fillText('Asfalto: '+sa,10,H-34);
-    c.fillStyle='#a99cc9';c.fillText('Calor',10,H-14);
-    c.fillStyle='#000';c.fillRect(48,H-24,120,10);c.fillStyle=heat>70?'#ef4444':heat>40?'#fbbf24':'#34d399';c.fillRect(48,H-24,120*Math.min(1,heat/100),10);
-    c.textAlign='right';c.fillStyle='#a99cc9';c.fillText('Estilo +'+Math.round(Math.min(.5,Math.floor(streak/2)*.05)*100)+'%',W-10,22);
-    c.fillText(Math.round(car.sp*.8)+' km/h',W-10,H-14);
-  }
-  function overlay(lines){
-    c.fillStyle='rgba(8,4,20,.8)';c.fillRect(0,0,W,H);c.textAlign='center';
-    lines.forEach(([tx,s,col],i)=>{c.font=`800 ${s}px system-ui`;c.fillStyle=col||'#fff';c.fillText(tx,CX,150+i*36)});
-  }
-  function draw(){
-    c.clearRect(0,0,W,H);drawTrack();
-    marks.forEach(m=>{c.strokeStyle=`rgba(0,0,0,${.55*(1-m[4]/5)})`;c.lineWidth=2;c.beginPath();c.moveTo(m[0],m[1]);c.lineTo(m[2],m[3]);c.stroke()});
-    parts.forEach(p=>{c.fillStyle=`rgba(200,200,220,${.45*(1-p.l)})`;c.beginPath();c.arc(p.x,p.y,4+p.l*10,0,PI2);c.fill()});
-    drawCar();
-    if(st=='count'){
-      hud();c.fillStyle='rgba(8,4,20,.4)';c.fillRect(0,0,W,H);c.textAlign='center';
-      const f=cd%1;c.globalAlpha=.45+.55*f;c.font=`900 ${90+f*40}px system-ui`;c.fillStyle='#ffd54a';c.fillText(Math.ceil(cd),CX,CY+30);c.globalAlpha=1;
-      c.font='700 15px system-ui';c.fillStyle='#fff';c.fillText('Mantén pulsado para girar a la izquierda',CX,CY+90);c.fillText('Suelta para ir recto',CX,CY+112);
-      setBtn('¡PREPÁRATE!','gold');
-    }else if(st=='run'){
-      hud();if(goT>0){c.textAlign='center';c.font='900 64px system-ui';c.fillStyle='#34d399';c.fillText('¡YA!',CX,CY+20)}
-      setBtn('COBRAR '+sym()+fmt(pay$(mult))+' 💰','green');
-    }else if(st=='idle'){
-      overlay([['DRIFT RUSH',34,'#ffd54a'],['Mantén pulsado para girar a la izquierda',15],['Derrapa para subir el multiplicador',16],['Vigila el calor de los neumáticos',15,'#a99cc9'],['y cobra antes de estrellarte',16]]);setBtn('ENTRAR AL CIRCUITO 🏎️','gold');
-    }else{hud();overlay(msg);setBtn('JUGAR OTRA VEZ 🏎️','gold')}
-  }
-  function loop(ts){
-    const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
-    if(st=='count'){cd-=dt;if(cd<=0){st='run';goT=.7}}else if(st=='run')update(dt);
-    if(goT>0)goT-=dt;draw();raf=requestAnimationFrame(loop);
-  }
-  const btn=()=>{if(st=='run')cash();else if(st!='count')start()};
-  cv.addEventListener('pointerdown',e=>{pm[e.pointerId]=1;try{cv.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
-  ['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,e=>{delete pm[e.pointerId]}));
-  addEventListener('keydown',e=>{
-    if(curG!='drift')return;
-    if(STEER.includes(e.code)){kk[e.code]=1;e.preventDefault()}
-    if(e.code=='Space'&&!e.repeat&&e.target.tagName!='INPUT'){e.preventDefault();btn()}
-  });
-  addEventListener('keyup',e=>{delete kk[e.code]});
-  reset();
-  return{
-    btn,
-    open(){st='idle';pm={};kk={};reset();if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}},
-    stop(){if(raf)cancelAnimationFrame(raf);raf=0;st='idle';pm={};kk={}},
-    info(){
-      return `<b style="color:#ffd54a">Cómo funciona</b><br>Un coche visto desde arriba da vueltas a un circuito. <b>Mantén la pantalla pulsada</b> para girar a la izquierda y suelta para ir recto. Al pulsar entrar hay una cuenta atrás de 3 segundos para que veas el circuito.<br><b>Derrapa</b> para subir el multiplicador (empieza en x1,00). Cuanto más ángulo, más sube por segundo: FLOJO +0,014 · BUENO +0,042 · PERFECTO +0,07 · EXTREMO +0,112. Aguantar un derrape seguido da hasta +50% de estilo, y el asfalto mojado da más puntos pero se pierde antes el control.<br><b>Calor de neumáticos</b>: el derrape perfecto y el extremo lo suben; si llega al máximo pierdes el control. Con ángulos menores se enfría.<br><b>Cobrar</b>: pulsa el botón cuando quieras. Cobro = apuesta × (multiplicador − 1) × ${PAYK}, así que empiezas a ganar dinero desde x${(1+1/PAYK).toFixed(2)}. Máximo x${MAXMULT}.<br><b>Accidente</b> (muro, trompo o neumáticos): la reparación te cuesta menos: recuperas el ${Math.round(REPAIR*100)}% de la apuesta más el ${Math.round(CRASH_KEEP*100)}% de lo que habrías cobrado.<br>El coche acelera poco a poco, así que cada vez es más difícil. Es un juego de habilidad: tu devolución depende de lo bien que conduzcas.`;
-    }
-  };
-})();
-const driftOpen=DR.open,driftStop=DR.stop,driftBtn=DR.btn;
-/* ---------- Chicken Cross ---------- */
-const CH=(()=>{
-  const RH=52,SLOT=156,RTP=.96;
-  const DIF=[{n:'Fácil',p:.9,L:20},{n:'Medio',p:.8,L:15},{n:'Difícil',p:.7,L:12}];
-  let d=1,n=0,st='idle',stake=50,busy=false;
-  const D=()=>DIF[d],mul=i=>i?RTP/Math.pow(D().p,i):1,fm=m=>m<100?m.toFixed(2):String(Math.round(m));
-  const strip=()=>$('ch-strip'),hen=()=>$('ch-hen'),view=()=>$('ch-view');
-  function setPos(i){strip().style.transform=`translateY(${SLOT-(D().L+1-i)*RH}px)`}
-  function mark(){document.querySelectorAll('#ch-strip .ln[id]').forEach(e=>{const i=+e.id.slice(2);e.classList.toggle('done',i<n);e.classList.toggle('cur',i==n)})}
-  function ctl(){
-    $('ch-go').disabled=busy;$('ch-cash').disabled=busy||n<1;
-    $('ch-cash').textContent=n?`COBRAR ${sym()}${fmt(stake*mul(n))} 💰`:'COBRAR';
-  }
-  function hud(){
-    $('ch-mx').textContent='x'+fm(mul(n));$('ch-win').textContent=sym()+fmt(st=='run'?stake*mul(n):0);
-    $('ch-p').textContent=Math.round(D().p*100)+'%';ctl();
-  }
-  function build(){
-    const L=D().L;let h='';
-    for(let i=L+1;i>=0;i--)h+=i==L+1?'<div class="ln goal">🏁 META 🏁</div>':i==0?'<div class="ln walk">🌳 INICIO 🌳</div>':`<div class="ln" id="ln${i}"><span class="lm">x${fm(mul(i))}</span></div>`;
-    strip().innerHTML=h;view().style.setProperty('--cw',(view().clientWidth||400)+60+'px');
-    n=0;hen().textContent='🐔';hen().className='';setPos(0);mark();hud();
-    document.querySelectorAll('.cdf').forEach((b,i)=>b.classList.toggle('on',i==d));
-  }
-  const hop=()=>{const h=hen();h.classList.remove('hop');void h.offsetWidth;h.classList.add('hop')};
-  function car(i){
-    const ln=$('ln'+i);if(!ln)return;
-    const e=document.createElement('i');e.className='car';e.textContent=['🚗','🚕','🚙','🚚','🚓','🏎️'][rnd(6)];
-    ln.appendChild(e);setTimeout(()=>e.remove(),900);
-  }
-  function msg(t,c){const m=$('ch-msg');m.className='msgb';void m.offsetWidth;m.className='msgb '+(c||'');m.textContent=t}
-  function end(win,w){
-    st='over';busy=false;
-    if(win){msg(`🎉 ${n>=D().L?'¡Cruzaste todo! ':''}+${sym()}${fmt(w-stake)} (x${fm(mul(n))})`,'win');burst(view(),['🪙','✨','🐔'])}
-    else msg(`💥 ¡Atropellado en la carretera ${n+1}! -${sym()}${fmt(stake)}`,'lose');
-    $('ch-act').classList.add('hide');$('ch-start').classList.remove('hide');$('ch-start').textContent='JUGAR OTRA VEZ 🐔';hud();
-  }
-  function cash(auto){
-    if(st!='run'||(busy&&auto!==true)||n<1)return;
-    const w=Math.floor(stake*mul(n));pay(w,stake);end(true,w);
-  }
-  async function step(){
-    if(st!='run'||busy)return;busy=true;ctl();
-    const L=D().L,lane=n+1,safe=Math.random()<D().p;
-    car(lane);
-    if(safe){
-      await sl(520);if(st!='run')return;
-      hop();n=lane;setPos(n);mark();await sl(300);if(st!='run')return;
-      hud();if(n>=L)return cash(true);
-      busy=false;ctl();
-    }else{
-      await sl(150);if(st!='run')return;
-      hop();setPos(lane);await sl(250);if(st!='run')return;
-      hen().textContent='💥';hen().className='dead';await sl(700);
-      if(st=='run')end(false);
-    }
-  }
-  function start(){
-    if(st=='run')return;const b=bet();if(!b)return;stake=b;build();st='run';busy=false;
-    $('ch-start').classList.add('hide');$('ch-act').classList.remove('hide');msg('¿Te atreves a cruzar? 🐔');hud();
-  }
-  return{
-    start,step,cash:()=>cash(),
-    diff(i){if(st=='run')return;d=i;build()},
-    open(){st='idle';busy=false;$('ch-start').classList.remove('hide');$('ch-start').textContent='EMPEZAR 🐔';$('ch-act').classList.add('hide');msg('Elige dificultad y empieza');build()},
-    stop(){st='idle';busy=false},
-    state:()=>({n,st}),
-    info(){
-      return `<b style="color:#ffd54a">Cómo funciona</b><br>Ayuda a la gallina a cruzar carreteras. Pulsa <b>AVANZAR</b> para pasar a la siguiente: puede cruzar sin problema o ser atropellada.<br>Cada carretera superada sube el multiplicador y puedes <b>COBRAR</b> cuando quieras. Si te atropellan, pierdes la apuesta. Si cruzas todas, cobras automáticamente.<br><b>Dificultad</b> (probabilidad de pasar cada carretera):<br>${DIF.map(x=>`• <b>${x.n}</b>: ${Math.round(x.p*100)}% · ${x.L} carreteras · máx. x${fm(RTP/Math.pow(x.p,x.L))}`).join('<br>')}<br>El multiplicador es ${RTP} ÷ la probabilidad de haber llegado hasta ahí, así que la devolución teórica es del ${Math.round(RTP*100)}% cobres donde cobres. Más difícil significa premios más grandes pero menos veces.`;
-    }
-  };
-})();
-const chOpen=CH.open,chStop=CH.stop,chStart=CH.start,chStep=CH.step,chCash=CH.cash,chDiff=CH.diff;
-/* ---------- Recolectores (tragaperras) ---------- */
-const CO=(()=>{
-/* ===== MOTOR (apuesta = 1 unidad; los premios se devuelven en múltiplos de la apuesta) ===== */
-const P={VAL:[.0042,.0083,.0165,.0415,.11],LW:[50,28,14,6,2],SW:{W:3,U:2,T:2.5,C:3,B:1.5,S:.42},
-  CW:[[.0135,50],[.027,25],[.0405,12],[.0675,8],[.135,4],[.3375,1]],THR:[6,7,8,9],MAXN:8,CAP:3000,FS:8,FSRE:4,FSMAX:30,SIZE0:5,RAD_T:2,RAD_B:2,NT:6};
-let ID=0;
-const rnd=n=>Math.random()*n|0;
-function wpick(a){let t=0;for(const x of a)t+=x[1];let r=Math.random()*t;for(const x of a){r-=x[1];if(r<0)return x[0]}return a[0][0]}
-const DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
-const newGame=()=>({N:P.SIZE0,up:[0,0,0,0],meter:0});
-function rs(up){
-  let r=Math.random()*100;
-  for(const k in P.SW){r-=P.SW[k];if(r<0)return{id:++ID,k,c:0,l:0,dy:0}}
-  const c=rnd(4),l=Math.min(5,wpick(P.LW.map((w,i)=>[i+1,w]))+up[c]);
-  return{id:++ID,k:'g',c,l,dy:0};
-}
-function spin(st,rec){
-  const ev=[];let N=st.N,win=0,scat=0,bombs=[],B,bp=[],bird=[];
-  const CAPV=P.CAP;
-  const snap=()=>{const o=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++){const p=B[r][c];if(p)o.push({id:p.id,k:p.k,c:p.c,l:p.l,r,col:c,dy:p.dy})}return o};
-  const E=(t,x)=>{if(rec)ev.push(Object.assign({t,N,win,snap:snap(),meter:st.meter,thr:thr(),up:st.up.slice()},x||{}))};
-  const thr=()=>P.THR[Math.min(N-P.SIZE0,P.THR.length-1)];
-  B=Array.from({length:N},()=>Array(N).fill(null));
-  for(let r=0;r<N;r++)for(let c=0;c<N;c++)B[r][c]=rs(st.up);
-  const cells=shuffle([].concat(...Array.from({length:N},(_,r)=>Array.from({length:N},(_,c)=>[r,c]))));
-  for(let i=0;i<4;i++){const[r,c]=cells[i];bird[i]={id:++ID,k:'bird',c:i,l:0,dy:0};B[r][c]=bird[i];bp[i]={r,c}}
-  if(rec)for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(B[r][c])B[r][c].dy=N+1;
-  E('init');
-  const valid=(i,r,c)=>{if(r<0||c<0||r>=N||c>=N)return false;const p=B[r][c];return p&&p.k!='bird'&&(p.k!='g'||p.c==i)};
-  const moves=i=>{const o=[];for(const[dr,dc]of DIRS){const r=bp[i].r+dr,c=bp[i].c+dc;if(valid(i,r,c))o.push([r,c])}return o};
-  function grow(){
-    if(N>=P.MAXN)return false;
-    for(let r=0;r<N;r++)B[r].push(rs(st.up));
-    B.push(Array.from({length:N+1},()=>rs(st.up)));
-    N++;st.N=N;return true;
-  }
-  function addSpecial(){
-    const cand=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(B[r][c]&&B[r][c].k=='g')cand.push([r,c]);
-    if(cand.length){const[r,c]=cand[rnd(cand.length)];B[r][c]={id:++ID,k:wpick([['W',3],['U',3],['T',3],['C',3],['B',1.5]]),c:0,l:0,dy:0}}
-  }
-  function collect(i,r2,c2){
-    const p=B[r2][c2],b=bp[i];let amt=0;
-    B[b.r][b.c]=null;B[r2][c2]=bird[i];bp[i]={r:r2,c:c2};
-    switch(p.k){
-      case'g':amt=P.VAL[p.l-1];break;
-      case'W':amt=P.VAL[Math.min(4,1+st.up[i])];break;
-      case'U':{st.up[i]=Math.min(3,st.up[i]+1);for(let r=0;r<N;r++)for(let c=0;c<N;c++){const q=B[r][c];if(q&&q.k=='g'&&q.c==i)q.l=Math.min(5,q.l+1)}break}
-      case'T':{const cand=[];for(let r=Math.max(0,r2-P.RAD_T);r<=Math.min(N-1,r2+P.RAD_T);r++)for(let c=Math.max(0,c2-P.RAD_T);c<=Math.min(N-1,c2+P.RAD_T);c++){const q=B[r][c];if(q&&q.k=='g'&&q.c!=i)cand.push(q)}
-        shuffle(cand).slice(0,P.NT).forEach(q=>q.c=i);break}
-      case'C':amt=wpick(P.CW);break;
-      case'B':bombs.push([r2,c2]);break;
-      case'S':scat++;break;
-    }
-    win+=amt;
-    E('mv',{i,to:[r2,c2],amt,kind:p.k,from:[b.r,b.c]});
-    st.meter++;
-    if(st.meter>=thr()){st.meter=0;addSpecial();const g=grow();E('fill',{grew:g})}
-  }
-  function swap(){
-    for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
-      const a=bp[i],b=bp[j];if(Math.abs(a.r-b.r)+Math.abs(a.c-b.c)!=1)continue;
-      const ok=(k,from,other)=>DIRS.some(([dr,dc])=>{const r=from.r+dr,c=from.c+dc;if(r==other.r&&c==other.c)return false;return valid(k,r,c)});
-      if(ok(i,b,a)||ok(j,a,b)){
-        B[a.r][a.c]=bird[j];B[b.r][b.c]=bird[i];bp[i]={r:b.r,c:b.c};bp[j]={r:a.r,c:a.c};
-        E('sw',{i,j});return true;
-      }
-    }
-    return false;
-  }
-  function explode(){
-    const dead=[];
-    for(const[br,bc]of bombs)for(let r=Math.max(0,br-P.RAD_B);r<=Math.min(N-1,br+P.RAD_B);r++)for(let c=Math.max(0,bc-P.RAD_B);c<=Math.min(N-1,bc+P.RAD_B);c++){
-      const q=B[r][c];if(q&&q.k=='g'){B[r][c]=null;dead.push([r,c])}}
-    bombs=[];E('boom',{cells:dead});
-    if(grow())E('grow');
-  }
-  function cascade(){
-    for(let c=0;c<N;c++){
-      const col=[];for(let r=N-1;r>=0;r--)if(B[r][c])col.push(B[r][c]);
-      const miss=N-col.length;
-      for(let r=N-1;r>=0;r--){const k=N-1-r;if(k<col.length)B[r][c]=col[k];else{const q=rs(st.up);q.dy=miss;B[r][c]=q}}
-    }
-    for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(B[r][c].k=='bird')bp[B[r][c].c]={r,c};
-    E('cas');
-  }
-  let rounds=0;
-  for(;rounds<80;rounds++){
-    let col=0;
-    for(;;){
-      let moved=false;
-      for(let i=0;i<4;i++){const m=moves(i);if(!m.length)continue;const[r2,c2]=m[rnd(m.length)];moved=true;col++;collect(i,r2,c2);if(win>=CAPV)break}
-      if(win>=CAPV)break;
-      if(!moved&&!swap())break;
-    }
-    if(win>=CAPV)break;
-    if(bombs.length){explode();col++}
-    if(!col)break;
-    cascade();
-  }
-  win=Math.min(win,CAPV);
-  return{win,scat,ev,rounds,st};
-}
-
-/* ===== INTERFAZ ===== */
-const CLR=['#ef4444','#22c55e','#3b82f6','#a855f7'],CN=['Rojo','Verde','Azul','Morado'];
-const SPI={W:'🌟',U:'⬆️',T:'🔄',C:'🪙',B:'💣',S:'🎁'};
-const cf=n=>n>=1000?fmt(n):n>=10?n.toFixed(1):n.toFixed(2);
-let busy=false,turbo=false,els=new Map(),curN=5;
-const BD=$('coboard'),W=ms=>sl(turbo?ms*.35:ms);
-const html=p=>p.k=='g'?`<div class="cogm" style="--c:${CLR[p.c]};--l:${p.l}">${p.l}</div>`:p.k=='bird'?`<div class="cobd" style="--c:${CLR[p.c]}">🐦</div>`:`<div class="cosp cs${p.k}">${SPI[p.k]}</div>`;
-const key=p=>p.k+p.c+p.l;
-function show(snap,N,tt){
-  BD.style.setProperty('--n',N);BD.style.setProperty('--tt',(turbo?tt*.5:tt)+'s');curN=N;$('co-nn').textContent=N+'×'+N;
-  const ids=new Set(snap.map(p=>p.id));
-  for(const[id,el]of els)if(!ids.has(id)){el.classList.add('coout');setTimeout(()=>el.remove(),300);els.delete(id)}
-  const sz=100/N;
-  for(const p of snap){
-    const left=p.col*sz,top=p.r*sz;let el=els.get(p.id);
-    if(!el){
-      el=document.createElement('div');el.className='copc';el.innerHTML=html(p);el.dataset.k=key(p);
-      el.style.cssText=`width:${sz}%;height:${sz}%;left:${left}%;top:${(p.r-p.dy)*sz}%`;
-      BD.appendChild(el);els.set(p.id,el);
-      if(p.dy){void el.offsetWidth;el.style.top=top+'%'}else el.classList.add('copop');
-    }else{
-      el.style.left=left+'%';el.style.top=top+'%';el.style.width=sz+'%';el.style.height=sz+'%';
-      if(el.dataset.k!=key(p)){el.dataset.k=key(p);el.innerHTML=html(p);el.classList.remove('coflash');void el.offsetWidth;el.classList.add('coflash')}
-    }
-  }
-}
-function float(r,c,txt){
-  const f=document.createElement('div');f.className='cofl';f.textContent=txt;
-  f.style.left=(c+.5)*100/curN+'%';f.style.top=r*100/curN+'%';BD.appendChild(f);setTimeout(()=>f.remove(),950);
-}
-const msg=t=>$('co-msg').textContent=t;
-async function banner(t,ms){$('co-ban').innerHTML=t;$('co-ban').classList.add('on');await sl(ms);$('co-ban').classList.remove('on')}
-function setMeter(e){$('co-mtb').style.width=Math.min(100,e.meter/e.thr*100)+'%';$('co-mtt').textContent='Medidor '+e.meter+'/'+e.thr}
-async function play(ev,b,ctx){
-  let sc=0;
-  for(const e of ev){
-    setMeter(e);ctx.win=e.win*b;$('co-win').textContent=cf(ctx.base+ctx.win);
-    switch(e.t){
-      case'init':show(e.snap,e.N,.5);msg('¡Los recolectores se ponen en marcha!');await W(750);break;
-      case'mv':{
-        show(e.snap,e.N,.18);
-        if(e.amt>0)float(e.to[0],e.to[1],'+'+cf(e.amt*b));
-        if(e.kind=='U')msg('⬆️ ¡Mejora! Suben las gemas de '+CN[e.i]);
-        else if(e.kind=='T')msg('🔄 ¡Transformación!');
-        else if(e.kind=='C')msg('🪙 ¡Monedas! +'+cf(e.amt*b));
-        else if(e.kind=='B')msg('💣 Bomba recogida: explotará al terminar');
-        else if(e.kind=='W')msg('🌟 ¡Comodín recogido!');
-        else if(e.kind=='S'){sc++;$('co-scb').textContent='🎁 Bonus '+Math.min(3,sc)+'/3';msg('🎁 ¡Símbolo de bonus!')}
-        await W(e.kind=='g'?85:320);break}
-      case'sw':show(e.snap,e.N,.3);msg('🔁 Intercambio de recolectores');await W(420);break;
-      case'fill':show(e.snap,e.N,.3);msg('✨ ¡Medidor lleno! Nuevo símbolo especial'+(e.grew?' y el tablero crece':''));await W(650);break;
-      case'boom':BD.classList.remove('coshake');void BD.offsetWidth;BD.classList.add('coshake');show(e.snap,e.N,.3);msg('💥 ¡Explosión!');await W(600);break;
-      case'grow':show(e.snap,e.N,.3);msg('📐 ¡El tablero crece a '+e.N+'×'+e.N+'!');await W(550);break;
-      case'cas':show(e.snap,e.N,.45);await W(520);break;
-    }
-  }
-  $('co-scb').textContent='🎁 Bonus 0/3';
-}
-async function go(){
-  if(busy)return;const b=bet();if(!b)return;
-  busy=true;$('co-go').disabled=true;$('co-fsb').textContent='';
-  const st=newGame(),ctx={base:0,win:0};
-  const r=spin(st,true);await play(r.ev,b,ctx);
-  let total=r.win*b;if(total>0)pay(total,b);$('co-win').textContent=sym()+cf(total);
-  if(r.scat>=3){
-    await banner('🎁 ¡BONUS!<br>'+P.FS+' giros gratis<br><small style="font-size:.5em">El tablero, las mejoras y el medidor se mantienen</small>',2200);
-    let left=P.FS,fsTot=0,done=0;
-    while(left>0){
-      left--;done++;$('co-fsb').textContent='🎁 Quedan '+left;
-      const q=spin(st,true);ctx.base=fsTot;await play(q.ev,b,ctx);
-      const w=q.win*b;fsTot+=w;if(w>0)pay(w,0);$('co-win').textContent=sym()+cf(total+fsTot);
-      if(q.scat>=3&&done<P.FSMAX){left+=P.FSRE;await banner('🎁 ¡+'+P.FSRE+' giros!',1400)}
-      await W(500);
-    }
-    total+=fsTot;$('co-fsb').textContent='';
-    await banner('🏆 Bonus terminado<br>+'+sym()+cf(fsTot),2200);
-  }
-  ctx.base=0;msg(total>0?'🎉 Premio total: +'+sym()+cf(total):'Sin premio esta vez');$('co-win').textContent=sym()+cf(total);
-  busy=false;$('co-go').disabled=false;
-}
-function info(){
-  const b=Math.floor(+$('bet').value)||100;
-  return `<b style="color:#ffd54a">Recolectores</b><br>Hay 4 pájaros en el tablero, uno por color: ${CLR.map((c,i)=>`<span class="codot" style="background:${c}"></span>${CN[i]}`).join(' ')}. Un pájaro se mueve arriba, abajo, izquierda o derecha a una casilla con una <b>gema de su color</b> o un <b>símbolo especial</b>; la recoge y sigue en cadena. Si dos pájaros pegados se atascan pero intercambiando posiciones uno podría seguir, <b>se intercambian solos</b>.<br><br>
-  <b style="color:#ffd54a">Caída</b><br>Cuando nadie se puede mover, los huecos se rellenan: los símbolos caen y entran otros nuevos por arriba. El giro acaba cuando una ronda no recoge nada.<br><br>
-  <b style="color:#ffd54a">Medidor y tablero</b><br>Cada cosa recogida llena el medidor. Al llenarse aparece un símbolo especial y el tablero crece (de 5×5 hasta 8×8).<br><br>
-  <b style="color:#ffd54a">Valor de las gemas (con tu apuesta de ${sym()}${fmt(b)})</b><br>${P.VAL.map((v,i)=>`Nivel ${i+1}: ${sym()}${cf(v*b)}`).join(' · ')}<br><br>
-  <b style="color:#ffd54a">Símbolos especiales</b><br>🌟 <b>Comodín</b>: lo recoge cualquier pájaro (vale como una gema de nivel 2).<br>⬆️ <b>Mejora</b>: sube un nivel todas las gemas del color del pájaro y las futuras.<br>🔄 <b>Transformación</b>: convierte hasta ${P.NT} gemas cercanas al color del pájaro.<br>🪙 <b>Monedas</b>: premio directo de ${sym()}${cf(P.CW[0][0]*b)} a ${sym()}${cf(P.CW[5][0]*b)}.<br>💣 <b>Bomba</b>: al acabar los movimientos explota, destruye las gemas de alrededor y el tablero crece.<br>🎁 <b>Bonus</b>: 3 recogidos en un mismo giro dan ${P.FS} giros gratis (+${P.FSRE} si vuelves a juntar 3). En el bonus el tamaño del tablero, las mejoras y el medidor <b>no se reinician</b>.<br><br>
-  <span style="color:#a99cc9">Devolución teórica estimada: ≈ 88%. Premio máximo por giro: x${P.CAP}.</span>`;
-}
-function turboT(){turbo=!turbo;$('co-turbo').style.background=turbo?'#059669':''}
-function open(){
-  if(busy)return;
-  els.clear();BD.querySelectorAll('.copc').forEach(e=>e.remove());BD.style.setProperty('--n',5);
-  $('co-nn').textContent='5×5';$('co-mtb').style.width='0%';$('co-mtt').textContent='Medidor 0/'+P.THR[0];$('co-win').textContent='0';$('co-scb').textContent='🎁 Bonus 0/3';$('co-fsb').textContent='';msg('Pulsa GIRAR');
-}
-return{go,open,info,turbo:turboT,stop(){}};
-})();
-const coSpin=CO.go,coOpen=CO.open,coTurbo=CO.turbo;
-/* Con una ventana abierta, el fondo (el clicker) no se desplaza */
-(()=>{
-  const sync=()=>{const on=!!document.querySelector('.modal.open');document.documentElement.classList.toggle('lock',on);document.body.classList.toggle('lock',on)};
-  const mo=new MutationObserver(sync);
-  document.querySelectorAll('.modal').forEach(m=>mo.observe(m,{attributes:true,attributeFilter:['class']}));
-  document.addEventListener('touchmove',e=>{if(document.body.classList.contains('lock')&&!e.target.closest('.box'))e.preventDefault()},{passive:false});
-  sync();
-})();
-ui();
-</script>
-</body>
-</html>
+    const sa=gm>=1?'SE
