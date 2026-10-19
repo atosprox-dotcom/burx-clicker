@@ -167,6 +167,23 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
 .car{position:absolute;top:6px;left:-50px;font-style:normal;font-size:2rem;animation:drive .8s linear forwards;z-index:2}
 @keyframes drive{from{transform:translateX(0) scaleX(-1)}to{transform:translateX(var(--cw)) scaleX(-1)}}
 .cdf{flex:1;padding:.5rem}.cdf.on{background:linear-gradient(#34d399,#059669)}
+#coboard{--n:5;--tt:.22s;position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:1rem;border:3px solid #7c3aed;background-color:#120a24;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:calc(100%/var(--n)) calc(100%/var(--n));box-shadow:0 0 25px rgba(124,58,237,.45)}
+#coboard.coshake{animation:cosk .45s}@keyframes cosk{20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,-3px)}80%{transform:translate(4px,3px)}}
+.copc{position:absolute;display:flex;align-items:center;justify-content:center;transition:left var(--tt) ease-in-out,top var(--tt) ease-in-out,width .3s,height .3s}
+.copc.coout{transition:none;animation:coout .28s forwards;z-index:1}@keyframes coout{to{transform:scale(1.6);opacity:0}}
+.copc.copop{animation:copop .35s}@keyframes copop{from{transform:scale(0)}to{transform:scale(1)}}
+.copc.coflash{animation:coflash .45s}@keyframes coflash{50%{transform:scale(1.35);filter:brightness(1.8)}}
+.cogm{width:calc(52% + var(--l)*4.5%);height:calc(52% + var(--l)*4.5%);border-radius:38%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.8),transparent 38%),var(--c);box-shadow:0 0 calc(var(--l)*3px) var(--c),inset 0 -4px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:clamp(9px,3.4vw,15px);text-shadow:0 1px 2px #0008}
+.cobd{width:88%;height:88%;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.7),transparent 40%),var(--c);border:3px solid #fff;box-shadow:0 0 14px var(--c);display:flex;align-items:center;justify-content:center;font-size:clamp(14px,6vw,26px);z-index:2}
+.cosp{font-size:clamp(15px,7vw,30px)}
+.csW{filter:drop-shadow(0 0 6px #ffd54a)}.csU{filter:drop-shadow(0 0 6px #34d399)}.csT{filter:drop-shadow(0 0 6px #38bdf8)}.csC{filter:drop-shadow(0 0 6px #fbbf24)}.csB{filter:drop-shadow(0 0 6px #f87171)}.csS{filter:drop-shadow(0 0 8px #e879f9);animation:copl 1s infinite alternate}
+@keyframes copl{to{transform:scale(1.15)}}
+.cofl{position:absolute;transform:translate(-50%,0);font-weight:800;color:#ffd54a;text-shadow:0 2px 4px #000;pointer-events:none;animation:coflup .9s ease-out forwards;z-index:5;font-size:clamp(11px,3.6vw,15px)}
+@keyframes coflup{to{transform:translate(-50%,-34px);opacity:0}}
+#co-ban{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;background:rgba(8,4,20,.75);z-index:9;font-weight:900;font-size:clamp(20px,7vw,32px);color:#ffd54a;text-shadow:0 0 16px #f59e0b;padding:1rem}
+#co-ban.on{display:flex;animation:copop .4s}
+.cobar{height:.7rem;background:rgba(0,0,0,.5);border-radius:1rem;overflow:hidden}.cobar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8b5cf6,#ff3d8b,#ffd54a);transition:width .25s}
+.codot{display:inline-block;width:.8rem;height:.8rem;border-radius:50%;vertical-align:middle;margin-right:.2rem}
 </style>
 </head>
 <body>
@@ -232,6 +249,7 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
     <button class="menu" onclick="show('crash','🚀 Cohete')">🚀 Cohete<div class="small">Cobra antes de que explote</div></button>
     <button class="menu" onclick="show('drift','🏎️ Drift Rush')">🏎️ Drift Rush<div class="small">Derrapa, sube el multiplicador y cobra a tiempo</div></button>
     <button class="menu" onclick="show('chicken','🐔 Chicken Cross')">🐔 Chicken Cross<div class="small">Cruza carreteras, sube el multiplicador y cobra</div></button>
+    <button class="menu" onclick="show('collect','🐦 Recolectores')">🐦 Recolectores<div class="small">Pájaros que recogen gemas en cadena · tablero que crece · bonus</div></button>
   </div>
 
   <div id="g-bingo" class="game hide col">
@@ -289,6 +307,16 @@ main{flex:1;flex-direction:column;gap:.8rem;display:flex;align-items:center;just
     <div id="ch-msg" class="msgb">Elige dificultad y empieza</div>
     <button id="ch-start" class="gold big" onclick="chStart()">EMPEZAR 🐔</button>
     <div id="ch-act" class="row hide"><button id="ch-go" class="green big" onclick="chStep()">AVANZAR ➡️</button><button id="ch-cash" class="gold big" onclick="chCash()">COBRAR</button></div>
+  </div>
+  <div id="g-collect" class="game hide col">
+    <div class="panel small">
+      <div class="row"><span>Tablero <b id="co-nn">5×5</b></span><span id="co-fsb" style="color:#e879f9"></span><span>Premio <b id="co-win" style="color:#ffd54a">0</b></span></div>
+      <div class="cobar" style="margin:.35rem 0 .15rem"><i id="co-mtb"></i></div>
+      <div class="row" style="font-size:.72rem;color:#a99cc9"><span id="co-mtt">Medidor 0/6</span><span id="co-scb">🎁 Bonus 0/3</span></div>
+    </div>
+    <div id="coboard"><div id="co-ban"></div></div>
+    <div id="co-msg" class="msgb">Pulsa GIRAR</div>
+    <div class="row"><button id="co-go" class="gold big" onclick="coSpin()">GIRAR 🎰</button><button id="co-turbo" onclick="coTurbo()" style="white-space:nowrap">⏩ Turbo</button></div>
   </div>
 </div></div></div>
 
@@ -426,7 +454,7 @@ setInterval(()=>{
 function openArcade(){$('arcade').classList.add('open');menu()}
 function closeArcade(){menu();$('arcade').classList.remove('open')}
 function menu(){stopCrash();driftStop();chStop();if(M&&M.on){M.on=false;$('m-start').classList.remove('hide');$('m-cash').classList.add('hide')}document.querySelectorAll('.game').forEach(g=>g.classList.add('hide'));$('g-menu').classList.remove('hide');$('betbox').classList.add('hide');$('back').classList.add('hide');$('gi').classList.add('hide');curG=null;$('ginfo').classList.remove('open');$('atitle').textContent='🕹️ Minijuegos'}
-function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('gi').classList.remove('hide');curG=g;$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit();if(g=='drift')driftOpen();if(g=='chicken')chOpen()}
+function show(g,t){$('g-menu').classList.add('hide');$('g-'+g).classList.remove('hide');$('betbox').classList.remove('hide');$('back').classList.remove('hide');$('gi').classList.remove('hide');curG=g;$('atitle').textContent=t;if(g=='slots'){setReels(reels);slotJp()};if(g=='mines')mGrid();if(g=='bingo'&&!bingoBusy)bInit();if(g=='drift')driftOpen();if(g=='chicken')chOpen();if(g=='collect')coOpen()}
 
 /* ---------- Bingo 90 ---------- */
 const BM=60;
@@ -765,13 +793,13 @@ function slotsInfo(){
   return `<b style="color:#ffd54a">Cómo funciona</b><br>Hay <b>10 líneas</b> fijas que pagan de izquierda a derecha. Los premios son múltiplos de tu apuesta total.<br>👸 <b>Dama (comodín)</b>: sustituye a todos menos a 🔮 y <b>duplica</b> el premio cuando sustituye.<br>🔮 <b>6 o más orbes</b> activan <b>LOCK & SPIN</b>: las orbes se bloquean, tienes 3 respins y cada orbe nueva los reinicia. Cada orbe da un premio o un bote: MINI x${JP.MINI}, MINOR x${JP.MINOR}, MAJOR x${JP.MAJOR}. Si llenas las 15 casillas, ¡GRAND x${JP.GRAND}!<div class="col" style="margin-top:.5rem;gap:.25rem"><div class="row" style="gap:.2rem;color:#a99cc9"><span style="min-width:4.6rem">Símbolo</span><span style="width:3.4rem;text-align:right">2</span><span style="width:3.4rem;text-align:right">3</span><span style="width:3.4rem;text-align:right">4</span><span style="width:3.4rem;text-align:right">5</span></div>${rows}</div><div style="margin-top:.4rem;color:#a99cc9">Devolución teórica aproximada: 92%.</div>`;
 }
 let curG=null;
-const GN={bingo:'🎱 Bingo',bj:'🃏 Blackjack',slots:'🎰 Lady Royal',mines:'💣 Minas',crash:'🚀 Cohete',drift:'🏎️ Drift Rush',chicken:'🐔 Chicken Cross'};
+const GN={bingo:'🎱 Bingo',bj:'🃏 Blackjack',slots:'🎰 Lady Royal',mines:'💣 Minas',crash:'🚀 Cohete',drift:'🏎️ Drift Rush',chicken:'🐔 Chicken Cross',collect:'🐦 Recolectores'};
 function bjInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>Acércate a 21 sin pasarte. Del 2 al 10 valen su número, J, Q y K valen 10 y el As vale 11 o 1.<br><b>Pedir</b>: una carta más. <b>Plantarse</b>: te quedas con lo que tienes. <b>Doblar ×2</b>: solo con tus 2 primeras cartas; doblas la apuesta, recibes una carta y te plantas.<br>El crupier pide hasta llegar a 17.<br><b>Pagos</b>: ganar x2 · Blackjack natural (As + figura con 2 cartas) x2,5 · empate devuelve tu apuesta. Si el crupier hace Blackjack natural, gana a un 21 normal.`}
 function minesInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>El tablero tiene 25 casillas con 3, 5 o 10 minas escondidas (eliges cuántas antes de empezar).<br>Cada 💎 que descubres sube el multiplicador y puedes <b>cobrar</b> cuando quieras. Si pisas una 💣 pierdes la apuesta.<br>Con más minas el multiplicador sube más rápido, pero el riesgo es mayor. Bajo el tablero ves el siguiente multiplicador y el riesgo de la próxima casilla. Si descubres todas las seguras, cobras automáticamente.`}
 function crashInfo(){return `<b style="color:#ffd54a">Cómo funciona</b><br>El cohete despega y el multiplicador sube. Pulsa <b>COBRAR</b> antes de que explote: ganas tu apuesta × el multiplicador.<br>Puede explotar en cualquier momento, incluso nada más despegar. En el panel y en el botón ves en tiempo real cuánto ganarías. Si explota antes de cobrar, pierdes la apuesta.<br><span style="color:#a99cc9">Devolución teórica aproximada: 97%.</span>`}
 function gInfo(){
   if(!curG)return;
-  const I={bingo:bingoInfo,slots:slotsInfo,bj:bjInfo,mines:minesInfo,crash:crashInfo,drift:()=>DR.info(),chicken:()=>CH.info()};
+  const I={bingo:bingoInfo,slots:slotsInfo,bj:bjInfo,mines:minesInfo,crash:crashInfo,drift:()=>DR.info(),chicken:()=>CH.info(),collect:()=>CO.info()};
   $('ginfo-title').textContent='ℹ️ '+GN[curG];$('ginfo-body').innerHTML=I[curG]();$('ginfo').classList.add('open');
 }
 function openInfo(){
@@ -994,6 +1022,208 @@ const CH=(()=>{
   };
 })();
 const chOpen=CH.open,chStop=CH.stop,chStart=CH.start,chStep=CH.step,chCash=CH.cash,chDiff=CH.diff;
+/* ---------- Recolectores (tragaperras) ---------- */
+const CO=(()=>{
+/* ===== MOTOR (apuesta = 1 unidad; los premios se devuelven en múltiplos de la apuesta) ===== */
+const P={VAL:[.0042,.0083,.0165,.0415,.11],LW:[50,28,14,6,2],SW:{W:3,U:2,T:2.5,C:3,B:1.5,S:.42},
+  CW:[[.0135,50],[.027,25],[.0405,12],[.0675,8],[.135,4],[.3375,1]],THR:[6,7,8,9],MAXN:8,CAP:3000,FS:8,FSRE:4,FSMAX:30,SIZE0:5,RAD_T:2,RAD_B:2,NT:6};
+let ID=0;
+const rnd=n=>Math.random()*n|0;
+function wpick(a){let t=0;for(const x of a)t+=x[1];let r=Math.random()*t;for(const x of a){r-=x[1];if(r<0)return x[0]}return a[0][0]}
+const DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const newGame=()=>({N:P.SIZE0,up:[0,0,0,0],meter:0});
+function rs(up){
+  let r=Math.random()*100;
+  for(const k in P.SW){r-=P.SW[k];if(r<0)return{id:++ID,k,c:0,l:0,dy:0}}
+  const c=rnd(4),l=Math.min(5,wpick(P.LW.map((w,i)=>[i+1,w]))+up[c]);
+  return{id:++ID,k:'g',c,l,dy:0};
+}
+function spin(st,rec){
+  const ev=[];let N=st.N,win=0,scat=0,bombs=[],B,bp=[],bird=[];
+  const CAPV=P.CAP;
+  const snap=()=>{const o=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++){const p=B[r][c];if(p)o.push({id:p.id,k:p.k,c:p.c,l:p.l,r,col:c,dy:p.dy})}return o};
+  const E=(t,x)=>{if(rec)ev.push(Object.assign({t,N,win,snap:snap(),meter:st.meter,thr:thr(),up:st.up.slice()},x||{}))};
+  const thr=()=>P.THR[Math.min(N-P.SIZE0,P.THR.length-1)];
+  B=Array.from({length:N},()=>Array(N).fill(null));
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++)B[r][c]=rs(st.up);
+  const cells=shuffle([].concat(...Array.from({length:N},(_,r)=>Array.from({length:N},(_,c)=>[r,c]))));
+  for(let i=0;i<4;i++){const[r,c]=cells[i];bird[i]={id:++ID,k:'bird',c:i,l:0,dy:0};B[r][c]=bird[i];bp[i]={r,c}}
+  if(rec)for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(B[r][c])B[r][c].dy=N+1;
+  E('init');
+  const valid=(i,r,c)=>{if(r<0||c<0||r>=N||c>=N)return false;const p=B[r][c];return p&&p.k!='bird'&&(p.k!='g'||p.c==i)};
+  const moves=i=>{const o=[];for(const[dr,dc]of DIRS){const r=bp[i].r+dr,c=bp[i].c+dc;if(valid(i,r,c))o.push([r,c])}return o};
+  function grow(){
+    if(N>=P.MAXN)return false;
+    for(let r=0;r<N;r++)B[r].push(rs(st.up));
+    B.push(Array.from({length:N+1},()=>rs(st.up)));
+    N++;st.N=N;return true;
+  }
+  function addSpecial(){
+    const cand=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(B[r][c]&&B[r][c].k=='g')cand.push([r,c]);
+    if(cand.length){const[r,c]=cand[rnd(cand.length)];B[r][c]={id:++ID,k:wpick([['W',3],['U',3],['T',3],['C',3],['B',1.5]]),c:0,l:0,dy:0}}
+  }
+  function collect(i,r2,c2){
+    const p=B[r2][c2],b=bp[i];let amt=0;
+    B[b.r][b.c]=null;B[r2][c2]=bird[i];bp[i]={r:r2,c:c2};
+    switch(p.k){
+      case'g':amt=P.VAL[p.l-1];break;
+      case'W':amt=P.VAL[Math.min(4,1+st.up[i])];break;
+      case'U':{st.up[i]=Math.min(3,st.up[i]+1);for(let r=0;r<N;r++)for(let c=0;c<N;c++){const q=B[r][c];if(q&&q.k=='g'&&q.c==i)q.l=Math.min(5,q.l+1)}break}
+      case'T':{const cand=[];for(let r=Math.max(0,r2-P.RAD_T);r<=Math.min(N-1,r2+P.RAD_T);r++)for(let c=Math.max(0,c2-P.RAD_T);c<=Math.min(N-1,c2+P.RAD_T);c++){const q=B[r][c];if(q&&q.k=='g'&&q.c!=i)cand.push(q)}
+        shuffle(cand).slice(0,P.NT).forEach(q=>q.c=i);break}
+      case'C':amt=wpick(P.CW);break;
+      case'B':bombs.push([r2,c2]);break;
+      case'S':scat++;break;
+    }
+    win+=amt;
+    E('mv',{i,to:[r2,c2],amt,kind:p.k,from:[b.r,b.c]});
+    st.meter++;
+    if(st.meter>=thr()){st.meter=0;addSpecial();const g=grow();E('fill',{grew:g})}
+  }
+  function swap(){
+    for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
+      const a=bp[i],b=bp[j];if(Math.abs(a.r-b.r)+Math.abs(a.c-b.c)!=1)continue;
+      const ok=(k,from,other)=>DIRS.some(([dr,dc])=>{const r=from.r+dr,c=from.c+dc;if(r==other.r&&c==other.c)return false;return valid(k,r,c)});
+      if(ok(i,b,a)||ok(j,a,b)){
+        B[a.r][a.c]=bird[j];B[b.r][b.c]=bird[i];bp[i]={r:b.r,c:b.c};bp[j]={r:a.r,c:a.c};
+        E('sw',{i,j});return true;
+      }
+    }
+    return false;
+  }
+  function explode(){
+    const dead=[];
+    for(const[br,bc]of bombs)for(let r=Math.max(0,br-P.RAD_B);r<=Math.min(N-1,br+P.RAD_B);r++)for(let c=Math.max(0,bc-P.RAD_B);c<=Math.min(N-1,bc+P.RAD_B);c++){
+      const q=B[r][c];if(q&&q.k=='g'){B[r][c]=null;dead.push([r,c])}}
+    bombs=[];E('boom',{cells:dead});
+    if(grow())E('grow');
+  }
+  function cascade(){
+    for(let c=0;c<N;c++){
+      const col=[];for(let r=N-1;r>=0;r--)if(B[r][c])col.push(B[r][c]);
+      const miss=N-col.length;
+      for(let r=N-1;r>=0;r--){const k=N-1-r;if(k<col.length)B[r][c]=col[k];else{const q=rs(st.up);q.dy=miss;B[r][c]=q}}
+    }
+    for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(B[r][c].k=='bird')bp[B[r][c].c]={r,c};
+    E('cas');
+  }
+  let rounds=0;
+  for(;rounds<80;rounds++){
+    let col=0;
+    for(;;){
+      let moved=false;
+      for(let i=0;i<4;i++){const m=moves(i);if(!m.length)continue;const[r2,c2]=m[rnd(m.length)];moved=true;col++;collect(i,r2,c2);if(win>=CAPV)break}
+      if(win>=CAPV)break;
+      if(!moved&&!swap())break;
+    }
+    if(win>=CAPV)break;
+    if(bombs.length){explode();col++}
+    if(!col)break;
+    cascade();
+  }
+  win=Math.min(win,CAPV);
+  return{win,scat,ev,rounds,st};
+}
+
+/* ===== INTERFAZ ===== */
+const CLR=['#ef4444','#22c55e','#3b82f6','#a855f7'],CN=['Rojo','Verde','Azul','Morado'];
+const SPI={W:'🌟',U:'⬆️',T:'🔄',C:'🪙',B:'💣',S:'🎁'};
+const cf=n=>n>=1000?fmt(n):n>=10?n.toFixed(1):n.toFixed(2);
+let busy=false,turbo=false,els=new Map(),curN=5;
+const BD=$('coboard'),W=ms=>sl(turbo?ms*.35:ms);
+const html=p=>p.k=='g'?`<div class="cogm" style="--c:${CLR[p.c]};--l:${p.l}">${p.l}</div>`:p.k=='bird'?`<div class="cobd" style="--c:${CLR[p.c]}">🐦</div>`:`<div class="cosp cs${p.k}">${SPI[p.k]}</div>`;
+const key=p=>p.k+p.c+p.l;
+function show(snap,N,tt){
+  BD.style.setProperty('--n',N);BD.style.setProperty('--tt',(turbo?tt*.5:tt)+'s');curN=N;$('co-nn').textContent=N+'×'+N;
+  const ids=new Set(snap.map(p=>p.id));
+  for(const[id,el]of els)if(!ids.has(id)){el.classList.add('coout');setTimeout(()=>el.remove(),300);els.delete(id)}
+  const sz=100/N;
+  for(const p of snap){
+    const left=p.col*sz,top=p.r*sz;let el=els.get(p.id);
+    if(!el){
+      el=document.createElement('div');el.className='copc';el.innerHTML=html(p);el.dataset.k=key(p);
+      el.style.cssText=`width:${sz}%;height:${sz}%;left:${left}%;top:${(p.r-p.dy)*sz}%`;
+      BD.appendChild(el);els.set(p.id,el);
+      if(p.dy){void el.offsetWidth;el.style.top=top+'%'}else el.classList.add('copop');
+    }else{
+      el.style.left=left+'%';el.style.top=top+'%';el.style.width=sz+'%';el.style.height=sz+'%';
+      if(el.dataset.k!=key(p)){el.dataset.k=key(p);el.innerHTML=html(p);el.classList.remove('coflash');void el.offsetWidth;el.classList.add('coflash')}
+    }
+  }
+}
+function float(r,c,txt){
+  const f=document.createElement('div');f.className='cofl';f.textContent=txt;
+  f.style.left=(c+.5)*100/curN+'%';f.style.top=r*100/curN+'%';BD.appendChild(f);setTimeout(()=>f.remove(),950);
+}
+const msg=t=>$('co-msg').textContent=t;
+async function banner(t,ms){$('co-ban').innerHTML=t;$('co-ban').classList.add('on');await sl(ms);$('co-ban').classList.remove('on')}
+function setMeter(e){$('co-mtb').style.width=Math.min(100,e.meter/e.thr*100)+'%';$('co-mtt').textContent='Medidor '+e.meter+'/'+e.thr}
+async function play(ev,b,ctx){
+  let sc=0;
+  for(const e of ev){
+    setMeter(e);ctx.win=e.win*b;$('co-win').textContent=cf(ctx.base+ctx.win);
+    switch(e.t){
+      case'init':show(e.snap,e.N,.5);msg('¡Los recolectores se ponen en marcha!');await W(750);break;
+      case'mv':{
+        show(e.snap,e.N,.18);
+        if(e.amt>0)float(e.to[0],e.to[1],'+'+cf(e.amt*b));
+        if(e.kind=='U')msg('⬆️ ¡Mejora! Suben las gemas de '+CN[e.i]);
+        else if(e.kind=='T')msg('🔄 ¡Transformación!');
+        else if(e.kind=='C')msg('🪙 ¡Monedas! +'+cf(e.amt*b));
+        else if(e.kind=='B')msg('💣 Bomba recogida: explotará al terminar');
+        else if(e.kind=='W')msg('🌟 ¡Comodín recogido!');
+        else if(e.kind=='S'){sc++;$('co-scb').textContent='🎁 Bonus '+Math.min(3,sc)+'/3';msg('🎁 ¡Símbolo de bonus!')}
+        await W(e.kind=='g'?85:320);break}
+      case'sw':show(e.snap,e.N,.3);msg('🔁 Intercambio de recolectores');await W(420);break;
+      case'fill':show(e.snap,e.N,.3);msg('✨ ¡Medidor lleno! Nuevo símbolo especial'+(e.grew?' y el tablero crece':''));await W(650);break;
+      case'boom':BD.classList.remove('coshake');void BD.offsetWidth;BD.classList.add('coshake');show(e.snap,e.N,.3);msg('💥 ¡Explosión!');await W(600);break;
+      case'grow':show(e.snap,e.N,.3);msg('📐 ¡El tablero crece a '+e.N+'×'+e.N+'!');await W(550);break;
+      case'cas':show(e.snap,e.N,.45);await W(520);break;
+    }
+  }
+  $('co-scb').textContent='🎁 Bonus 0/3';
+}
+async function go(){
+  if(busy)return;const b=bet();if(!b)return;
+  busy=true;$('co-go').disabled=true;$('co-fsb').textContent='';
+  const st=newGame(),ctx={base:0,win:0};
+  const r=spin(st,true);await play(r.ev,b,ctx);
+  let total=r.win*b;if(total>0)pay(total,b);$('co-win').textContent=sym()+cf(total);
+  if(r.scat>=3){
+    await banner('🎁 ¡BONUS!<br>'+P.FS+' giros gratis<br><small style="font-size:.5em">El tablero, las mejoras y el medidor se mantienen</small>',2200);
+    let left=P.FS,fsTot=0,done=0;
+    while(left>0){
+      left--;done++;$('co-fsb').textContent='🎁 Quedan '+left;
+      const q=spin(st,true);ctx.base=fsTot;await play(q.ev,b,ctx);
+      const w=q.win*b;fsTot+=w;if(w>0)pay(w,0);$('co-win').textContent=sym()+cf(total+fsTot);
+      if(q.scat>=3&&done<P.FSMAX){left+=P.FSRE;await banner('🎁 ¡+'+P.FSRE+' giros!',1400)}
+      await W(500);
+    }
+    total+=fsTot;$('co-fsb').textContent='';
+    await banner('🏆 Bonus terminado<br>+'+sym()+cf(fsTot),2200);
+  }
+  ctx.base=0;msg(total>0?'🎉 Premio total: +'+sym()+cf(total):'Sin premio esta vez');$('co-win').textContent=sym()+cf(total);
+  busy=false;$('co-go').disabled=false;
+}
+function info(){
+  const b=Math.floor(+$('bet').value)||100;
+  return `<b style="color:#ffd54a">Recolectores</b><br>Hay 4 pájaros en el tablero, uno por color: ${CLR.map((c,i)=>`<span class="codot" style="background:${c}"></span>${CN[i]}`).join(' ')}. Un pájaro se mueve arriba, abajo, izquierda o derecha a una casilla con una <b>gema de su color</b> o un <b>símbolo especial</b>; la recoge y sigue en cadena. Si dos pájaros pegados se atascan pero intercambiando posiciones uno podría seguir, <b>se intercambian solos</b>.<br><br>
+  <b style="color:#ffd54a">Caída</b><br>Cuando nadie se puede mover, los huecos se rellenan: los símbolos caen y entran otros nuevos por arriba. El giro acaba cuando una ronda no recoge nada.<br><br>
+  <b style="color:#ffd54a">Medidor y tablero</b><br>Cada cosa recogida llena el medidor. Al llenarse aparece un símbolo especial y el tablero crece (de 5×5 hasta 8×8).<br><br>
+  <b style="color:#ffd54a">Valor de las gemas (con tu apuesta de ${sym()}${fmt(b)})</b><br>${P.VAL.map((v,i)=>`Nivel ${i+1}: ${sym()}${cf(v*b)}`).join(' · ')}<br><br>
+  <b style="color:#ffd54a">Símbolos especiales</b><br>🌟 <b>Comodín</b>: lo recoge cualquier pájaro (vale como una gema de nivel 2).<br>⬆️ <b>Mejora</b>: sube un nivel todas las gemas del color del pájaro y las futuras.<br>🔄 <b>Transformación</b>: convierte hasta ${P.NT} gemas cercanas al color del pájaro.<br>🪙 <b>Monedas</b>: premio directo de ${sym()}${cf(P.CW[0][0]*b)} a ${sym()}${cf(P.CW[5][0]*b)}.<br>💣 <b>Bomba</b>: al acabar los movimientos explota, destruye las gemas de alrededor y el tablero crece.<br>🎁 <b>Bonus</b>: 3 recogidos en un mismo giro dan ${P.FS} giros gratis (+${P.FSRE} si vuelves a juntar 3). En el bonus el tamaño del tablero, las mejoras y el medidor <b>no se reinician</b>.<br><br>
+  <span style="color:#a99cc9">Devolución teórica estimada: ≈ 88%. Premio máximo por giro: x${P.CAP}.</span>`;
+}
+function turboT(){turbo=!turbo;$('co-turbo').style.background=turbo?'#059669':''}
+function open(){
+  if(busy)return;
+  els.clear();BD.querySelectorAll('.copc').forEach(e=>e.remove());BD.style.setProperty('--n',5);
+  $('co-nn').textContent='5×5';$('co-mtb').style.width='0%';$('co-mtt').textContent='Medidor 0/'+P.THR[0];$('co-win').textContent='0';$('co-scb').textContent='🎁 Bonus 0/3';$('co-fsb').textContent='';msg('Pulsa GIRAR');
+}
+return{go,open,info,turbo:turboT,stop(){}};
+})();
+const coSpin=CO.go,coOpen=CO.open,coTurbo=CO.turbo;
 ui();
 </script>
 </body>
