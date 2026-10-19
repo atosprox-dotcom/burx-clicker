@@ -615,14 +615,17 @@ async function auth(create){
   if(u.length<3||p.length<6)return m.textContent='Apodo de 3+ letras/números y contraseña de 6+.';
   m.textContent='Conectando...';
   const email=u+'@burx.game';
-  const r=create?await db.auth.signUp({email,password:p,options:{data:{username:u}}}):await db.auth.signInWithPassword({email,password:p});
-  if(r.error)return m.textContent=r.error.message.includes('Invalid login')?'Apodo o contraseña incorrectos.':r.error.message;
+  let r;
+  try{r=create?await db.auth.signUp({email,password:p,options:{data:{username:u}}}):await db.auth.signInWithPassword({email,password:p})}
+  catch(e){console.error(e);return m.textContent='No se pudo conectar con el servidor: '+(e.message||e)}
+  if(r.error)return m.textContent=r.error.message.includes('Invalid login')?'Apodo o contraseña incorrectos.':'Error: '+r.error.message;
   if(!r.data.session)return m.textContent='Desactiva "Confirm email" en Supabase > Auth > Providers > Email.';
-  start(r.data.user,create);
+  try{await start(r.data.user,create)}catch(e){console.error(e);m.textContent='Error al cargar tu partida: '+(e.message||e)}
 }
 async function start(u,isNew){
   user=u;$('uname').textContent=u.user_metadata.username;
-  const {data}=await db.from('profiles').select('data').eq('id',u.id).maybeSingle();
+  const {data,error}=await db.from('profiles').select('data').eq('id',u.id).maybeSingle();
+  if(error){user=null;$('uname').textContent='-';throw new Error(error.message)}
   S=Object.assign(def(),data&&data.data||{});if(!S.total)S.total=Math.max(S.money,S.prog);
   $('login').classList.remove('open');ui();if(!data||isNew)save();
 }
@@ -651,7 +654,7 @@ async function openRank(){
 }
 
 /* ---------- Clicker ---------- */
-const MAXCPS=12,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
+const MAXCPS=20,AC_MEAN=250,AC_SD=5; // máx. clics por segundo; autoclicker = ritmo de +4/s casi perfectamente regular
 let ct=[],iv=[],acUntil=0,lastWarn=0;
 function clickOK(e,now=performance.now()){
   const warn=m=>{if(now-lastWarn>3000){lastWarn=now;toast(m)}};
@@ -1135,8 +1138,4 @@ const DR=(()=>{
   function hud(){
     c.textAlign='center';
     c.font='800 38px system-ui';c.fillStyle=QC[k];c.shadowColor=QC[k];c.shadowBlur=12;c.fillText('x'+mult.toFixed(2),CX,48);c.shadowBlur=0;
-    c.font='800 14px system-ui';c.fillText(QN[k],CX,70);
-    c.textAlign='left';c.font='700 13px system-ui';
-    c.fillStyle=mult>=1+1/PAYK?'#34d399':'#ffd54a';c.fillText('💰 Cobro: '+sym()+fmt(pay$(mult)),10,22);
-    c.fillStyle='#a99cc9';c.fillText(t.toFixed(0)+' s · rentable desde x'+(1+1/PAYK).toFixed(2),10,40);
-    const sa=gm>=1?'SE
+    c.font='800 14px system-ui';c.f
