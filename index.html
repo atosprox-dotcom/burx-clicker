@@ -6,6 +6,13 @@
 <title>BURX Clicker</title>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>if(!window.supabase)document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>')</script>
+<script>
+/* Diagnóstico: muestra en pantalla cualquier error de carga */
+window.addEventListener('error',function(e){var m=document.getElementById('login-msg');if(m)m.textContent='Error del juego: '+(e.message||e)+(e.lineno?' (línea '+e.lineno+')':'')});
+window.addEventListener('unhandledrejection',function(e){var m=document.getElementById('login-msg');if(m)m.textContent='Error: '+((e.reason&&e.reason.message)||e.reason)});
+window.addEventListener('load',function(){if(!window.supabase){var m=document.getElementById('login-msg');if(m)m.textContent='No carga la librería de cuentas (Supabase). Revisa tu conexión o bloqueadores. Puedes jugar sin cuenta.'}});
+</script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;color:#fff;font-family:Outfit,system-ui,sans-serif;background:radial-gradient(circle at 20% 0,rgba(139,92,246,.35),transparent 45%),radial-gradient(circle at 85% 100%,rgba(255,61,139,.25),transparent 45%),#0b0716;background-attachment:fixed;display:flex;flex-direction:column;align-items:center;padding:1rem;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -1125,17 +1132,4 @@ const DR=(()=>{
     c.lineJoin='round';c.setLineDash([]);
     path(0,PI2,120);c.closePath();c.strokeStyle='#4a3a7a';c.lineWidth=2*TW+8;c.stroke();
     c.strokeStyle='#1d1a33';c.lineWidth=2*TW;c.stroke();
-    for(let s=0;s<6;s++)if(G[s]<1){path(s*PI2/6,(s+1)*PI2/6,24);c.strokeStyle=G[s]<.7?'rgba(56,189,248,.3)':'rgba(56,189,248,.13)';c.lineWidth=2*TW;c.stroke()}
-    path(0,PI2,120);c.closePath();c.setLineDash([10,12]);c.strokeStyle='rgba(255,255,255,.2)';c.lineWidth=2;c.stroke();c.setLineDash([]);
-    const r=R(0);c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(CX+r-TW,CY);c.lineTo(CX+r+TW,CY);c.stroke();
-  }
-  function drawCar(){
-    c.save();c.translate(car.x,car.y);c.rotate(car.h);
-    c.fillStyle='#ff3d8b';c.beginPath();rr(-9,-5,18,10,3);c.fill();
-    c.fillStyle='#1b1030';c.fillRect(1,-4,5,8);c.fillStyle='#fff';c.fillRect(8,-4,2,2);c.fillRect(8,2,2,2);
-    c.restore();
-  }
-  function hud(){
-    c.textAlign='center';
-    c.font='800 38px system-ui';c.fillStyle=QC[k];c.shadowColor=QC[k];c.shadowBlur=12;c.fillText('x'+mult.toFixed(2),CX,48);c.shadowBlur=0;
-    c.font='800 14px system-ui';c.f
+    for(let s=0;s<6;s++)if(G[s]<1){path(s*PI2/6,(s+1)*PI2/6,24);c.strokeStyle=G[s]<.7?'rgb
